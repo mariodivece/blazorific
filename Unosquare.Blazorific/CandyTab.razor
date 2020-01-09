@@ -1,0 +1,30 @@
+﻿@inherits CandyComponentBase
+
+@if (TabSet.Mode == CandyTabMode.Normal)
+{
+    <a href="javascript:void(0)"
+       class="nav-item nav-link @(IsFirst ? "active" : null)"
+       id="@($"{Id}-tab")"
+       data-toggle="tab" data-target="@($"#{Id}")" role="tab" aria-controls="@Id" aria-selected="false">@Title</a>
+}
+else
+{
+    <div class="card mb-1">
+        <div class="card-header p-0" id="@($"{Id}-tab")">
+            <a href="javascript:void(0)" class="btn btn-link" data-toggle="collapse" data-target="@($"#{Id}")" aria-expanded="@(IsExpanded ? "true" : "false")" aria-controls="@Id">
+                @Title
+            </a>
+        </div>
+
+        <div id="@Id" class="collapse @(IsExpanded ? "show" : null)" aria-labelledby="@($"{Id}-tab")" data-parent="@($"#{TabSet.Id}")">
+            <div class="card-body">
+                @ChildContent
+            </div>
+        </div>
+    </div>
+}
+
+@code{
+    bool IsFirst => TabSet.IndexOf(this) == 0;
+    bool IsExpanded => IsFirst && TabSet.Mode != CandyTabMode.AccordionCollapsed;
+}

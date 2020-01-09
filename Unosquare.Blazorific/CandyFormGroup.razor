@@ -1,0 +1,35 @@
+﻿@inherits CandyComponentBase
+
+<div class="form-group">
+    <label>@Label</label>
+    <div class="input-group">
+        @if (!string.IsNullOrWhiteSpace(PrependIconClass))
+        {
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <i class="@PrependIconClass"></i>
+                </span>
+            </div>
+        }
+
+        @ChildContent
+
+        @if (!string.IsNullOrWhiteSpace(AppendText))
+        {
+            <div class="input-group-append">
+                <span class="input-group-text">
+                    @AppendText
+                </span>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(HelpText))
+        {
+            <div class="w-100">
+                <small class="form-text text-muted">
+                    @HelpText
+                </small>
+            </div>
+        }
+    </div>
+</div>

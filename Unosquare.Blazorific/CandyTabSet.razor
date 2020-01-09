@@ -1,0 +1,31 @@
+﻿@inherits CandyComponentBase
+
+@if (Mode == CandyTabMode.Normal)
+{
+    <CascadingValue Name="TabSet" Value="this">
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                @ChildContent
+            </div>
+        </nav>
+    </CascadingValue>
+
+    <div class="tab-content">
+        @foreach (var tab in Tabs)
+        {
+            <div class="tab-pane fade @(IndexOf(tab) == 0 ? "show active" : null)" id="@tab.Id" role="tabpanel" aria-labelledby="@($"{tab.Id}-tab")">
+                <div class="border-left border-bottom border-right">
+                    @tab.ChildContent
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <CascadingValue Name="TabSet" Value="this">
+        <div id="@Id">
+            @ChildContent
+        </div>
+    </CascadingValue>
+}
