@@ -1,6 +1,46 @@
-﻿@page "/"
-<h3>Index</h3>
+﻿@inherits AppComponentBase
+@page "/"
 
-@code {
+<div class="container mt-4">
+    <CandyGrid Data="@Items" OnBodyRowDoubleClick="@OnBodyRowDoubleClick">
+        <CandyGridColumns>
+            <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" />
+            <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" />
+            <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" />
+            <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" />
 
+            <CandyGridColumn Title="Date" Context="item">
+                <DataTemplate>
+                    @($"UID: {(item as Product).DateCreated.ToShortDateString()}")
+                </DataTemplate>
+            </CandyGridColumn>
+        </CandyGridColumns>
+    </CandyGrid>
+</div>
+
+@code
+{
+    private Product[] Items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Items = await Http.GetJsonAsync<Product[]>("Products");
+        await base.OnInitializedAsync();
+    }
+
+    protected void OnBodyRowDoubleClick(GridBodyRowEventArgs e)
+    {
+        Console.WriteLine($"Forecast on {(e.DataItem as Product).ProductId} Double clicked");
+        (e.DataItem as Product).Name = string.Empty;
+
+        var request = new CandyGridDataRequest
+        {
+            Columns = new CandyGridDataColumn[]
+            {
+                // new CandyGridDataColumn { DataType. }
+            }
+        };
+
+        // Http.PostJsonAsync("Products/grid", )
+    }
 }

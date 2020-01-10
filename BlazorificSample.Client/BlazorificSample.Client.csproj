@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
     <LangVersion>latest</LangVersion>
+    <UserSecretsId>9222c082-18ad-42fc-8f26-6314a810dcd7</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
