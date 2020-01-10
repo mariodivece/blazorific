@@ -1,0 +1,25 @@
+﻿@inject NavigationManager Nav
+<div>
+    <nav class="navbar navbar-light navbar-expand-lg shadow-lg navigation-clean">
+        <div class="container">
+            <a class="navbar-brand" href="#">NomiCore</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse"
+                 id="navcol-1">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item" role="presentation"><NavLink class="nav-link" href="/" Match="NavLinkMatch.All"><i class="fas fa-calculator"></i>&nbsp;Calculadora MX</NavLink></li>
+                    <li class="nav-item" role="presentation"><NavLink class="nav-link" href="/UK"><i class="fas fa-calculator"></i>&nbsp;Calculator UK</NavLink></li>
+                    <li class="nav-item" role="presentation"><NavLink class="nav-link" href="/bandas"><i class="fas fa-ring"></i>&nbsp;Cost Bands</NavLink></li>
+                    <li class="nav-item" role="presentation"><NavLink class="nav-link" href="/seguros"><i class="fas fa-heartbeat"></i>&nbsp;Gastos M&eacute;dicos MX</NavLink></li>
+                </ul>
+
+                @if (Nav.ToAbsoluteUri("/").Host == "localhost")
+                {
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item" role="presentation"><NavLink class="nav-link" href="/gridtest"><i class="fas fa-cog"></i>&nbsp;Grid</NavLink></li>
+                        <li class="nav-item" role="presentation"><NavLink class="nav-link" href="/modaltest"><i class="fas fa-lock"></i>&nbsp;Modal</NavLink></li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </nav>
+</div>
