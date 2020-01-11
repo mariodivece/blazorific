@@ -3,6 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using System.Text.Json;
     using Unosquare.Blazorific.Common;
@@ -19,7 +20,7 @@
                 var request = new TubularGridDataRequest
                 {
                     Counter = GridDateRequestIndex++,
-                    Skip = grid.PageIndex * grid.PageSize,
+                    Skip = Math.Max(0, grid.CurrentPage - 1) * grid.PageSize,
                     Take = grid.PageSize,
                     TimezoneOffset = (int)Math.Round(DateTime.UtcNow.Subtract(DateTime.Now).TotalMinutes, 0),
                     Search = new TubularDataFilter(),
@@ -30,11 +31,24 @@
             }
         }
 
-        public static void ApplyGridDataResponse(this CandyGrid grid, Type dataItemType, TubularGridDataResponse response)
+        public static TubularGridDataRequest CreateTubularGridDataRequest<T>(this CandyGrid grid) =>
+            grid.CreateTubularGridDataRequest(typeof(T));
+
+        public static GridDataResponse ToGridDataResponse(this TubularGridDataResponse response, Type dataItemType)
         {
-            var result = response.ParsePayload(dataItemType);
-            grid.UpdateData(result);
+            return new GridDataResponse
+            {
+                CurrentPage = response.CurrentPage,
+                DataItems = response.ParsePayload(dataItemType),
+                DataItemType = dataItemType,
+                FilteredRecordCount = response.FilteredRecordCount,
+                TotalPages = response.TotalPages,
+                TotalRecordCount = response.TotalRecordCount
+            };
         }
+
+        public static GridDataResponse ToGridDataResponse<T>(this TubularGridDataResponse response) =>
+            response.ToGridDataResponse(typeof(T));
 
         public static DataType ToTubularDataType(this Type t)
         {

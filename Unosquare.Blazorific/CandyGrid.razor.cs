@@ -13,8 +13,7 @@
     public partial class CandyGrid
     {
         private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
-        private IReadOnlyDictionary<string, IPropertyProxy> PropertyProxies;
-        private IEnumerable<object> m_Data;
+        private List<object> DataItems;
         private Type DataItemType;
 
         public CandyGrid()
@@ -23,41 +22,40 @@
         }
 
         [Parameter]
-        public EventCallback<GridBodyRowEventArgs> OnBodyRowDoubleClick { get; set; }
-
-        [Parameter]
-        public IEnumerable Data
-        {
-            get { return m_Data; }
-            set
-            {
-                m_Data = value?.Cast<object>();
-                if (value != null)
-                {
-                    foreach (var dataItem in value)
-                    {
-                        if (dataItem == null)
-                            continue;
-
-                        UpdatePropertyProxies(dataItem);
-                        break;
-                    }
-                }
-            }
-        }
+        public IGridDataAdapter DataAdapter { get; set; }
 
         [Parameter]
         public RenderFragment CandyGridColumns { get; set; }
 
         [Parameter]
-        public int PageSize { get; set; } = 50;
+        public int PageSize { get; set; } = 20;
 
         [Parameter]
-        public int PageIndex { get; set; } = 0;
+        public EventCallback<GridBodyRowEventArgs> OnBodyRowDoubleClick { get; set; }
 
-        public bool IsEmpty => m_Data == null || m_Data.Count() <= 0;
+        public int CurrentPage { get; protected set; } = 0;
+
+        public int TotalRecordCount { get; protected set; } = 0;
+
+        public int FilteredRecordCount { get; protected set; } = 0;
+
+        public int TotalPages { get; protected set; } = 0;
+
+        public bool IsEmpty { get; protected set; } = true;
+
+        public bool IsLoading { get; protected set; }
+
+        public string StatusText { get; protected set; }
+
+        public int StartRecordNumber => 1 + (PageSize * (CurrentPage - 1));
+
+        public int EndRecordNumber => StartRecordNumber + (DataItems?.Count ?? 0);
 
         public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
+
+        public IEnumerable GetDataItems() => DataItems;
+
+        public IEnumerable<T> GetDataItems<T>() => DataItems?.Cast<T>();
 
         internal void AddColumn(CandyGridColumn column)
         {
@@ -65,18 +63,51 @@
             StateHasChanged();
         }
 
-        internal void UpdateData(IEnumerable data)
+        public async Task UpdateDataAsync()
         {
-            Data = data;
-            StateHasChanged();
+            IsLoading = true;
+            StatusText = "Loading data";
+            try
+            {
+                if (DataAdapter == null)
+                {
+                    DataItemType = default;
+                    DataItems = default;
+                    CurrentPage = default;
+                    FilteredRecordCount = default;
+                    TotalRecordCount = default;
+                    TotalPages = default;
+                    StatusText = null;
+                    return;
+                }
+
+                var response = await DataAdapter.RetrieveDataAsync(this);
+                DataItemType = response.DataItemType;
+                DataItems = new List<object>(response.DataItems.OfType<object>());
+                CurrentPage = response.CurrentPage;
+                FilteredRecordCount = response.FilteredRecordCount;
+                TotalRecordCount = response.TotalRecordCount;
+                TotalPages = response.TotalPages;
+                StatusText = "Loaded grid data";
+            }
+            catch (Exception ex)
+            {
+                StatusText = ex.Message;
+            }
+            finally
+            {
+                IsLoading = false;
+                StateHasChanged();
+            }
         }
 
-        protected override void OnAfterRender(bool firstRender)
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            base.OnAfterRender(firstRender);
+            await base.OnAfterRenderAsync(firstRender);
 
             if (!firstRender) return;
-            Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
+            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
+            await UpdateDataAsync();
         }
 
         private object GetColumnValue(CandyGridColumn column, object dataItem)
@@ -88,46 +119,13 @@
                 return null;
 
             if (column.Property == null)
-                return null;
-
-            return column.Property.GetValue(dataItem);
-        }
-
-        private void SetColumnValue(CandyGridColumn column, object dataItem, object value)
-        {
-            if (string.IsNullOrWhiteSpace(column.Field))
-                return;
-
-            if (dataItem == null)
-                return;
-
-            if (column.Property == null)
-                return;
-
-            column.Property.SetValue(dataItem, value);
-        }
-
-        private void UpdatePropertyProxies(object dataItem)
-        {
-            if (dataItem == null)
-                return;
-
-            if (DataItemType != dataItem.GetType())
             {
-                DataItemType = dataItem.GetType();
-                PropertyProxies = DataItemType.GetPropertyProxies()
-                    .ToDictionary((k) => k.Name, (v) => v);
+                column.Property = dataItem.GetType()
+                    .GetPropertyProxies()
+                    .FirstOrDefault(p => p.Name == column.Field);
             }
 
-            foreach (var col in Columns)
-            {
-                if (string.IsNullOrWhiteSpace(col.Field))
-                    continue;
-
-                col.Property = PropertyProxies.ContainsKey(col.Field)
-                    ? PropertyProxies[col.Field]
-                    : null;
-            }
+            return column.Property?.GetValue(dataItem);
         }
 
         private async Task RaiseOnBodyRowDoubleClick(object dataItem)

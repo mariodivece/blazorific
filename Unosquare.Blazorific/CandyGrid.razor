@@ -12,7 +12,7 @@
                     <ul class="pagination mb-0">
                         <li class="page-item"><a class="page-link" href="#" aria-label="First"><i class="fas fa-backward"></i></a></li>
                         <li class="page-item"><a class="page-link" href="#" aria-label="Previous"><i class="fas fa-step-backward"></i></a></li>
-                        <li class="page-item"><a class="page-link" href="#" aria-label="Page 1">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#" aria-label="Page 1" @onclick="UpdateDataAsync">1</a></li>
                         <li class="page-item"><a class="page-link" href="#" aria-label="Page 2">2</a></li>
                         <li class="page-item"><a class="page-link" href="#" aria-label="Page 3">3</a></li>
                         <li class="page-item"><a class="page-link" href="#" aria-label="Page 4">4</a></li>
@@ -75,17 +75,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (IsEmpty)
+                    @if (DataItems == null || DataItems.Count == 0)
                     {
                         <tr>
                             <td colspan="@Columns.Count">
-                                No records to show
+                                @StatusText
                             </td>
                         </tr>
                     }
                     else
                     {
-                        @foreach (var item in Data)
+                        @foreach (var item in DataItems)
                         {
                             <tr @ondblclick="(async () => await RaiseOnBodyRowDoubleClick(item))">
                                 @foreach (var col in Columns)
@@ -140,14 +140,16 @@
                     </ul>
                 </nav>
             </div>
-            <div class="col-lg-5 align-self-center"><span class="small">Showing 1 to 20 of 238 records (Filtered from 937 total records)</span></div>
+            <div class="col-lg-5 align-self-center">
+                <span class="small">Showing @StartRecordNumber to @EndRecordNumber of @TotalRecordCount records (Filtered from @FilteredRecordCount total records)</span>
+            </div>
             <div class="col-lg-3 align-self-center">
                 <div class="form-group row mt-0 mb-0 small">
                     <label class="col-sm-4 col-form-label text-right text-nowrap">Page Size:</label>
                     <div class="col-sm-8">
                         <select class="custom-select form-control-sm custom-select-sm" @bind="PageSize">
-                            <option value="10" selected="">10</option>
-                            <option value="20" selected="">20</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
                             <option value="50">50</option>
                             <option value="100">100</option>
                         </select>
