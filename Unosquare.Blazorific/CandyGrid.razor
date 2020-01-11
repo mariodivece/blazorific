@@ -144,7 +144,14 @@
             <div class="col-lg-3 align-self-center">
                 <div class="form-group row mt-0 mb-0 small">
                     <label class="col-sm-4 col-form-label text-right text-nowrap">Page Size:</label>
-                    <div class="col-sm-8"><select class="custom-select form-control-sm custom-select-sm"><option value="10" selected="">10</option><option value="20" selected="">20</option><option value="50">50</option><option value="100">100</option></select></div>
+                    <div class="col-sm-8">
+                        <select class="custom-select form-control-sm custom-select-sm" @bind="PageSize">
+                            <option value="10" selected="">10</option>
+                            <option value="20" selected="">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>

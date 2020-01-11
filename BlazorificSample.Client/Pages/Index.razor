@@ -17,30 +17,3 @@
         </CandyGridColumns>
     </CandyGrid>
 </div>
-
-@code
-{
-    private Product[] Items;
-
-    protected override async Task OnInitializedAsync()
-    {
-        Items = await Http.GetJsonAsync<Product[]>("Products");
-        await base.OnInitializedAsync();
-    }
-
-    protected void OnBodyRowDoubleClick(GridBodyRowEventArgs e)
-    {
-        Console.WriteLine($"Forecast on {(e.DataItem as Product).ProductId} Double clicked");
-        (e.DataItem as Product).Name = string.Empty;
-
-        var request = new CandyGridDataRequest
-        {
-            Columns = new CandyGridDataColumn[]
-            {
-                // new CandyGridDataColumn { DataType. }
-            }
-        };
-
-        // Http.PostJsonAsync("Products/grid", )
-    }
-}

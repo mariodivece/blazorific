@@ -13,6 +13,7 @@
     public partial class CandyGrid
     {
         private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
+        private IReadOnlyDictionary<string, IPropertyProxy> PropertyProxies;
         private IEnumerable<object> m_Data;
         private Type DataItemType;
 
@@ -28,19 +29,45 @@
         public IEnumerable Data
         {
             get { return m_Data; }
-            set { m_Data = value?.Cast<object>(); }
+            set
+            {
+                m_Data = value?.Cast<object>();
+                if (value != null)
+                {
+                    foreach (var dataItem in value)
+                    {
+                        if (dataItem == null)
+                            continue;
+
+                        UpdatePropertyProxies(dataItem);
+                        break;
+                    }
+                }
+            }
         }
 
         [Parameter]
         public RenderFragment CandyGridColumns { get; set; }
 
-        internal bool IsEmpty => m_Data == null || m_Data.Count() <= 0;
+        [Parameter]
+        public int PageSize { get; set; } = 50;
 
-        private IReadOnlyList<CandyGridColumn> Columns => m_Columns;
+        [Parameter]
+        public int PageIndex { get; set; } = 0;
+
+        public bool IsEmpty => m_Data == null || m_Data.Count() <= 0;
+
+        public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
 
         internal void AddColumn(CandyGridColumn column)
         {
             m_Columns.Add(column);
+            StateHasChanged();
+        }
+
+        internal void UpdateData(IEnumerable data)
+        {
+            Data = data;
             StateHasChanged();
         }
 
@@ -61,9 +88,6 @@
                 return null;
 
             if (column.Property == null)
-                UpdatePropertyProxies(dataItem);
-
-            if (column.Property == null)
                 return null;
 
             return column.Property.GetValue(dataItem);
@@ -78,9 +102,6 @@
                 return;
 
             if (column.Property == null)
-                UpdatePropertyProxies(dataItem);
-
-            if (column.Property == null)
                 return;
 
             column.Property.SetValue(dataItem, value);
@@ -91,21 +112,21 @@
             if (dataItem == null)
                 return;
 
-            var itemType = dataItem.GetType();
-            if (itemType == DataItemType)
-                return;
-
-            DataItemType = itemType;
-            var properties = dataItem.GetType()
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .ToDictionary((k) => k.Name, (v) => v.CreatePropertyProxy());
+            if (DataItemType != dataItem.GetType())
+            {
+                DataItemType = dataItem.GetType();
+                PropertyProxies = DataItemType.GetPropertyProxies()
+                    .ToDictionary((k) => k.Name, (v) => v);
+            }
 
             foreach (var col in Columns)
             {
                 if (string.IsNullOrWhiteSpace(col.Field))
                     continue;
 
-                col.Property = properties.ContainsKey(col.Field) ? properties[col.Field] : null;
+                col.Property = PropertyProxies.ContainsKey(col.Field)
+                    ? PropertyProxies[col.Field]
+                    : null;
             }
         }
 

@@ -1,4 +1,4 @@
-﻿namespace Unosquare.Blazorific.Common
+﻿namespace Unosquare.Blazorific.Tubular
 {
     /// <summary>
     /// Represents a Tubular's Grid column.
@@ -6,7 +6,7 @@
     /// This object is only used to be serialized/deserialized between
     /// the backend and Tubular Grid.
     /// </summary>
-    public class CandyGridDataColumn
+    public class TubularColumn
     {
         /// <summary>
         /// Column Name.
@@ -16,7 +16,7 @@
         /// <summary>
         /// Column Label.
         /// </summary>
-        public string? Label { get; set; }
+        public string Label { get; set; }
 
         /// <summary>
         /// Set if column is sortable.
@@ -36,7 +36,7 @@
         /// <summary>
         /// Represents the Columns filter.
         /// </summary>
-        public CandyGridDataFilter Filter { get; set; }
+        public TubularDataFilter Filter { get; set; }
 
         /// <summary>
         /// Set if the column is searchable in free-text search.

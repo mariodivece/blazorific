@@ -1,11 +1,11 @@
-﻿namespace Unosquare.Blazorific.Common
+﻿namespace Unosquare.Blazorific.Tubular
 {
     /// <summary>
     /// Represents a Data Request from a Tubular Grid.
     /// 
     /// This model is how Tubular Grid sends data to any server.
     /// </summary>
-    public class CandyGridDataRequest
+    public class TubularGridDataRequest
     {
         /// <summary>
         /// Request's counter.
@@ -15,7 +15,7 @@
         /// <summary>
         /// The free-text search.
         /// </summary>
-        public CandyGridDataFilter Search { get; set; }
+        public TubularDataFilter Search { get; set; }
 
         /// <summary>
         /// Set how many records skip, for pagination.
@@ -30,7 +30,7 @@
         /// <summary>
         /// Defines the columns.
         /// </summary>
-        public CandyGridDataColumn[] Columns { get; set; }
+        public TubularColumn[] Columns { get; set; }
 
         /// <summary>
         /// Sent the minutes difference between UTC and local time.

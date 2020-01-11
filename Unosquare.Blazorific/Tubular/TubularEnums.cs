@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Unosquare.Blazorific.Common
+﻿namespace Unosquare.Blazorific.Tubular
 {
     /// <summary>
     /// Enumeration Sort directions.

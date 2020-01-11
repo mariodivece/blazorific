@@ -1,4 +1,4 @@
-﻿namespace Unosquare.Blazorific.Common
+﻿namespace Unosquare.Blazorific.Tubular
 {
     /// <summary>
     /// Represents a Tubular's filter (by column).
@@ -6,12 +6,12 @@
     /// This object is only used to be serialized/deserialized between
     /// the API and Tubular.
     /// </summary>
-    public class CandyGridDataFilter
+    public class TubularDataFilter
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Filter"/> class.
         /// </summary>
-        public CandyGridDataFilter()
+        public TubularDataFilter()
         {
             Operator = CompareOperators.None;
             Name = string.Empty;

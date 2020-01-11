@@ -1,8 +1,8 @@
-﻿namespace Unosquare.Blazorific.Common
+﻿namespace Unosquare.Blazorific.Tubular
 {
     using System.Collections.Generic;
 
-    public class CandyGridDataResponse
+    public class TubularGridDataResponse
     {
         /// <summary>
         /// Response's counter.
