@@ -12,11 +12,16 @@
                     <ul class="pagination mb-0">
                         <li class="page-item"><a class="page-link" href="#" aria-label="First"><i class="fas fa-backward"></i></a></li>
                         <li class="page-item"><a class="page-link" href="#" aria-label="Previous"><i class="fas fa-step-backward"></i></a></li>
-                        <li class="page-item"><a class="page-link" href="#" aria-label="Page 1" @onclick="UpdateDataAsync">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#" aria-label="Page 2">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#" aria-label="Page 3">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#" aria-label="Page 4">4</a></li>
-                        <li class="page-item"><a class="page-link" href="#" aria-label="Page 5">5</a></li>
+                        @for (var i = 1; i <= Math.Min(5, TotalPages); i++)
+                        {
+                            var pageNumber = i;
+                            <li class="page-item @(CurrentPage == pageNumber ? "active" : string.Empty)">
+                                <button class="page-link"
+                                   href="#" aria-label="Page @pageNumber" @onclick="(async (e) => await RequestPage(pageNumber))">
+                                    @pageNumber
+                                </button>
+                            </li>
+                        }
                         <li class="page-item"><a class="page-link" href="#" aria-label="Next"><i class="fas fa-step-forward"></i></a></li>
                         <li class="page-item"><a class="page-link" href="#" aria-label="Last"><i class="fas fa-forward"></i></a></li>
                     </ul>
@@ -147,7 +152,7 @@
                 <div class="form-group row mt-0 mb-0 small">
                     <label class="col-sm-4 col-form-label text-right text-nowrap">Page Size:</label>
                     <div class="col-sm-8">
-                        <select class="custom-select form-control-sm custom-select-sm" @bind="PageSize">
+                        <select class="custom-select form-control-sm custom-select-sm" @bind="RequestedPageSize">
                             <option value="10">10</option>
                             <option value="20">20</option>
                             <option value="50">50</option>

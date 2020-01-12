@@ -6,7 +6,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
+    using System.Threading;
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
 
@@ -15,11 +15,24 @@
         private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
         private List<object> DataItems;
         private Type DataItemType;
+        private readonly Timer QueueProcessor;
 
         public CandyGrid()
         {
-            // placeholder
+            QueueProcessor = new Timer(async (s) =>
+            {
+                if (RequestedPageSize != PageSize ||
+                    RequestedPageNumber != CurrentPage)
+                {
+                    await UpdateDataAsync();
+                }
+
+            }, null, Timeout.Infinite, Timeout.Infinite);
         }
+
+        public int RequestedPageSize { get; set; } = 20;
+
+        public int RequestedPageNumber { get; set; } = 1;
 
         [Parameter]
         public IGridDataAdapter DataAdapter { get; set; }
@@ -28,20 +41,17 @@
         public RenderFragment CandyGridColumns { get; set; }
 
         [Parameter]
-        public int PageSize { get; set; } = 20;
-
-        [Parameter]
         public EventCallback<GridBodyRowEventArgs> OnBodyRowDoubleClick { get; set; }
 
-        public int CurrentPage { get; protected set; } = 0;
+        public int CurrentPage { get; protected set; }
 
-        public int TotalRecordCount { get; protected set; } = 0;
+        public int PageSize { get; protected set; }
 
-        public int FilteredRecordCount { get; protected set; } = 0;
+        public int TotalRecordCount { get; protected set; }
 
-        public int TotalPages { get; protected set; } = 0;
+        public int FilteredRecordCount { get; protected set; }
 
-        public bool IsEmpty { get; protected set; } = true;
+        public int TotalPages { get; protected set; }
 
         public bool IsLoading { get; protected set; }
 
@@ -49,19 +59,13 @@
 
         public int StartRecordNumber => 1 + (PageSize * (CurrentPage - 1));
 
-        public int EndRecordNumber => StartRecordNumber + (DataItems?.Count ?? 0);
+        public int EndRecordNumber => StartRecordNumber + (DataItems?.Count ?? 0) - 1;
 
         public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
 
         public IEnumerable GetDataItems() => DataItems;
 
         public IEnumerable<T> GetDataItems<T>() => DataItems?.Cast<T>();
-
-        internal void AddColumn(CandyGridColumn column)
-        {
-            m_Columns.Add(column);
-            StateHasChanged();
-        }
 
         public async Task UpdateDataAsync()
         {
@@ -97,8 +101,16 @@
             finally
             {
                 IsLoading = false;
+                PageSize = RequestedPageSize;
+                CurrentPage = RequestedPageNumber;
                 StateHasChanged();
             }
+        }
+
+        internal void AddColumn(CandyGridColumn column)
+        {
+            m_Columns.Add(column);
+            StateHasChanged();
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -126,6 +138,12 @@
             }
 
             return column.Property?.GetValue(dataItem);
+        }
+
+        private async Task RequestPage(int pageNumber)
+        {
+            RequestedPageNumber = pageNumber;
+            await UpdateDataAsync();
         }
 
         private async Task RaiseOnBodyRowDoubleClick(object dataItem)

@@ -1,4 +1,4 @@
-﻿namespace Unosquare.Blazorific.Tubular
+﻿namespace Unosquare.Blazorific.Common
 {
     /// <summary>
     /// Enumeration Sort directions.
@@ -110,7 +110,7 @@
     /// <summary>
     /// Supported data types.
     /// </summary>
-    public enum DataType
+    public enum GridColumnDataType
     {
         /// <summary>
         /// String type
