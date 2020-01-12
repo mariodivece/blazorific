@@ -10,20 +10,35 @@
             <div class="col-lg-4 align-self-center">
                 <nav class="nav small">
                     <ul class="pagination mb-0">
-                        <li class="page-item"><a class="page-link" href="#" aria-label="First"><i class="fas fa-backward"></i></a></li>
-                        <li class="page-item"><a class="page-link" href="#" aria-label="Previous"><i class="fas fa-step-backward"></i></a></li>
+                        <li class="page-item @(CurrentPage <= 1 ? "disabled" : string.Empty)">
+                            <button class="page-link" aria-label="First" @onclick="_ => RequestedPageNumber = 1">
+                                <i class="fas fa-step-backward"></i>
+                            </button>
+                        </li>
+                        <li class="page-item @(CurrentPage <= 1 ? "disabled" : string.Empty)">
+                            <button class="page-link" aria-label="Previous" @onclick="_ => RequestedPageNumber = CurrentPage - 1">
+                                <i class="fas fa-backward"></i>
+                            </button>
+                        </li>
                         @for (var i = 1; i <= Math.Min(5, TotalPages); i++)
                         {
                             var pageNumber = i;
                             <li class="page-item @(CurrentPage == pageNumber ? "active" : string.Empty)">
-                                <button class="page-link"
-                                   href="#" aria-label="Page @pageNumber" @onclick="_ => RequestedPageNumber = pageNumber">
+                                <button class="page-link" aria-label="Page @pageNumber" @onclick="_ => RequestedPageNumber = pageNumber">
                                     @pageNumber
                                 </button>
                             </li>
                         }
-                        <li class="page-item"><a class="page-link" href="#" aria-label="Next"><i class="fas fa-step-forward"></i></a></li>
-                        <li class="page-item"><a class="page-link" href="#" aria-label="Last"><i class="fas fa-forward"></i></a></li>
+                        <li class="page-item @(CurrentPage >= TotalPages ? "disabled" : string.Empty)">
+                            <button class="page-link" href="#" aria-label="Next" @onclick="_ => RequestedPageNumber = CurrentPage + 1">
+                                <i class="fas fa-forward"></i>
+                            </button>
+                        </li>
+                        <li class="page-item @(CurrentPage >= TotalPages ? "disabled" : string.Empty)">
+                            <button class="page-link" href="#" aria-label="Last" @onclick="_ => RequestedPageNumber = TotalPages">
+                                <i class="fas fa-step-forward"></i>
+                            </button>
+                        </li>
                     </ul>
                 </nav>
             </div>

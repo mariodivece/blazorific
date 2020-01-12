@@ -12,7 +12,7 @@
 
     public partial class CandyGrid
     {
-        private const int QueueProcessorIntervalMs = 1000;
+        private const int QueueProcessorIntervalMs = 250;
 
         private readonly object SyncLock = new object();
         private readonly Timer QueueProcessor;
@@ -60,7 +60,10 @@
 
         public int RequestedPageSize
         {
-            get => m_RequestedPageSize;
+            get
+            {
+                return m_RequestedPageSize > 0 ? m_RequestedPageSize : -1;
+            }
             set
             {
                 m_RequestedPageSize = value;
@@ -70,7 +73,18 @@
 
         public int RequestedPageNumber
         {
-            get => m_RequestedPageNumber;
+            get
+            {
+                var maxPageNumber = RequestedPageSize > 0
+                    ? ComputeTotalPages(RequestedPageSize, FilteredRecordCount)
+                    : 1;
+
+                return m_RequestedPageNumber < 1
+                    ? 1
+                    : m_RequestedPageNumber > maxPageNumber
+                    ? maxPageNumber
+                    : m_RequestedPageNumber;
+            }
             set
             {
                 m_RequestedPageNumber = value;
@@ -169,13 +183,20 @@
 
                 var request = CreateGridDataRequest();
                 var response = await DataAdapter.RetrieveDataAsync(request);
+
                 DataItems = new List<object>(response.DataItems.OfType<object>());
-                CurrentPage = response.CurrentPage;
                 FilteredRecordCount = response.FilteredRecordCount;
                 TotalRecordCount = response.TotalRecordCount;
-                TotalPages = DataItems.Count > 0
-                    ? (response.FilteredRecordCount / request.Take) + ((response.FilteredRecordCount % request.Take > 0) ? 1 : 0)
-                    : response.TotalPages;
+
+                PageSize = request.Take <= 0 ? response.FilteredRecordCount : request.Take;
+                TotalPages = ComputeTotalPages(PageSize, response.FilteredRecordCount);
+
+                CurrentPage = response.CurrentPage > TotalPages
+                    ? TotalPages
+                    : response.CurrentPage < 0
+                    ? 1
+                    : response.CurrentPage;
+
                 StatusText = "Loaded grid data";
 
                 Console.WriteLine($"Total Pages = {TotalPages}, Current Page = {CurrentPage}");
@@ -187,8 +208,6 @@
             finally
             {
                 IsLoading = false;
-                PageSize = RequestedPageSize;
-                CurrentPage = RequestedPageNumber;
                 StateHasChanged();
             }
         }
@@ -233,6 +252,14 @@
                 return;
 
             await OnBodyRowDoubleClick.InvokeAsync(new GridBodyRowEventArgs(this as CandyGrid, dataItem));
+        }
+
+        private int ComputeTotalPages(int pageSize, int totalCount)
+        {
+            if (totalCount <= 0) return 0;
+            if (pageSize <= 0) return totalCount;
+
+            return (totalCount / pageSize) + (totalCount % pageSize > 0 ? 1 : 0);
         }
     }
 }
