@@ -12,30 +12,94 @@
 
     public partial class CandyGrid
     {
-        private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
-        private List<object> DataItems;
-        private Type DataItemType;
+        private const int QueueProcessorIntervalMs = 1000;
+
+        private readonly object SyncLock = new object();
         private readonly Timer QueueProcessor;
+        private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
+
+        private bool IsProcessingQueue;
+        private long PendingAdapterUpdates;
+        private int GridDataRequestIndex;
+
+        private IGridDataAdapter m_DataAdapter;
+        private int m_RequestedPageSize = 20;
+        private int m_RequestedPageNumber = 1;
+
+        private List<object> DataItems;
 
         public CandyGrid()
         {
             QueueProcessor = new Timer(async (s) =>
             {
-                if (RequestedPageSize != PageSize ||
-                    RequestedPageNumber != CurrentPage)
+                lock (SyncLock)
                 {
-                    await UpdateDataAsync();
+                    if (IsProcessingQueue)
+                        return;
+
+                    IsProcessingQueue = true;
                 }
 
+                var pendingUpdates = Interlocked.Read(ref PendingAdapterUpdates);
+
+                try
+                {
+                    if (pendingUpdates <= 0)
+                        return;
+
+                    await UpdateDataAsync();
+                }
+                finally
+                {
+                    Interlocked.Add(ref PendingAdapterUpdates, pendingUpdates * -1);
+                    lock (SyncLock)
+                        IsProcessingQueue = false;
+                }
             }, null, Timeout.Infinite, Timeout.Infinite);
         }
 
-        public int RequestedPageSize { get; set; } = 20;
+        public int RequestedPageSize
+        {
+            get => m_RequestedPageSize;
+            set
+            {
+                m_RequestedPageSize = value;
+                QueueDataUpdate();
+            }
+        }
 
-        public int RequestedPageNumber { get; set; } = 1;
+        public int RequestedPageNumber
+        {
+            get => m_RequestedPageNumber;
+            set
+            {
+                m_RequestedPageNumber = value;
+                QueueDataUpdate();
+            }
+        }
 
         [Parameter]
-        public IGridDataAdapter DataAdapter { get; set; }
+        public IGridDataAdapter DataAdapter
+        {
+            get
+            {
+                return m_DataAdapter;
+            }
+            set
+            {
+                if (value == m_DataAdapter)
+                    return;
+
+                m_DataAdapter = value;
+                if (m_DataAdapter == null)
+                {
+
+                    return;
+                }
+
+                QueueDataUpdate();
+            }
+        }
 
         [Parameter]
         public RenderFragment CandyGridColumns { get; set; }
@@ -67,7 +131,26 @@
 
         public IEnumerable<T> GetDataItems<T>() => DataItems?.Cast<T>();
 
-        public async Task UpdateDataAsync()
+        public void QueueDataUpdate() => Interlocked.Increment(ref PendingAdapterUpdates);
+
+        internal void AddColumn(CandyGridColumn column)
+        {
+            m_Columns.Add(column);
+            StateHasChanged();
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+
+            if (!firstRender)
+                return;
+
+            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
+            QueueProcessor.Change(QueueProcessorIntervalMs, QueueProcessorIntervalMs);
+        }
+
+        private async Task UpdateDataAsync()
         {
             IsLoading = true;
             StatusText = "Loading data";
@@ -75,7 +158,6 @@
             {
                 if (DataAdapter == null)
                 {
-                    DataItemType = default;
                     DataItems = default;
                     CurrentPage = default;
                     FilteredRecordCount = default;
@@ -85,14 +167,18 @@
                     return;
                 }
 
-                var response = await DataAdapter.RetrieveDataAsync(this);
-                DataItemType = response.DataItemType;
+                var request = CreateGridDataRequest();
+                var response = await DataAdapter.RetrieveDataAsync(request);
                 DataItems = new List<object>(response.DataItems.OfType<object>());
                 CurrentPage = response.CurrentPage;
                 FilteredRecordCount = response.FilteredRecordCount;
                 TotalRecordCount = response.TotalRecordCount;
-                TotalPages = response.TotalPages;
+                TotalPages = DataItems.Count > 0
+                    ? (response.FilteredRecordCount / request.Take) + ((response.FilteredRecordCount % request.Take > 0) ? 1 : 0)
+                    : response.TotalPages;
                 StatusText = "Loaded grid data";
+
+                Console.WriteLine($"Total Pages = {TotalPages}, Current Page = {CurrentPage}");
             }
             catch (Exception ex)
             {
@@ -105,21 +191,6 @@
                 CurrentPage = RequestedPageNumber;
                 StateHasChanged();
             }
-        }
-
-        internal void AddColumn(CandyGridColumn column)
-        {
-            m_Columns.Add(column);
-            StateHasChanged();
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            await base.OnAfterRenderAsync(firstRender);
-
-            if (!firstRender) return;
-            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
-            await UpdateDataAsync();
         }
 
         private object GetColumnValue(CandyGridColumn column, object dataItem)
@@ -140,10 +211,20 @@
             return column.Property?.GetValue(dataItem);
         }
 
-        private async Task RequestPage(int pageNumber)
+        private GridDataRequest CreateGridDataRequest()
         {
-            RequestedPageNumber = pageNumber;
-            await UpdateDataAsync();
+            lock (SyncLock)
+            {
+                return new GridDataRequest
+                {
+                    Counter = GridDataRequestIndex++,
+                    Skip = Math.Max(0, RequestedPageNumber - 1) * RequestedPageSize,
+                    Take = RequestedPageSize,
+                    TimezoneOffset = (int)Math.Round(DateTime.UtcNow.Subtract(DateTime.Now).TotalMinutes, 0),
+                    Search = new GridDataFilter(),
+                    Columns = DataAdapter.DataItemType.GetGridDataRequestColumns(this)
+                };
+            }
         }
 
         private async Task RaiseOnBodyRowDoubleClick(object dataItem)

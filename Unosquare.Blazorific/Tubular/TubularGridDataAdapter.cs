@@ -10,9 +10,6 @@
 
     public class TubularGridDataAdapter : IGridDataAdapter
     {
-        private readonly object SyncLock = new object();
-        private int GridDateRequestIndex;
-
         public TubularGridDataAdapter(Type dataItemType, string requestUrl)
         {
             DataItemType = dataItemType;
@@ -23,32 +20,11 @@
 
         public string RequestUrl { get; }
 
-        public async Task<GridDataResponse> RetrieveDataAsync(CandyGrid grid)
+        public async Task<GridDataResponse> RetrieveDataAsync(GridDataRequest request)
         {
             using var client = new HttpClient();
-            var request = CreateTubularRequest(grid);
             var response = await client.PostJsonAsync<TubularGridDataResponse>(RequestUrl, request);
             return CreateGridDataResponse(response);
-        }
-
-        private GridDataRequest CreateTubularRequest(CandyGrid grid)
-        {
-            lock (SyncLock)
-            {
-                var request = new GridDataRequest
-                {
-                    Counter = GridDateRequestIndex++,
-                    Skip = Math.Max(0, grid.RequestedPageNumber - 1) * grid.RequestedPageSize,
-                    Take = grid.RequestedPageSize,
-                    TimezoneOffset = (int)Math.Round(DateTime.UtcNow.Subtract(DateTime.Now).TotalMinutes, 0),
-                    Search = new GridDataFilter(),
-                    Columns = DataItemType.GetGridDataRequestColumns(grid)
-                };
-
-                Console.WriteLine($"Requested Pg. Number = {grid.RequestedPageNumber}; Skip = {request.Skip}");
-
-                return request;
-            }
         }
 
         private GridDataResponse CreateGridDataResponse(TubularGridDataResponse response)

@@ -1,9 +1,12 @@
 ﻿namespace Unosquare.Blazorific.Common
 {
+    using System;
     using System.Threading.Tasks;
 
     public interface IGridDataAdapter
     {
-        Task<GridDataResponse> RetrieveDataAsync(CandyGrid grid);
+        Type DataItemType { get; }
+
+        Task<GridDataResponse> RetrieveDataAsync(GridDataRequest request);
     }
 }

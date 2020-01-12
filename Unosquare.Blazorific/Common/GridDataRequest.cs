@@ -1,7 +1,5 @@
-﻿namespace Unosquare.Blazorific.Tubular
+﻿namespace Unosquare.Blazorific.Common
 {
-    using Unosquare.Blazorific.Common;
-
     /// <summary>
     /// Represents a Data Request from a Tubular Grid.
     /// This model is how Tubular Grid sends data to any server.

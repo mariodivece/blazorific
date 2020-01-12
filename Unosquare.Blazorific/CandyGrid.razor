@@ -17,7 +17,7 @@
                             var pageNumber = i;
                             <li class="page-item @(CurrentPage == pageNumber ? "active" : string.Empty)">
                                 <button class="page-link"
-                                   href="#" aria-label="Page @pageNumber" @onclick="(async (e) => await RequestPage(pageNumber))">
+                                   href="#" aria-label="Page @pageNumber" @onclick="_ => RequestedPageNumber = pageNumber">
                                     @pageNumber
                                 </button>
                             </li>
@@ -146,7 +146,7 @@
                 </nav>
             </div>
             <div class="col-lg-5 align-self-center">
-                <span class="small">Showing @StartRecordNumber to @EndRecordNumber of @TotalRecordCount records (Filtered from @FilteredRecordCount total records)</span>
+                <span class="small">Showing @StartRecordNumber to @EndRecordNumber of @FilteredRecordCount records (Filtered from @TotalRecordCount total records)</span>
             </div>
             <div class="col-lg-3 align-self-center">
                 <div class="form-group row mt-0 mb-0 small">
