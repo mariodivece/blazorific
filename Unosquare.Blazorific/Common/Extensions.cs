@@ -47,10 +47,7 @@
 
             foreach (var property in properties)
             {
-                var column = grid.Columns
-                    .FirstOrDefault(c => c.Property != null && c.Property.Name == property.Name) as IGridColumn;
-
-                if (column != null)
+                if (grid.Columns.FirstOrDefault(c => c.Property != null && c.Property.Name == property.Name) is IGridColumn column)
                 {
                     result.Add(column);
                     continue;
@@ -58,7 +55,6 @@
 
                 result.Add(new GridDataColumn
                 {
-                    // DataType = property.PropertyType.ToGridColumnDataType(),
                     Name = property.Name,
                 });
             }

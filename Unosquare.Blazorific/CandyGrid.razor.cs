@@ -18,6 +18,8 @@
         private readonly Timer QueueProcessor;
         private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
 
+        private DateTime LastSearchInputTime = DateTime.UtcNow;
+        private string SearchInput;
         private bool IsProcessingQueue;
         private long PendingAdapterUpdates;
         private int GridDataRequestIndex;
@@ -135,15 +137,17 @@
 
         public string StatusText { get; protected set; }
 
-        public int StartRecordNumber => 1 + (PageSize * (CurrentPage - 1));
+        public int StartRecordNumber => Math.Max(0, 1 + (PageSize * (CurrentPage - 1)));
 
-        public int EndRecordNumber => StartRecordNumber + (DataItems?.Count ?? 0) - 1;
+        public int EndRecordNumber => Math.Max(0, StartRecordNumber + (DataItems?.Count ?? 0) - 1);
 
         public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
 
         public IEnumerable GetDataItems() => DataItems;
 
         public IEnumerable<T> GetDataItems<T>() => DataItems?.Cast<T>();
+
+        public GridDataFilter SearchFilter { get; } = new GridDataFilter();
 
         public void QueueDataUpdate() => Interlocked.Increment(ref PendingAdapterUpdates);
 
@@ -240,7 +244,7 @@
                     Skip = Math.Max(0, RequestedPageNumber - 1) * RequestedPageSize,
                     Take = RequestedPageSize,
                     TimezoneOffset = (int)Math.Round(DateTime.UtcNow.Subtract(DateTime.Now).TotalMinutes, 0),
-                    Search = new GridDataFilter(),
+                    Search = SearchFilter,
                     Columns = DataAdapter.DataItemType.GetGridDataRequestColumns(this)
                 };
             }
@@ -260,6 +264,27 @@
             if (pageSize <= 0) return totalCount;
 
             return (totalCount / pageSize) + (totalCount % pageSize > 0 ? 1 : 0);
+        }
+
+        private void OnSearchInput(ChangeEventArgs e)
+        {
+            LastSearchInputTime = DateTime.UtcNow;
+            SearchInput = e.Value as string ?? string.Empty;
+
+            if (SearchInput.Length > 2)
+            {
+                SearchFilter.Operator = CompareOperators.Auto;
+                SearchFilter.Text = SearchInput;
+                QueueDataUpdate();
+            }
+            else
+            {
+                SearchFilter.Operator = CompareOperators.None;
+                if (SearchFilter.Text != SearchInput)
+                    QueueDataUpdate();
+
+                SearchFilter.Text = string.Empty;
+            }
         }
     }
 }
