@@ -1,15 +1,21 @@
 ﻿namespace Unosquare.Blazorific.Tubular
 {
     using System;
+    using System.Collections;
     using System.Net.Http;
+    using System.Text;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
-    using Microsoft.AspNetCore.Components;
-    using System.Collections;
-    using System.Text.Json;
 
     public class TubularGridDataAdapter : IGridDataAdapter
     {
+        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true,
+        };
+
         public TubularGridDataAdapter(Type dataItemType, string requestUrl)
         {
             DataItemType = dataItemType;
@@ -23,7 +29,10 @@
         public async Task<GridDataResponse> RetrieveDataAsync(GridDataRequest request)
         {
             using var client = new HttpClient();
-            var response = await client.PostJsonAsync<TubularGridDataResponse>(RequestUrl, request);
+            var requestJson = new StringContent(JsonSerializer.Serialize(request, JsonOptions), Encoding.UTF8, "application/json");
+            var httpResponse = await client.PostAsync(RequestUrl, requestJson);
+            var responseJson = await httpResponse.Content.ReadAsStringAsync();
+            var response = JsonSerializer.Deserialize<TubularGridDataResponse>(responseJson, JsonOptions);
             return CreateGridDataResponse(response);
         }
 

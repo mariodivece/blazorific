@@ -203,7 +203,7 @@
             }
             catch (Exception ex)
             {
-                StatusText = ex.Message;
+                StatusText = $"{ex.Message} - {ex.StackTrace}";
             }
             finally
             {
