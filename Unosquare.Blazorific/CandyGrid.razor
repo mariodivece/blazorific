@@ -41,9 +41,30 @@
                             <th class="candygrid-column-header" scope="col">
                                 <div class="clearfix">
                                     <div class="candygrid-column-sortable float-left">
-                                        <a class="candygrid-column-sortable text-light" href="#">@col.Title</a>
-                                        <i class="fas fa-caret-up"></i>
-                                        <i class="fas fa-caret-down"></i>
+                                        @if (col.IsSortable)
+                                        {
+                                            var nextSortDirection = col.SortDirection == SortDirection.None
+                                                ? SortDirection.Ascending
+                                                : col.SortDirection == SortDirection.Ascending
+                                                ? SortDirection.Descending
+                                                : SortDirection.None;
+
+                                            <a class="candygrid-column-sortable text-light" href="" @onclick:preventDefault
+                                                    @onclick="_ => { col.SortDirection = nextSortDirection; col.SortOrder = 1; QueueDataUpdate(); }">@col.Title</a>
+                                        }
+                                        else
+                                        {
+                                            <span class="candygrid-column-sortable text-light">@col.Title</span>
+                                        }
+
+                                        @if (col.SortDirection == SortDirection.Ascending)
+                                        {
+                                            <i class="fas fa-caret-up"></i>
+                                        }
+                                        else if (col.SortDirection == SortDirection.Descending)
+                                        {
+                                            <i class="fas fa-caret-down"></i>
+                                        }
                                     </div>
                                     <div class="float-right dropdown">
                                         <button class="btn btn-light candygrid-column-header-button" type="button" data-toggle="dropdown" data-boundary="window"><i class="fas fa-filter"></i></button>

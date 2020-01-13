@@ -4,8 +4,8 @@
 <div class="container mt-4">
     <CandyGrid DataAdapter="Adapter" OnBodyRowDoubleClick="@OnBodyRowDoubleClick">
         <CandyGridColumns>
-            <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" />
-            <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" />
+            <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" IsSortable="true" />
+            <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" IsSearchable="true" />
             <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" />
             <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" />
 
