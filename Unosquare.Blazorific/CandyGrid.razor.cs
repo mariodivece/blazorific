@@ -18,8 +18,6 @@
         private readonly Timer QueueProcessor;
         private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
 
-        private DateTime LastSearchInputTime = DateTime.UtcNow;
-        private string SearchInput;
         private bool IsProcessingQueue;
         private long PendingAdapterUpdates;
         private int GridDataRequestIndex;
@@ -171,7 +169,7 @@
         private async Task UpdateDataAsync()
         {
             IsLoading = true;
-            StatusText = "Loading data";
+            StatusText = "Loading data . . .";
             try
             {
                 if (DataAdapter == null)
@@ -201,7 +199,9 @@
                     ? 1
                     : response.CurrentPage;
 
-                StatusText = "Loaded grid data";
+                StatusText = (DataItems as List<object>).Count <= 0
+                    ? "No records to display."
+                    : "Loaded grid data";
 
                 Console.WriteLine($"Total Pages = {TotalPages}, Current Page = {CurrentPage}");
             }
@@ -264,27 +264,6 @@
             if (pageSize <= 0) return totalCount;
 
             return (totalCount / pageSize) + (totalCount % pageSize > 0 ? 1 : 0);
-        }
-
-        private void OnSearchInput(ChangeEventArgs e)
-        {
-            LastSearchInputTime = DateTime.UtcNow;
-            SearchInput = e.Value as string ?? string.Empty;
-
-            if (SearchInput.Length > 2)
-            {
-                SearchFilter.Operator = CompareOperators.Auto;
-                SearchFilter.Text = SearchInput;
-                QueueDataUpdate();
-            }
-            else
-            {
-                SearchFilter.Operator = CompareOperators.None;
-                if (SearchFilter.Text != SearchInput)
-                    QueueDataUpdate();
-
-                SearchFilter.Text = string.Empty;
-            }
         }
     }
 }
