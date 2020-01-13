@@ -1,0 +1,31 @@
+﻿@using System.Collections.Generic
+
+<div class="form-group row mt-0 mb-0 small">
+    <label class="col-sm-4 col-form-label text-right text-nowrap">@Label</label>
+    <div class="col-sm-8">
+        <select class="custom-select form-control-sm custom-select-sm" @bind="Parent.RequestedPageSize">
+            @foreach (var option in PageSizeOptions)
+            {
+                <option value="@option.Key">@option.Value</option>
+            }
+        </select>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter(Name = nameof(Parent))]
+    protected CandyGrid Parent { get; set; }
+
+    [Parameter]
+    public string Label { get; set; } = "Page Size:";
+
+    [Parameter]
+    public IDictionary<int, string> PageSizeOptions { get; set; } = new Dictionary<int, string>
+    {
+        { 10, "10" },
+        { 20, "20" },
+        { 50, "50" },
+        { 100, "100" },
+        { -1, "All" },
+    };
+}
