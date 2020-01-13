@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Web;
     using Unosquare.Blazorific.Common;
 
     public class CandyGridColumn : IComponent, IGridColumn
@@ -46,6 +47,19 @@
         bool IGridColumn.Sortable => IsSortable;
 
         bool IGridColumn.Searchable => IsSearchable;
+
+        public void ChangeSortDirection()
+        {
+            var nextSortDirection = SortDirection == SortDirection.None
+                ? SortDirection.Ascending
+                : SortDirection == SortDirection.Ascending
+                ? SortDirection.Descending
+                : SortDirection.None;
+
+            SortDirection = nextSortDirection;
+            SortOrder = nextSortDirection == SortDirection.None ? 0 : 1;
+            Parent.QueueDataUpdate();
+        }
 
         void IComponent.Attach(RenderHandle renderHandle)
         {

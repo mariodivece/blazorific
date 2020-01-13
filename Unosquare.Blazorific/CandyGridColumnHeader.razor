@@ -1,0 +1,50 @@
+﻿<th class="candygrid-column-header" scope="col">
+    <div class="clearfix">
+        <div class="candygrid-column-sortable float-left">
+            @if (Column.IsSortable)
+            {
+                <a class="candygrid-column-sortable text-light" href="" @onclick:preventDefault
+                   @onclick="Column.ChangeSortDirection">@Column.Title</a>
+            }
+            else
+            {
+                <span class="candygrid-column-sortable text-light">@Column.Title</span>
+            }
+
+            @if (Column.SortDirection == SortDirection.Ascending)
+            {
+                <i class="fas fa-caret-up"></i>
+            }
+            else if (Column.SortDirection == SortDirection.Descending)
+            {
+                <i class="fas fa-caret-down"></i>
+            }
+        </div>
+        <div class="float-right dropdown">
+            <button class="btn btn-light candygrid-column-header-button" type="button" data-toggle="dropdown" data-boundary="window"><i class="fas fa-filter"></i></button>
+            <div class="dropdown-menu candygrid-dropdown-menu" role="menu">
+                <h6 class="popover-header mb-2">Filter Settings</h6>
+                <form>
+                    <div class="pr-1 pl-1">
+                        <select class="form-control custom-select custom-select-sm">
+                            <option value="12" selected="">Contains</option>
+                            <option value="13">Equals</option>
+                            <option value="14">Does not equal</option>
+                        </select>
+                        <input class="form-control form-control form-control-sm mt-2" type="text" autocomplete="off" inputmode="verbatim" placeholder="filter string">
+                    </div>
+                    <div class="p-1 mt-2 clearfix">
+                        <button class="btn btn-danger float-right btn-sm" type="button"><i class="fas fa-times-circle"></i></button>
+                        <button class="btn btn-success float-right btn-sm mr-1" type="button"><i class="fas fa-check-circle"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th>
+
+@code {
+
+    [CascadingParameter(Name = nameof(Column))]
+    protected CandyGridColumn Column { get; set; }
+}
