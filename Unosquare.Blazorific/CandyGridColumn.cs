@@ -4,7 +4,7 @@
     using Microsoft.AspNetCore.Components;
     using Unosquare.Blazorific.Common;
 
-    public class CandyGridColumn : IComponent
+    public class CandyGridColumn : IComponent, IGridColumn
     {
         private bool HasInitialized;
 
@@ -15,12 +15,37 @@
         public string Field { get; set; }
 
         [Parameter]
+        public bool IsSortable { get; set; }
+
+        [Parameter]
+        public bool IsSearchable { get; set; }
+
+        [Parameter]
+        public int SortOrder { get; set; }
+
+        [Parameter]
+        public SortDirection SortDirection { get; set; }
+
+        [Parameter]
+        public AggregationFunction Aggregate { get; set; }
+
+        [Parameter]
         public RenderFragment<object> DataTemplate { get; set; }
+
+        public GridDataFilter Filter { get; } = new GridDataFilter();
 
         [CascadingParameter(Name = nameof(Parent))]
         protected CandyGrid Parent { get; set; }
 
         internal IPropertyProxy Property { get; set; }
+
+        string IGridColumn.Name => Field;
+
+        string IGridColumn.Label => Title;
+
+        bool IGridColumn.Sortable => IsSortable;
+
+        bool IGridColumn.Searchable => IsSearchable;
 
         void IComponent.Attach(RenderHandle renderHandle)
         {

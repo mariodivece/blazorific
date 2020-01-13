@@ -66,7 +66,7 @@
     private int m_ButtonCount = 5;
 
     [CascadingParameter(Name = nameof(Parent))]
-    private CandyGrid Parent { get; set; }
+    protected CandyGrid Parent { get; set; }
 
     [Parameter]
     public bool ShowFirstButton { get; set; } = true;

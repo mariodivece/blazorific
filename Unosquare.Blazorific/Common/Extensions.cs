@@ -3,6 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
 
     public static class Extensions
@@ -39,36 +40,30 @@
             }
         }
 
-        internal static GridDataColumn[] GetGridDataRequestColumns(this Type t, CandyGrid grid)
+        internal static IGridColumn[] GetGridDataRequestColumns(this Type t, CandyGrid grid)
         {
             var properties = t.GetPropertyProxies();
-            var result = new List<GridDataColumn>(properties.Length);
+            var result = new List<IGridColumn>(properties.Length);
 
             foreach (var property in properties)
             {
+                var column = grid.Columns
+                    .FirstOrDefault(c => c.Property != null && c.Property.Name == property.Name) as IGridColumn;
+
+                if (column != null)
+                {
+                    result.Add(column);
+                    continue;
+                }
+
                 result.Add(new GridDataColumn
                 {
-                    DataType = property.PropertyType.ToGridColumnDataType(),
+                    // DataType = property.PropertyType.ToGridColumnDataType(),
                     Name = property.Name,
                 });
             }
 
             return result.ToArray();
-        }
-
-        internal static GridColumnDataType ToGridColumnDataType(this Type t)
-        {
-            var type = Nullable.GetUnderlyingType(t) ?? t;
-
-            if (type.IsValueType)
-            {
-                var value = Activator.CreateInstance(type);
-                if (type == typeof(bool)) return GridColumnDataType.Boolean;
-                if (type == typeof(DateTime)) return GridColumnDataType.DateTime;
-                if (type.IsEnum || value.IsNumeric()) return GridColumnDataType.Numeric;
-            }
-
-            return GridColumnDataType.String;
         }
 
         internal static bool IsNumeric(this object o)
