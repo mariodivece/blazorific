@@ -3,6 +3,18 @@
 
 <div class="container mt-4">
     <CandyGrid DataAdapter="Adapter" OnBodyRowDoubleClick="@OnBodyRowDoubleClick">
+        <ToolbarTemplate>
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group btn-group-sm mr-2" role="group">
+                    <button class="btn btn-link" type="button" @onclick="context.QueueDataUpdate"><i class="fas fa-plus"></i>&nbsp;Add New</button>
+                    <button class="btn btn-link" type="button"><i class="far fa-check-square"></i>&nbsp;Select All</button>
+                </div>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button class="btn btn-link" type="button"><i class="fas fa-print"></i>&nbsp;Print</button>
+                    <button class="btn btn-link" type="button"><i class="fas fa-external-link-alt"></i>&nbsp;Export</button>
+                </div>
+            </div>
+        </ToolbarTemplate>
         <CandyGridColumns>
             <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" IsSortable="true" />
             <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" IsSearchable="true">

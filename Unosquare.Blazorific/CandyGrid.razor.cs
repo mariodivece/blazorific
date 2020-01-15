@@ -4,7 +4,6 @@
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.JSInterop;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -112,6 +111,9 @@
 
         [Parameter]
         public RenderFragment<CandyGrid> LoadingRecordsTemplate { get; set; }
+
+        [Parameter]
+        public RenderFragment<CandyGrid> ToolbarTemplate { get; set; }
 
         [Parameter]
         public string EmtyRecordsText { get; set; } = "No records to display.";

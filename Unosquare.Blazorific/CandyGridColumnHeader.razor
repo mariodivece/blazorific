@@ -1,5 +1,5 @@
 ﻿<th class="candygrid-column-header" scope="col">
-    <div class="clearfix">
+    <div class="clearfix text-nowrap">
         <div class="candygrid-column-sortable float-left">
             @if (Column.IsSortable)
             {
@@ -11,14 +11,14 @@
                 <span class="candygrid-column-sortable text-light">@Column.Title</span>
             }
 
-            @if (Column.SortDirection == SortDirection.Ascending)
-            {
-                <i class="fas fa-caret-up"></i>
+            @{ 
+                var caretClass = Column.SortDirection == SortDirection.Ascending
+                    ? "fa-caret-up"
+                    : Column.SortDirection == SortDirection.Descending
+                    ? "fa-caret-down"
+                    : string.Empty;
             }
-            else if (Column.SortDirection == SortDirection.Descending)
-            {
-                <i class="fas fa-caret-down"></i>
-            }
+            <i class="fas @caretClass"></i>
         </div>
         <div class="float-right dropdown">
             <button class="btn btn-light candygrid-column-header-button" type="button" data-toggle="dropdown" data-boundary="window"><i class="fas fa-filter"></i></button>
@@ -44,7 +44,6 @@
 </th>
 
 @code {
-
     [CascadingParameter(Name = nameof(Column))]
     protected CandyGridColumn Column { get; set; }
 }

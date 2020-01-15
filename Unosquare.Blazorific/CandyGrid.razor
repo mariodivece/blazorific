@@ -9,16 +9,8 @@
                 <CandyGridPaginator ButtonCount="5" />
             </div>
             <div class="col-lg-5 align-self-center">
-                <div class="btn-toolbar" role="toolbar">
-                    <div class="btn-group btn-group-sm mr-2" role="group">
-                        <button class="btn btn-link" type="button"><i class="fas fa-plus"></i>&nbsp;Add New</button>
-                        <button class="btn btn-link" type="button"><i class="far fa-check-square"></i>&nbsp;Select All</button>
-                    </div>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button class="btn btn-link" type="button"><i class="fas fa-print"></i>&nbsp;Print</button>
-                        <button class="btn btn-link" type="button"><i class="fas fa-external-link-alt"></i>&nbsp;Export</button>
-                    </div>
-                </div>
+                @if (ToolbarTemplate != null)
+                    @ToolbarTemplate(this)
             </div>
             <div class="col-lg-3 align-self-center">
                 <CandyGridSearchBox />
@@ -97,7 +89,7 @@
                                         {
                                             <div class="@col.CssClass">
                                                 <!--
-                                                    
+
                                                 // Needs clearfix in parent container
                                                 <div class="btn-group btn-group-sm candygrid-btn-group-sm mr-2 float-left">
                                                     <button class="btn btn-info" type="button" title="Go to details">
