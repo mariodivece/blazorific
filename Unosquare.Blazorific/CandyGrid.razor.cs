@@ -345,5 +345,22 @@
 
             return stringValue;
         }
+
+        private CandyGridColumn[] GenerateColumnsFromType(Type t)
+        {
+            // TODO: Create automatic columns from type.
+            var proxies = t.GetPropertyProxies();
+            var result = new List<CandyGridColumn>(proxies.Length);
+            foreach (var proxy in proxies)
+            {
+                result.Add(new CandyGridColumn
+                {
+                    Field = proxy.Name,
+                    Title = proxy.Name
+                });
+            }
+
+            return result.ToArray();
+        }
     }
 }

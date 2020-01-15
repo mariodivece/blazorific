@@ -4,11 +4,11 @@
             @if (Column.IsSortable)
             {
                 <a class="candygrid-column-sortable text-light" href="" @onclick:preventDefault
-                   @onclick="Column.ChangeSortDirection">@Column.Title</a>
+                   @onclick="Column.ChangeSortDirection">@(Column.Title ?? Column.Field)</a>
             }
             else
             {
-                <span class="candygrid-column-sortable text-light">@Column.Title</span>
+                <span class="candygrid-column-sortable text-light">@(Column.Title ?? Column.Field)</span>
             }
             <i class="fas @CaretCssClass"></i>
         </div>
