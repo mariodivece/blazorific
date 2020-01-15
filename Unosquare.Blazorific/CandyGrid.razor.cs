@@ -119,6 +119,15 @@
         public RenderFragment CandyGridColumns { get; set; }
 
         [Parameter]
+        public string TableContainerCssClass { get; set; } = "table-responsive table-borderless candygrid-table";
+
+        [Parameter]
+        public string TableCssClass { get; set; } = "table table-striped table-bordered table-hover table-sm";
+
+        [Parameter]
+        public string TableHeaderCssClass { get; set; } = "thead-dark";
+
+        [Parameter]
         public EventCallback<GridBodyRowEventArgs> OnBodyRowDoubleClick { get; set; }
 
         public int CurrentPage { get; protected set; }

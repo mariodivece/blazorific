@@ -52,22 +52,22 @@
         min-width: 1.5rem;
     }
 
-.candygrid-cell .custom-control-label::before {
-    margin-top: -4px;
-}
-
-.candygrid-cell .custom-control-label::after {
-    margin-top: -4px;
-}
-
-.candygrid-cell .custom-control-label {
-    vertical-align: top;
-    cursor: pointer;
-    line-height: inherit;
-}
-
 .candygrid-cell {
     line-height: 1.5rem;
     vertical-align: top;
     min-height: 1.5rem;
 }
+
+    .candygrid-cell .custom-control-label::before {
+        margin-top: -4px;
+    }
+
+    .candygrid-cell .custom-control-label::after {
+        margin-top: -4px;
+    }
+
+    .candygrid-cell .custom-control-label {
+        vertical-align: top;
+        cursor: pointer;
+        line-height: inherit;
+    }

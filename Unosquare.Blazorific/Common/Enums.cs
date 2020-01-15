@@ -147,4 +147,15 @@
         /// </summary>
         Min,
     }
+
+    /// <summary>
+    /// Text alignment options
+    /// </summary>
+    public enum TextAlignment
+    {
+        Auto,
+        Left,
+        Right,
+        Center,
+    }
 }

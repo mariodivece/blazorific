@@ -5,8 +5,12 @@
     <CandyGrid DataAdapter="Adapter" OnBodyRowDoubleClick="@OnBodyRowDoubleClick">
         <CandyGridColumns>
             <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" IsSortable="true" />
-            <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" IsSearchable="true" />
-            <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" />
+            <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" IsSearchable="true">
+                <HeaderTemplate>
+                    @($"Field: {context.Field}")
+                </HeaderTemplate>
+            </CandyGridColumn>
+            <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" FormatString="{0:c2}" />
             <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" />
 
             <CandyGridColumn Title="Date" Context="item">

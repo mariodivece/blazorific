@@ -33,6 +33,21 @@
         [Parameter]
         public RenderFragment<object> DataTemplate { get; set; }
 
+        [Parameter]
+        public RenderFragment<CandyGridColumn> HeaderTemplate { get; set; }
+
+        [Parameter]
+        public string FormatString { get; set; }
+
+        [Parameter]
+        public string EmptyDisplayString { get; set; } = string.Empty;
+
+        [Parameter]
+        public TextAlignment Alignment { get; set; } = TextAlignment.Auto;
+
+        [Parameter]
+        public string CssClass { get; set; } = "candygrid-cell";
+
         public GridDataFilter Filter { get; } = new GridDataFilter();
 
         [CascadingParameter(Name = nameof(Parent))]
