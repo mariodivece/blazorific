@@ -16,10 +16,10 @@
             Adapter = new TubularGridDataAdapter<Product>(requestUrl);
         }
 
-        protected void OnBodyRowDoubleClick(GridBodyRowEventArgs e)
+        protected void OnBodyRowDoubleClick(GridInputEventArgs<object> e)
         {
-            Console.WriteLine($"Item on {(e.DataItem as Product).ProductId} Double clicked");
-            (e.DataItem as Product).Name = string.Empty;
+            Console.WriteLine($"Item on {(e.Argument as Product).ProductId} Double clicked");
+            (e.Argument as Product).Name = string.Empty;
         }
     }
 }

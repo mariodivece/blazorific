@@ -1,6 +1,7 @@
 ﻿namespace Unosquare.Blazorific
 {
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Web;
     using Microsoft.JSInterop;
     using System;
     using System.Collections;
@@ -58,6 +59,85 @@
             }, null, Timeout.Infinite, Timeout.Infinite);
         }
 
+        #region Parameters: Data
+
+        [Parameter]
+        public IGridDataAdapter DataAdapter
+        {
+            get
+            {
+                return m_DataAdapter;
+            }
+            set
+            {
+                if (value == m_DataAdapter)
+                    return;
+
+                m_DataAdapter = value;
+                if (m_DataAdapter == null)
+                {
+                    return;
+                }
+
+                IsLoading = true;
+                QueueDataUpdate();
+            }
+        }
+
+        [Parameter]
+        public RenderFragment CandyGridColumns { get; set; }
+
+        #endregion
+
+        #region Parameters: CSS Classes
+
+        [Parameter]
+        public string RootCssClass { get; set; } = "candygrid-container";
+
+        [Parameter]
+        public string TableContainerCssClass { get; set; } = "table-responsive table-borderless candygrid-table";
+
+        [Parameter]
+        public string TableCssClass { get; set; } = "table table-striped table-bordered table-hover table-sm";
+
+        [Parameter]
+        public string TableHeaderCssClass { get; set; } = "thead-dark";
+
+        #endregion
+
+        #region Parameters: Templates
+
+        [Parameter]
+        public RenderFragment<CandyGrid> EmptyRecordsTemplate { get; set; }
+
+        [Parameter]
+        public RenderFragment<CandyGrid> LoadingRecordsTemplate { get; set; }
+
+        [Parameter]
+        public string EmtyRecordsText { get; set; } = "No records to display.";
+
+        #endregion
+
+        #region Parameters: Event Callbacks
+
+        [Parameter]
+        public EventCallback<GridInputEventArgs<object>> OnBodyRowDoubleClick { get; set; }
+
+        [Parameter]
+        public EventCallback<GridInputEventArgs<object>> OnBodyRowClick { get; set; }
+
+        [Parameter]
+        public EventCallback<GridEventArgs> OnDataLoaded { get; set; }
+
+        [Parameter]
+        public EventCallback<GridEventArgs<Exception>> OnDataLoadFailed { get; set; }
+
+        #endregion
+
+        public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
+
+        public IReadOnlyList<object> Data => DataItems;
+
         public int RequestedPageSize
         {
             get
@@ -92,53 +172,6 @@
             }
         }
 
-        [Parameter]
-        public IGridDataAdapter DataAdapter
-        {
-            get
-            {
-                return m_DataAdapter;
-            }
-            set
-            {
-                if (value == m_DataAdapter)
-                    return;
-
-                m_DataAdapter = value;
-                if (m_DataAdapter == null)
-                {
-                    return;
-                }
-
-                IsLoading = true;
-                QueueDataUpdate();
-            }
-        }
-
-        [Parameter]
-        public RenderFragment CandyGridColumns { get; set; }
-
-        [Parameter]
-        public string TableContainerCssClass { get; set; } = "table-responsive table-borderless candygrid-table";
-
-        [Parameter]
-        public string TableCssClass { get; set; } = "table table-striped table-bordered table-hover table-sm";
-
-        [Parameter]
-        public string TableHeaderCssClass { get; set; } = "thead-dark";
-
-        [Parameter]
-        public RenderFragment<CandyGrid> EmptyRecordsTemplate { get; set; }
-
-        [Parameter]
-        public string EmtyRecordsText { get; set; } = "No records to display.";
-
-        [Parameter]
-        public EventCallback<GridBodyRowEventArgs> OnBodyRowDoubleClick { get; set; }
-
-        [Parameter]
-        public EventCallback<GridBodyRowEventArgs> OnBodyRowClick { get; set; }
-
         public int CurrentPage { get; protected set; }
 
         public int PageSize { get; protected set; }
@@ -149,21 +182,17 @@
 
         public int TotalPages { get; protected set; }
 
-        public bool IsLoading { get; protected set; }
-
-        public string StatusText { get; protected set; }
-
         public int StartRecordNumber => Math.Max(0, 1 + (PageSize * (CurrentPage - 1)));
 
         public int EndRecordNumber => Math.Max(0, StartRecordNumber + (DataItems?.Count ?? 0) - 1);
 
-        public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
-
-        public IEnumerable GetDataItems() => DataItems;
-
-        public IEnumerable<T> GetDataItems<T>() => DataItems?.Cast<T>();
-
         public GridDataFilter SearchFilter { get; } = new GridDataFilter();
+
+        public bool IsLoading { get; protected set; }
+
+        public string StatusText { get; protected set; }
+
+        public IReadOnlyList<T> GetData<T>() => DataItems?.Cast<T>()?.ToList();
 
         public void QueueDataUpdate() => Interlocked.Increment(ref PendingAdapterUpdates);
 
@@ -172,18 +201,6 @@
             m_Columns.Add(column);
             StateHasChanged();
         }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            await base.OnAfterRenderAsync(firstRender);
-
-            if (!firstRender)
-                return;
-
-            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
-            QueueProcessor.Change(QueueProcessorIntervalMs, QueueProcessorIntervalMs);
-        }
-
         private async Task UpdateDataAsync()
         {
             IsLoading = true;
@@ -217,21 +234,30 @@
                     ? 1
                     : response.CurrentPage;
 
-                StatusText = (DataItems as List<object>).Count <= 0
-                    ? "No records to display."
-                    : "Loaded grid data";
-
-                Console.WriteLine($"Total Pages = {TotalPages}, Current Page = {CurrentPage}");
+                if (OnDataLoaded.HasDelegate)
+                    await OnDataLoaded.InvokeAsync(new GridEventArgs(this));
             }
             catch (Exception ex)
             {
-                StatusText = $"{ex.Message} - {ex.StackTrace}";
+                if (OnDataLoadFailed.HasDelegate)
+                    await OnDataLoadFailed.InvokeAsync(new GridEventArgs<Exception>(this, ex));
             }
             finally
             {
                 IsLoading = false;
                 StateHasChanged();
             }
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+
+            if (!firstRender)
+                return;
+
+            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
+            QueueProcessor.Change(QueueProcessorIntervalMs, QueueProcessorIntervalMs);
         }
 
         private object GetColumnValue(CandyGridColumn column, object dataItem)
@@ -268,20 +294,20 @@
             }
         }
 
-        private async Task RaiseOnBodyRowDoubleClick(object dataItem)
+        private async Task RaiseOnBodyRowDoubleClick(MouseEventArgs e, object dataItem)
         {
             if (!OnBodyRowDoubleClick.HasDelegate)
                 return;
 
-            await OnBodyRowDoubleClick.InvokeAsync(new GridBodyRowEventArgs(this, dataItem));
+            await OnBodyRowDoubleClick.InvokeAsync(new GridInputEventArgs<object>(this, e, dataItem));
         }
 
-        private async Task RaiseOnBodyRowClick(object dataItem)
+        private async Task RaiseOnBodyRowClick(MouseEventArgs e, object dataItem)
         {
             if (!OnBodyRowClick.HasDelegate)
                 return;
 
-            await OnBodyRowClick.InvokeAsync(new GridBodyRowEventArgs(this, dataItem));
+            await OnBodyRowClick.InvokeAsync(new GridInputEventArgs<object>(this, e, dataItem));
         }
 
         private int ComputeTotalPages(int pageSize, int totalCount)
