@@ -2,7 +2,7 @@
 @page "/"
 
 <div class="container mt-4">
-    <CandyGrid DataAdapter="Adapter" OnBodyRowDoubleClick="@OnBodyRowDoubleClick">
+    <CandyGrid DataAdapter="DataAccess.ProductsDataAdapter" OnBodyRowDoubleClick="@OnBodyRowDoubleClick">
         <ToolbarTemplate>
             <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group btn-group-sm mr-2" role="group">
@@ -34,3 +34,15 @@
         </CandyGridColumns>
     </CandyGrid>
 </div>
+
+@code{
+    protected void OnBodyRowDoubleClick(GridInputEventArgs<object> e)
+    {
+        var product = e.Argument as Product;
+        if (product == null)
+            return;
+
+        Console.WriteLine($"Item on {product.ProductId} Double clicked");
+        product.Name = "Item was clicked!";
+    }
+}

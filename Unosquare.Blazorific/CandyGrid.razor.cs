@@ -75,7 +75,17 @@
                 m_DataAdapter = value;
                 if (m_DataAdapter == null)
                 {
+                    if (CandyGridColumns == null)
+                        m_Columns.Clear();
+
                     return;
+                }
+
+                if (CandyGridColumns == null)
+                {
+                    m_Columns.Clear();
+                    m_Columns.AddRange(
+                        GenerateColumnsFromType(m_DataAdapter.DataItemType));
                 }
 
                 IsLoading = true;
@@ -348,17 +358,10 @@
 
         private CandyGridColumn[] GenerateColumnsFromType(Type t)
         {
-            // TODO: Create automatic columns from type.
             var proxies = t.GetPropertyProxies();
             var result = new List<CandyGridColumn>(proxies.Length);
             foreach (var proxy in proxies)
-            {
-                result.Add(new CandyGridColumn
-                {
-                    Field = proxy.Name,
-                    Title = proxy.Name
-                });
-            }
+                result.Add(new CandyGridColumn(proxy));
 
             return result.ToArray();
         }

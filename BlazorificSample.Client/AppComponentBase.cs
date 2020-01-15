@@ -10,5 +10,8 @@
 
         [Inject]
         protected CandyModalService Modal { get; set; }
+
+        [Inject]
+        protected DataAccessService DataAccess { get; set; }
     }
 }

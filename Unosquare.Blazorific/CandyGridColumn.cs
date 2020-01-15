@@ -8,6 +8,19 @@
     {
         private bool HasInitialized;
 
+        public CandyGridColumn()
+        {
+            // placeholder  
+        }
+
+        internal CandyGridColumn(IPropertyProxy property)
+        {
+            // TODO: Create automatic columns from type.
+            // Make it smarter
+            Title = property.Name;
+            Field = property.Name;
+        }
+
         [Parameter]
         public string Title { get; set; }
 

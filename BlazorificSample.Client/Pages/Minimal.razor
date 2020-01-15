@@ -1,0 +1,10 @@
+﻿@inherits AppComponentBase
+@page "/minimal"
+
+<div class="container mt-4">
+    <CandyGrid DataAdapter="DataAccess.ProductsDataAdapter">
+        <ToolbarTemplate>
+            <button class="btn btn-link" type="button" @onclick="context.QueueDataUpdate"><i class="fas fa-redo-alt"></i>&nbsp;Refresh</button>
+        </ToolbarTemplate>
+    </CandyGrid>
+</div>

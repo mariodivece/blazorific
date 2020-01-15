@@ -1,9 +1,12 @@
-﻿<div class="input-group input-group-sm">
-    <div class="input-group-prepend">
-        <span class="input-group-text"><i class="fas fa-search"></i></span>
+﻿@if (Parent.Columns.Any(c => c.IsSearchable))
+{
+    <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+        </div>
+        <input type="search" class="form-control" placeholder="@Placeholder" @oninput="OnSearchInput">
     </div>
-    <input type="search" class="form-control" placeholder="@Placeholder" @oninput="OnSearchInput">
-</div>
+}
 
 @code {
     [CascadingParameter(Name = nameof(Parent))]
