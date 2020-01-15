@@ -1,8 +1,7 @@
 ﻿namespace Unosquare.Blazorific
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.Web;
+    using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
 
     public class CandyGridColumn : IComponent, IGridColumn
@@ -46,7 +45,7 @@
         public TextAlignment Alignment { get; set; } = TextAlignment.Auto;
 
         [Parameter]
-        public string CssClass { get; set; } = "candygrid-cell";
+        public string CssClass { get; set; } = "candygrid-cell clearfix";
 
         public GridDataFilter Filter { get; } = new GridDataFilter();
 

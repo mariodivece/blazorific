@@ -10,6 +10,7 @@
                     @($"Field: {context.Field}")
                 </HeaderTemplate>
             </CandyGridColumn>
+            <CandyGridColumn Title="Description" Field="@nameof(Product.Description)" IsSortable="true" />
             <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" FormatString="{0:c2}" />
             <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" />
 

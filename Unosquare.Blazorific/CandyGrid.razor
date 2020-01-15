@@ -51,7 +51,25 @@
                     {
                         <tr>
                             <td colspan="@Columns.Count">
-                                @StatusText
+                                @if (IsLoading)
+                                {
+                                    <div class="text-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    if (EmptyRecordsTemplate != null)
+                                    {
+                                        @EmptyRecordsTemplate(this)
+                                    }
+                                    else
+                                    {
+                                        @EmtyRecordsText;
+                                    }
+                                }
                             </td>
                         </tr>
                     }
@@ -59,7 +77,8 @@
                     {
                         @foreach (var item in DataItems)
                         {
-                            <tr @ondblclick="(async (e) => await RaiseOnBodyRowDoubleClick(item))">
+                            <tr @ondblclick="(async (e) => await RaiseOnBodyRowDoubleClick(item))"
+                                @onclick="(async (e) => await RaiseOnBodyRowClick(item))">
                                 @foreach (var col in Columns)
                                 {
                                     <td>
@@ -71,7 +90,9 @@
                                         {
                                             <div class="@col.CssClass">
                                                 <!--
-                                                                                                   <div class="btn-group btn-group-sm candygrid-btn-group-sm mr-2 float-left">
+                                                    
+                                                // Needs clearfix in parent container
+                                                <div class="btn-group btn-group-sm candygrid-btn-group-sm mr-2 float-left">
                                                     <button class="btn btn-info" type="button" title="Go to details">
                                                         <i class="fas fa-ellipsis-h"></i>
                                                     </button>
@@ -87,31 +108,7 @@
                                                     <span class="custom-control-label">KB 4320</span>
                                                 </label>
                                                 -->
-                                                @{
-                                                    var columnValue = GetColumnValue(col, item);
-                                                    var stringValue = columnValue as string;
-
-                                                    if (columnValue == null)
-                                                    {
-                                                        stringValue = col.EmptyDisplayString;
-                                                    }
-                                                    else
-                                                    {
-                                                        stringValue = columnValue?.ToString() ?? string.Empty;
-                                                        if (!string.IsNullOrWhiteSpace(col.FormatString))
-                                                        {
-                                                            try
-                                                            {
-                                                                stringValue = string.Format(col.FormatString, columnValue);
-                                                            }
-                                                            catch
-                                                            {
-                                                                // ignore
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                <span class="float-left">@stringValue</span>
+                                                <div class="text-nowrap text-truncate">@GetColumnValueText(col, item)</div>
                                             </div>
                                         }
                                     </td>

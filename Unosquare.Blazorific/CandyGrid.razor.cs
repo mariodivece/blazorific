@@ -107,10 +107,10 @@
                 m_DataAdapter = value;
                 if (m_DataAdapter == null)
                 {
-
                     return;
                 }
 
+                IsLoading = true;
                 QueueDataUpdate();
             }
         }
@@ -128,7 +128,16 @@
         public string TableHeaderCssClass { get; set; } = "thead-dark";
 
         [Parameter]
+        public RenderFragment<CandyGrid> EmptyRecordsTemplate { get; set; }
+
+        [Parameter]
+        public string EmtyRecordsText { get; set; } = "No records to display.";
+
+        [Parameter]
         public EventCallback<GridBodyRowEventArgs> OnBodyRowDoubleClick { get; set; }
+
+        [Parameter]
+        public EventCallback<GridBodyRowEventArgs> OnBodyRowClick { get; set; }
 
         public int CurrentPage { get; protected set; }
 
@@ -264,7 +273,15 @@
             if (!OnBodyRowDoubleClick.HasDelegate)
                 return;
 
-            await OnBodyRowDoubleClick.InvokeAsync(new GridBodyRowEventArgs(this as CandyGrid, dataItem));
+            await OnBodyRowDoubleClick.InvokeAsync(new GridBodyRowEventArgs(this, dataItem));
+        }
+
+        private async Task RaiseOnBodyRowClick(object dataItem)
+        {
+            if (!OnBodyRowClick.HasDelegate)
+                return;
+
+            await OnBodyRowClick.InvokeAsync(new GridBodyRowEventArgs(this, dataItem));
         }
 
         private int ComputeTotalPages(int pageSize, int totalCount)
@@ -273,6 +290,32 @@
             if (pageSize <= 0) return totalCount;
 
             return (totalCount / pageSize) + (totalCount % pageSize > 0 ? 1 : 0);
+        }
+
+        private string GetColumnValueText(CandyGridColumn col, object item)
+        {
+            var columnValue = GetColumnValue(col, item);
+            var stringValue = columnValue as string;
+
+            if (columnValue == null)
+            {
+                return col.EmptyDisplayString;
+            }
+
+            stringValue = columnValue?.ToString() ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(col.FormatString))
+            {
+                try
+                {
+                    stringValue = string.Format(col.FormatString, columnValue);
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+
+            return stringValue;
         }
     }
 }
