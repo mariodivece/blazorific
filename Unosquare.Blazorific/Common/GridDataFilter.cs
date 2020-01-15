@@ -14,14 +14,8 @@
         public GridDataFilter()
         {
             Operator = CompareOperators.None;
-            Name = string.Empty;
             Text = string.Empty;
         }
-
-        /// <summary>
-        /// Filter name.
-        /// </summary>
-        public string Name { get; set; }
 
         /// <summary>
         /// Filter search text.
@@ -37,10 +31,5 @@
         /// Filter's operator.
         /// </summary>
         public CompareOperators Operator { get; set; }
-
-        /// <summary>
-        /// Flags if the Filter is applied.
-        /// </summary>
-        public bool HasFilter { get; set; }
     }
 }
