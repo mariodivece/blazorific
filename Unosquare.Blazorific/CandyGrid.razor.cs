@@ -18,6 +18,8 @@
         private readonly Timer QueueProcessor;
         private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
 
+        private bool HasRendered;
+        private bool HasChangedAdapter;
         private bool IsProcessingQueue;
         private long PendingAdapterUpdates;
         private int GridDataRequestIndex;
@@ -69,25 +71,16 @@
             }
             set
             {
+                if (value == null)
+                    throw new InvalidOperationException($"The {nameof(DataAdapter)} cannot be set to null.");
+
+                if (m_DataAdapter != null)
+                    throw new InvalidOperationException($"The {nameof(DataAdapter)} cannot be changed once it has been set.");
+
                 if (value == m_DataAdapter)
                     return;
 
                 m_DataAdapter = value;
-                if (m_DataAdapter == null)
-                {
-                    if (CandyGridColumns == null)
-                        m_Columns.Clear();
-
-                    return;
-                }
-
-                if (CandyGridColumns == null)
-                {
-                    m_Columns.Clear();
-                    m_Columns.AddRange(
-                        GenerateColumnsFromType(m_DataAdapter.DataItemType));
-                }
-
                 IsLoading = true;
                 QueueDataUpdate();
             }
@@ -215,6 +208,12 @@
         }
         private async Task UpdateDataAsync()
         {
+            if (HasRendered && Columns.Count == 0 && DataAdapter != null)
+            {
+                m_Columns.AddRange(
+                    GenerateColumnsFromType(m_DataAdapter.DataItemType));
+            }
+
             IsLoading = true;
             StatusText = "Loading data . . .";
             try
@@ -268,6 +267,7 @@
             if (!firstRender)
                 return;
 
+            HasRendered = true;
             await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
             QueueProcessor.Change(QueueProcessorIntervalMs, QueueProcessorIntervalMs);
         }
