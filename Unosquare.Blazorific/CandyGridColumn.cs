@@ -1,11 +1,16 @@
 ﻿namespace Unosquare.Blazorific
 {
     using Microsoft.AspNetCore.Components;
+    using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
 
     public class CandyGridColumn : IComponent, IGridColumn
     {
+        private static readonly int MinSortDirection = Enum.GetValues(typeof(SortDirection)).Cast<int>().Min();
+        private static readonly int MaxSortDirection = Enum.GetValues(typeof(SortDirection)).Cast<int>().Max();
+
         private bool HasInitialized;
 
         public CandyGridColumn()
@@ -32,6 +37,9 @@
 
         [Parameter]
         public bool IsSearchable { get; set; }
+
+        [Parameter]
+        public bool IsVisible { get; set; }
 
         [Parameter]
         public int SortOrder { get; set; }
@@ -75,16 +83,54 @@
 
         bool IGridColumn.Searchable => IsSearchable;
 
-        public void ChangeSortDirection()
+        public void ChangeSortDirection(bool multiColumnSorting)
         {
-            var nextSortDirection = SortDirection == SortDirection.None
-                ? SortDirection.Ascending
-                : SortDirection == SortDirection.Ascending
-                ? SortDirection.Descending
-                : SortDirection.None;
+            // Compute the next sort direction and set it.
+            var nextSortDirection = (int)SortDirection + 1;
+            if (nextSortDirection > MaxSortDirection)
+                nextSortDirection = MinSortDirection;
 
-            SortDirection = nextSortDirection;
-            SortOrder = nextSortDirection == SortDirection.None ? 0 : 1;
+            SortDirection = multiColumnSorting && nextSortDirection == MinSortDirection
+                ? (SortDirection)(MinSortDirection + 1)
+                : (SortDirection)nextSortDirection;
+
+            // Clear the sort order for all columns with no sort direction
+            foreach (var column in Parent.Columns)
+            {
+                column.SortOrder = column.SortDirection != SortDirection.None
+                    ? column.SortOrder
+                    : 0;
+            }
+
+            if (multiColumnSorting)
+            {
+                SortOrder = SortOrder <= 0
+                    ? Parent.Columns.Max(c => c.SortOrder) + 1
+                    : SortOrder;
+            }
+            else
+            {
+                // Reset sort order and sort direction for all columns
+                // except for this one
+                foreach (var column in Parent.Columns)
+                {
+                    if (column == this)
+                        continue;
+
+                    column.SortDirection = SortDirection.None;
+                    column.SortOrder = 0;
+                }
+
+                SortOrder = 1;
+            }
+
+            // Reorganize sort orders for sorted columns
+            var columnSortOrder = 1;
+            var sortedColumns = Parent.Columns.Where(c => c.SortOrder > 0).OrderBy(c => c.SortOrder);
+            
+            foreach (var column in sortedColumns)
+                column.SortOrder = columnSortOrder++;
+
             Parent.QueueDataUpdate();
         }
 

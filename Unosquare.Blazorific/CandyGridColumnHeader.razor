@@ -4,7 +4,7 @@
             @if (Column.IsSortable)
             {
                 <a class="candygrid-column-sortable text-light" href="" @onclick:preventDefault
-                   @onclick="Column.ChangeSortDirection">@(Column.Title ?? Column.Field)</a>
+                   @onclick="OnColumnSortClick">@(Column.Title ?? Column.Field)</a>
             }
             else
             {
@@ -55,5 +55,10 @@
                 ? "fa-caret-down"
                 : string.Empty;
         }
+    }
+
+    private void OnColumnSortClick(MouseEventArgs e)
+    {
+        Column.ChangeSortDirection(e.CtrlKey);
     }
 }

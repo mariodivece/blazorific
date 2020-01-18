@@ -10,18 +10,18 @@
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
 
-    public partial class CandyGrid
+    public partial class CandyGrid : IDisposable
     {
-        private const int QueueProcessorIntervalMs = 250;
+        private const int QueueProcessorDueTimeMs = 50;
 
         private readonly object SyncLock = new object();
         private readonly Timer QueueProcessor;
         private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
 
+        private bool IsDisposed;
         private bool HasRendered;
-        private bool HasChangedAdapter;
         private bool IsProcessingQueue;
-        private long PendingAdapterUpdates;
+        private int PendingAdapterUpdates;
         private int GridDataRequestIndex;
 
         private IGridDataAdapter m_DataAdapter;
@@ -34,28 +34,30 @@
         {
             QueueProcessor = new Timer(async (s) =>
             {
+                var pendingUpdates = 0;
                 lock (SyncLock)
                 {
                     if (IsProcessingQueue)
                         return;
 
                     IsProcessingQueue = true;
+                    pendingUpdates = PendingAdapterUpdates;
                 }
-
-                var pendingUpdates = Interlocked.Read(ref PendingAdapterUpdates);
 
                 try
                 {
-                    if (pendingUpdates <= 0)
+                    if (pendingUpdates <= 0 || IsDisposed)
                         return;
 
                     await UpdateDataAsync();
                 }
                 finally
                 {
-                    Interlocked.Add(ref PendingAdapterUpdates, pendingUpdates * -1);
                     lock (SyncLock)
+                    {
+                        PendingAdapterUpdates -= pendingUpdates;
                         IsProcessingQueue = false;
+                    }                        
                 }
             }, null, Timeout.Infinite, Timeout.Infinite);
         }
@@ -199,13 +201,28 @@
 
         public IReadOnlyList<T> GetData<T>() => DataItems?.Cast<T>()?.ToList();
 
-        public void QueueDataUpdate() => Interlocked.Increment(ref PendingAdapterUpdates);
+        public void QueueDataUpdate()
+        {
+            lock (SyncLock)
+            {
+                if (IsDisposed) return;
+                PendingAdapterUpdates++;
+                QueueProcessor.Change(QueueProcessorDueTimeMs, Timeout.Infinite);
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         internal void AddColumn(CandyGridColumn column)
         {
             m_Columns.Add(column);
             StateHasChanged();
         }
+        
         private async Task UpdateDataAsync()
         {
             if (HasRendered && Columns.Count == 0 && DataAdapter != null)
@@ -269,7 +286,7 @@
 
             HasRendered = true;
             await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
-            QueueProcessor.Change(QueueProcessorIntervalMs, QueueProcessorIntervalMs);
+            QueueProcessor.Change(QueueProcessorDueTimeMs, Timeout.Infinite);
         }
 
         private object GetColumnValue(CandyGridColumn column, object dataItem)
@@ -364,6 +381,22 @@
                 result.Add(new CandyGridColumn(proxy));
 
             return result.ToArray();
+        }
+
+        protected virtual void Dispose(bool alsoManaged)
+        {
+            lock (SyncLock)
+            {
+                if (IsDisposed)
+                    return;
+
+                QueueProcessor.Change(Timeout.Infinite, Timeout.Infinite);
+
+                if (alsoManaged)
+                    QueueProcessor.Dispose();
+
+                IsDisposed = true;
+            }
         }
     }
 }
