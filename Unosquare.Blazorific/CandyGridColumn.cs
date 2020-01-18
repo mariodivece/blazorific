@@ -122,7 +122,7 @@
                     column.SortOrder = 0;
                 }
 
-                SortOrder = 1;
+                SortOrder = SortDirection == SortDirection.None ? 0 : 1;
             }
 
             // Reorganize sort orders for sorted columns
