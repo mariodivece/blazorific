@@ -6,6 +6,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
@@ -297,11 +298,12 @@
             if (dataItem == null)
                 return null;
 
-            if (column.Property == null)
+            var proxies = dataItem.GetType().PropertyProxies();
+            if (column.Property == null && !string.IsNullOrWhiteSpace(column.Field))
             {
-                column.Property = dataItem.GetType()
-                    .GetPropertyProxies()
-                    .FirstOrDefault(p => p.Name == column.Field);
+                column.Property = proxies.ContainsKey(column.Field)
+                    ? proxies[column.Field]
+                    : null;
             }
 
             return column.Property?.GetValue(dataItem);
@@ -375,8 +377,8 @@
 
         private CandyGridColumn[] GenerateColumnsFromType(Type t)
         {
-            var proxies = t.GetPropertyProxies();
-            var result = new List<CandyGridColumn>(proxies.Length);
+            var proxies = t.PropertyProxies().Values;
+            var result = new List<CandyGridColumn>(proxies.Count());
             foreach (var proxy in proxies)
                 result.Add(new CandyGridColumn(proxy));
 

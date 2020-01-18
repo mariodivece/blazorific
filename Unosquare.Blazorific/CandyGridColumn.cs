@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Components;
     using System;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
 

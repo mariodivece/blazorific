@@ -3,6 +3,7 @@
     using System;
     using System.Collections;
     using System.Net.Http;
+    using System.Reflection;
     using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -52,7 +53,7 @@
         private IList ParsePayload(TubularGridDataResponse response)
         {
             var result = DataItemType.CreateGenericList();
-            var props = DataItemType.GetPropertyProxies();
+            var props = DataItemType.PropertyProxies().Values;
 
             foreach (var itemData in response.Payload)
             {
