@@ -146,7 +146,25 @@
 
         public IReadOnlyList<object> Data => DataItems;
 
-        public int RequestedPageSize
+        public int PageNumber { get; protected set; }
+
+        public int PageSize { get; protected set; }
+
+        public int TotalRecordCount { get; protected set; }
+
+        public int FilteredRecordCount { get; protected set; }
+
+        public int TotalPages { get; protected set; }
+
+        public int StartRecordNumber => Math.Max(0, 1 + (PageSize * (PageNumber - 1)));
+
+        public int EndRecordNumber => Math.Max(0, StartRecordNumber + (DataItems?.Count ?? 0) - 1);
+
+        public GridDataFilter SearchFilter { get; } = new GridDataFilter();
+
+        public bool IsLoading { get; protected set; }
+
+        private int RequestedPageSize
         {
             get
             {
@@ -159,7 +177,7 @@
             }
         }
 
-        public int RequestedPageNumber
+        private int RequestedPageNumber
         {
             get
             {
@@ -180,26 +198,6 @@
             }
         }
 
-        public int CurrentPage { get; protected set; }
-
-        public int PageSize { get; protected set; }
-
-        public int TotalRecordCount { get; protected set; }
-
-        public int FilteredRecordCount { get; protected set; }
-
-        public int TotalPages { get; protected set; }
-
-        public int StartRecordNumber => Math.Max(0, 1 + (PageSize * (CurrentPage - 1)));
-
-        public int EndRecordNumber => Math.Max(0, StartRecordNumber + (DataItems?.Count ?? 0) - 1);
-
-        public GridDataFilter SearchFilter { get; } = new GridDataFilter();
-
-        public bool IsLoading { get; protected set; }
-
-        public string StatusText { get; protected set; }
-
         public IReadOnlyList<T> GetData<T>() => DataItems?.Cast<T>()?.ToList();
 
         public void QueueDataUpdate()
@@ -210,6 +208,26 @@
                 PendingAdapterUpdates++;
                 QueueProcessor.Change(QueueProcessorDueTimeMs, Timeout.Infinite);
             }
+        }
+
+        public int ChangePageSize(int pageSize)
+        {
+            if (pageSize == PageSize)
+                return PageSize;
+
+            RequestedPageSize = pageSize;
+            QueueDataUpdate();
+            return RequestedPageSize;
+        }
+
+        public int ChangePageNumber(int pageNumber)
+        {
+            if (pageNumber == PageNumber)
+                return PageNumber;
+
+            RequestedPageNumber = pageNumber;
+            QueueDataUpdate();
+            return RequestedPageNumber;
         }
 
         public void Dispose()
@@ -233,17 +251,15 @@
             }
 
             IsLoading = true;
-            StatusText = "Loading data . . .";
             try
             {
                 if (DataAdapter == null)
                 {
                     DataItems = default;
-                    CurrentPage = default;
+                    PageNumber = default;
                     FilteredRecordCount = default;
                     TotalRecordCount = default;
                     TotalPages = default;
-                    StatusText = null;
                     return;
                 }
 
@@ -257,7 +273,7 @@
                 PageSize = request.Take <= 0 ? response.FilteredRecordCount : request.Take;
                 TotalPages = ComputeTotalPages(PageSize, response.FilteredRecordCount);
 
-                CurrentPage = response.CurrentPage > TotalPages
+                PageNumber = response.CurrentPage > TotalPages
                     ? TotalPages
                     : response.CurrentPage < 0
                     ? 1

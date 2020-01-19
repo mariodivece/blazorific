@@ -19,20 +19,19 @@
     {
         var searchFilter = Parent.SearchFilter;
         var searchInput = e.Value as string ?? string.Empty;
+        searchFilter.Text = searchInput;
 
         if (searchInput.Length > 2)
         {
             searchFilter.Operator = CompareOperators.Auto;
-            searchFilter.Text = searchInput;
             Parent.QueueDataUpdate();
+            return;
         }
-        else
+
+        if (searchFilter.Operator != CompareOperators.None)
         {
             searchFilter.Operator = CompareOperators.None;
-            if (searchFilter.Text != searchInput)
-                Parent.QueueDataUpdate();
-
-            searchFilter.Text = string.Empty;
+            Parent.QueueDataUpdate();
         }
     }
 }

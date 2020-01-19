@@ -1,68 +1,70 @@
-﻿<nav class="nav small" arial-label="Pagination">
-    <ul class="pagination mb-0">
-        @if (ShowFirstButton)
-        {
-            <li class="page-item @(Parent.CurrentPage <= 1 ? "disabled" : string.Empty)">
-                <button class="page-link" aria-label="First" @onclick="_ => Parent.RequestedPageNumber = 1">
-                    <i class="fas fa-step-backward"></i>
-                </button>
-            </li>
-        }
-
-        @if (ShowPreviousButton)
-        {
-            <li class="page-item @(Parent.CurrentPage <= 1 ? "disabled" : string.Empty)">
-                <button class="page-link" aria-label="Previous" @onclick="_ => Parent.RequestedPageNumber = Parent.CurrentPage - 1">
-                    <i class="fas fa-backward"></i>
-                </button>
-            </li>
-        }
-
-        @{
-            var startPage = Parent.CurrentPage - (ButtonCount / 2);
-            if (startPage < 1) startPage = 1;
-
-            var endPage = startPage + (ButtonCount - 1);
-            if (endPage >= Parent.TotalPages)
+﻿@if (Parent.TotalPages > 0)
+{
+    <nav class="nav small" arial-label="Pagination">
+        <ul class="pagination mb-0">
+            @if (ShowFirstButton)
             {
-                endPage = Parent.TotalPages;
-                startPage = endPage - (ButtonCount - 1);
-                if (startPage <= 0) startPage = 1;
-            }
-
-            for (var i = startPage; i <= endPage; i++)
-            {
-                var pageNumber = i;
-                <li class="page-item @(Parent.CurrentPage == pageNumber ? "active" : string.Empty)">
-                    <button class="page-link" aria-label="Page @pageNumber" @onclick="_ => Parent.RequestedPageNumber = pageNumber">
-                        @pageNumber
+                <li class="page-item @(Parent.PageNumber <= 1 ? "disabled" : string.Empty)">
+                    <button class="page-link" aria-label="First" @onclick="_ => PageNumber = 1">
+                        <i class="fas fa-step-backward"></i>
                     </button>
                 </li>
             }
-        }
 
-        @if (ShowNextButton)
-        {
-            <li class="page-item @(Parent.CurrentPage >= Parent.TotalPages ? "disabled" : string.Empty)">
-                <button class="page-link" href="#" aria-label="Next" @onclick="_ => Parent.RequestedPageNumber = Parent.CurrentPage + 1">
-                    <i class="fas fa-forward"></i>
-                </button>
-            </li>
-        }
+            @if (ShowPreviousButton)
+            {
+                <li class="page-item @(Parent.PageNumber <= 1 ? "disabled" : string.Empty)">
+                    <button class="page-link" aria-label="Previous" @onclick="_ => PageNumber = Parent.PageNumber - 1">
+                        <i class="fas fa-backward"></i>
+                    </button>
+                </li>
+            }
 
-        @if (ShowLastButton)
-        {
-            <li class="page-item @(Parent.CurrentPage >= Parent.TotalPages ? "disabled" : string.Empty)">
-                <button class="page-link" href="#" aria-label="Last" @onclick="_ => Parent.RequestedPageNumber = Parent.TotalPages">
-                    <i class="fas fa-step-forward"></i>
-                </button>
-            </li>
-        }
-    </ul>
-</nav>
+            @{
+                var startPage = Parent.PageNumber - (ButtonCount / 2);
+                if (startPage < 1) startPage = 1;
+
+                var endPage = startPage + (ButtonCount - 1);
+                if (endPage >= Parent.TotalPages)
+                {
+                    endPage = Parent.TotalPages;
+                    startPage = endPage - (ButtonCount - 1);
+                    if (startPage <= 0) startPage = 1;
+                }
+
+                for (var i = startPage; i <= endPage; i++)
+                {
+                    var pageNumber = i;
+                    <li class="page-item @(Parent.PageNumber == pageNumber ? "active" : string.Empty)">
+                        <button class="page-link" aria-label="Page @pageNumber" @onclick="_ => PageNumber = pageNumber">
+                            @pageNumber
+                        </button>
+                    </li>
+                }
+            }
+
+            @if (ShowNextButton)
+            {
+                <li class="page-item @(Parent.PageNumber >= Parent.TotalPages ? "disabled" : string.Empty)">
+                    <button class="page-link" href="#" aria-label="Next" @onclick="_ => PageNumber = Parent.PageNumber + 1">
+                        <i class="fas fa-forward"></i>
+                    </button>
+                </li>
+            }
+
+            @if (ShowLastButton)
+            {
+                <li class="page-item @(Parent.PageNumber >= Parent.TotalPages ? "disabled" : string.Empty)">
+                    <button class="page-link" href="#" aria-label="Last" @onclick="_ => PageNumber = Parent.TotalPages">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                </li>
+            }
+        </ul>
+    </nav>
+}
 
 @code {
-
     private int m_ButtonCount = 5;
 
     [CascadingParameter(Name = nameof(Parent))]
@@ -85,5 +87,11 @@
     {
         get => m_ButtonCount < 1 ? 1 : m_ButtonCount;
         set => m_ButtonCount = value;
+    }
+
+    public int PageNumber
+    {
+        get => Parent.PageNumber;
+        set => Parent.ChangePageNumber(value);
     }
 }
