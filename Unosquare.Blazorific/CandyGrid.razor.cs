@@ -160,21 +160,12 @@
 
         public int EndRecordNumber => Math.Max(0, StartRecordNumber + (DataItems?.Count ?? 0) - 1);
 
-        public GridDataFilter SearchFilter { get; } = new GridDataFilter();
-
         public bool IsLoading { get; protected set; }
 
         private int RequestedPageSize
         {
-            get
-            {
-                return m_RequestedPageSize > 0 ? m_RequestedPageSize : -1;
-            }
-            set
-            {
-                m_RequestedPageSize = value;
-                QueueDataUpdate();
-            }
+            get => m_RequestedPageSize > 0 ? m_RequestedPageSize : -1;
+            set => m_RequestedPageSize = value;
         }
 
         private int RequestedPageNumber
@@ -194,9 +185,10 @@
             set
             {
                 m_RequestedPageNumber = value;
-                QueueDataUpdate();
             }
         }
+
+        private GridDataFilter SearchFilter { get; } = new GridDataFilter();
 
         public IReadOnlyList<T> GetData<T>() => DataItems?.Cast<T>()?.ToList();
 
@@ -228,6 +220,26 @@
             RequestedPageNumber = pageNumber;
             QueueDataUpdate();
             return RequestedPageNumber;
+        }
+
+        public void ChangeSearchText(string searchText)
+        {
+            SearchFilter.Text = searchText ?? string.Empty;
+
+            if (SearchFilter.Text.Length > 2)
+            {
+                RequestedPageNumber = 1;
+                SearchFilter.Operator = CompareOperators.Auto;
+                QueueDataUpdate();
+                return;
+            }
+
+            if (SearchFilter.Operator != CompareOperators.None)
+            {
+                RequestedPageNumber = 1;
+                SearchFilter.Operator = CompareOperators.None;
+                QueueDataUpdate();
+            }
         }
 
         public void Dispose()

@@ -17,21 +17,7 @@
 
     private void OnSearchInput(ChangeEventArgs e)
     {
-        var searchFilter = Parent.SearchFilter;
-        var searchInput = e.Value as string ?? string.Empty;
-        searchFilter.Text = searchInput;
-
-        if (searchInput.Length > 2)
-        {
-            searchFilter.Operator = CompareOperators.Auto;
-            Parent.QueueDataUpdate();
-            return;
-        }
-
-        if (searchFilter.Operator != CompareOperators.None)
-        {
-            searchFilter.Operator = CompareOperators.None;
-            Parent.QueueDataUpdate();
-        }
+        var searchInput = (e.Value as string ?? string.Empty).Trim();
+        Parent.ChangeSearchText(searchInput);
     }
 }
