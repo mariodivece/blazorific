@@ -4,8 +4,6 @@
     {
         string Name { get; }
 
-        string Label { get; }
-
         bool Sortable { get; }
 
         int SortOrder { get; }

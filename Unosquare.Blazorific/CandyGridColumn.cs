@@ -78,8 +78,6 @@
 
         string IGridColumn.Name => Field;
 
-        string IGridColumn.Label => Title;
-
         bool IGridColumn.Sortable => IsSortable;
 
         bool IGridColumn.Searchable => IsSearchable;

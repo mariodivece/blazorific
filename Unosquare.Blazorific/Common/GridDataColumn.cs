@@ -4,8 +4,6 @@
     {
         public string Name { get; set; }
 
-        public string Label { get; set; }
-
         public bool Sortable { get; set; }
 
         public int SortOrder { get; set; }
