@@ -1,0 +1,39 @@
+﻿<tr @ondblclick="e => RaiseOnBodyRowDoubleClick(e)"
+    @onclick="e => RaiseOnBodyRowClick(e)">
+    @foreach (var col in Parent.Columns)
+    {
+        <CascadingValue Name="Column" Value="col">
+            <CandyGridCell />
+        </CascadingValue>
+    }
+</tr>
+
+@code {
+    [CascadingParameter(Name = nameof(Parent))]
+    protected CandyGrid Parent { get; set; }
+
+    [CascadingParameter(Name = nameof(DataItem))]
+    protected object DataItem { get; set; }
+
+    protected void RaiseOnBodyRowDoubleClick(MouseEventArgs e)
+    {
+        Console.WriteLine($"GRID EVENT. {nameof(Parent.OnBodyRowDoubleClick)}.");
+        var callback = Parent.OnBodyRowDoubleClick;
+        if (callback == null) return;
+        var gridEvent = new GridInputDataEventArgs(Parent, e, DataItem);
+        callback.Invoke(gridEvent);
+        if (gridEvent.NotifyStateChanged)
+            Parent.NotifyStateChanged();
+    }
+
+    protected void RaiseOnBodyRowClick(MouseEventArgs e)
+    {
+        Console.WriteLine($"GRID EVENT. {nameof(Parent.OnBodyRowClick)}.");
+        var callback = Parent.OnBodyRowClick;
+        if (callback == null) return;
+        var gridEvent = new GridInputDataEventArgs(Parent, e, DataItem);
+        callback.Invoke(gridEvent);
+        if (gridEvent.NotifyStateChanged)
+            Parent.NotifyStateChanged();
+    }
+}

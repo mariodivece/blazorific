@@ -23,6 +23,7 @@
         private bool HasRendered;
         private bool IsProcessingQueue;
         private int PendingAdapterUpdates;
+        private DateTime LastRenderTime;
 
         private IGridDataAdapter m_DataAdapter;
 
@@ -54,7 +55,7 @@
                     {
                         PendingAdapterUpdates -= pendingUpdates;
                         IsProcessingQueue = false;
-                    }                        
+                    }
                 }
             }, null, Timeout.Infinite, Timeout.Infinite);
         }
@@ -70,6 +71,7 @@
             }
             set
             {
+                Console.WriteLine("DataAdapter Rebound");
                 if (value == null)
                     throw new InvalidOperationException($"The {nameof(DataAdapter)} cannot be set to null.");
 
@@ -125,16 +127,16 @@
         #region Parameters: Event Callbacks
 
         [Parameter]
-        public EventCallback<GridInputDataEventArgs> OnBodyRowDoubleClick { get; set; }
+        public Action<GridInputDataEventArgs> OnBodyRowDoubleClick { get; set; }
 
         [Parameter]
-        public EventCallback<GridInputDataEventArgs> OnBodyRowClick { get; set; }
+        public Action<GridInputDataEventArgs> OnBodyRowClick { get; set; }
 
         [Parameter]
-        public EventCallback<GridEventArgs> OnDataLoaded { get; set; }
+        public Action<GridEventArgs> OnDataLoaded { get; set; }
 
         [Parameter]
-        public EventCallback<GridExceptionEventArgs> OnDataLoadFailed { get; set; }
+        public Action<GridExceptionEventArgs> OnDataLoadFailed { get; set; }
 
         #endregion
 
@@ -235,7 +237,9 @@
             m_Columns.Add(column);
             StateHasChanged();
         }
-        
+
+        internal void NotifyStateChanged() => StateHasChanged();
+
         private async Task UpdateDataAsync()
         {
             if (HasRendered && Columns.Count == 0 && DataAdapter != null)
@@ -274,14 +278,12 @@
                         : response.CurrentPage;
                 }
 
-                if (OnDataLoaded.HasDelegate)
-                    await OnDataLoaded.InvokeAsync(new GridEventArgs(this));
+                OnDataLoaded?.Invoke(new GridEventArgs(this));
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to update {nameof(CandyGrid)}: {ex.Message} - {ex.StackTrace}");
-                if (OnDataLoadFailed.HasDelegate)
-                    await OnDataLoadFailed.InvokeAsync(new GridExceptionEventArgs(this, ex));
+                OnDataLoadFailed?.Invoke(new GridExceptionEventArgs(this, ex));
             }
             finally
             {
@@ -292,6 +294,12 @@
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
+            var intervalDuration = LastRenderTime == default
+                ? 0
+                : DateTime.UtcNow.Subtract(LastRenderTime).TotalMilliseconds;
+
+            LastRenderTime = DateTime.UtcNow;
+            Console.WriteLine($"GRID RENDER. {LastRenderTime.Minute:00}:{LastRenderTime.Second:00}:{LastRenderTime.Millisecond:000}. Interval: {intervalDuration:0.00}");
             await base.OnAfterRenderAsync(firstRender);
 
             if (!firstRender)
@@ -299,52 +307,7 @@
 
             HasRendered = true;
             await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
-            QueueProcessor.Change(QueueProcessorDueTimeMs, Timeout.Infinite);
-        }
-
-        private async Task RaiseOnBodyRowDoubleClick(MouseEventArgs e, object dataItem)
-        {
-            if (!OnBodyRowDoubleClick.HasDelegate)
-                return;
-
-            await OnBodyRowDoubleClick.InvokeAsync(new GridInputDataEventArgs(this, e, dataItem));
-        }
-
-        private async Task RaiseOnBodyRowClick(MouseEventArgs e, object dataItem)
-        {
-            if (!OnBodyRowClick.HasDelegate)
-                return;
-
-            await OnBodyRowClick.InvokeAsync(new GridInputDataEventArgs(this, e, dataItem));
-        }
-
-        private async Task RaiseOnRowDetailsButtonClick(CandyGridColumn col, MouseEventArgs e, object dataItem)
-        {
-            var callback = col.OnDetailsButtonClick;
-            if (!callback.HasDelegate) return;
-            await callback.InvokeAsync(new GridInputDataEventArgs(this, e, dataItem));
-        }
-
-        private async Task RaiseOnRowEditButtonClick(CandyGridColumn col, MouseEventArgs e, object dataItem)
-        {
-            var callback = col.OnEditButtonClick;
-            if (!callback.HasDelegate) return;
-            await callback.InvokeAsync(new GridInputDataEventArgs(this, e, dataItem));
-        }
-
-        private async Task RaiseOnRowDeleteButtonClick(CandyGridColumn col, MouseEventArgs e, object dataItem)
-        {
-            var callback = col.OnDeleteButtonClick;
-            if (!callback.HasDelegate) return;
-            await callback.InvokeAsync(new GridInputDataEventArgs(this, e, dataItem));
-        }
-
-        private async Task RaiseOnCellCheckedChanged(CandyGridColumn col, ChangeEventArgs e, object dataItem)
-        {
-            var callback = col.OnCellCheckedChanged;
-            if (!callback.HasDelegate) return;
-            var isChecked = (bool)e.Value;
-            await callback.InvokeAsync(new GridCellCheckedEventArgs(this, col, dataItem, isChecked));
+            QueueDataUpdate();
         }
 
         private CandyGridColumn[] GenerateColumnsFromType(Type t)

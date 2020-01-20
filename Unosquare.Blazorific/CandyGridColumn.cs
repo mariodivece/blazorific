@@ -70,16 +70,16 @@
         public string CssClass { get; set; } = "candygrid-cell clearfix";
 
         [Parameter]
-        public EventCallback<GridInputDataEventArgs> OnDeleteButtonClick { get; set; }
+        public Action<GridInputDataEventArgs> OnDeleteButtonClick { get; set; }
 
         [Parameter]
-        public EventCallback<GridInputDataEventArgs> OnDetailsButtonClick { get; set; }
+        public Action<GridInputDataEventArgs> OnDetailsButtonClick { get; set; }
 
         [Parameter]
-        public EventCallback<GridInputDataEventArgs> OnEditButtonClick { get; set; }
+        public Action<GridInputDataEventArgs> OnEditButtonClick { get; set; }
 
         [Parameter]
-        public EventCallback<GridCellCheckedEventArgs> OnCellCheckedChanged { get; set; }
+        public Action<GridCellCheckedEventArgs> OnCellCheckedChanged { get; set; }
 
         public GridDataFilter Filter { get; } = new GridDataFilter();
 

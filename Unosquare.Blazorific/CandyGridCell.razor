@@ -1,0 +1,107 @@
+﻿<td>
+    @if (Column.DataTemplate != null)
+    {
+        @Column.DataTemplate(DataItem)
+    }
+    else
+    {
+        <div class="@Column.CssClass">
+            @{
+                var showButtonGroup = Column.OnDeleteButtonClick != null ||
+                    Column.OnDetailsButtonClick != null ||
+                    Column.OnEditButtonClick != null;
+            }
+
+            @if (showButtonGroup)
+            {
+                <div class="btn-group btn-group-sm candygrid-btn-group-sm mr-2 float-left"
+                     @onclick:stopPropagation="true"
+                     @ondblclick:stopPropagation="true">
+                    @if (Column.OnDetailsButtonClick != null)
+                    {
+                        <button class="btn btn-info" type="button" title="Details"
+                                @onclick="e => RaiseOnRowButtonClick(e, GridEventType.Details)">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    }
+
+                    @if (Column.OnEditButtonClick != null)
+                    {
+                        <button class="btn btn-warning" type="button" title="Edit"
+                                @onclick="e => RaiseOnRowButtonClick(e, GridEventType.Edit)">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    }
+
+                    @if (Column.OnDeleteButtonClick != null)
+                    {
+                        <button class="btn btn-danger " type="button" title="Delete"
+                                @onclick="e => RaiseOnRowButtonClick(e, GridEventType.Delete)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    }
+                </div>
+            }
+
+            @if (Column.OnCellCheckedChanged != null)
+            {
+                <label class="custom-control custom-checkbox mb-0 float-left mr-1"
+                       @onclick:stopPropagation="true"
+                       @ondblclick:stopPropagation="true">
+                    <input type="checkbox" class="custom-control-input"
+                           @onchange="e => RaiseOnCellCheckedChanged(e)">
+                    <span class="custom-control-label">@Column.GetFormattedValue(DataItem)</span>
+                </label>
+            }
+            else
+            {
+                <div class="float-left">@Column.GetFormattedValue(DataItem)</div>
+            }
+        </div>
+    }
+</td>
+@code {
+
+    private enum GridEventType
+    {
+        Details,
+        Edit,
+        Delete,
+    }
+
+    [CascadingParameter(Name = nameof(Parent))]
+    private CandyGrid Parent { get; set; }
+
+    [CascadingParameter(Name = nameof(Column))]
+    private CandyGridColumn Column { get; set; }
+
+    [CascadingParameter(Name = nameof(DataItem))]
+    private object DataItem { get; set; }
+
+    private void RaiseOnRowButtonClick(MouseEventArgs e, GridEventType eventType)
+    {
+        var callback = eventType switch
+        {
+            GridEventType.Edit => Column.OnEditButtonClick,
+            GridEventType.Delete => Column.OnDeleteButtonClick,
+            _ => Column.OnDetailsButtonClick
+        };
+
+        if (callback == null) return;
+
+        Console.WriteLine($"GRID EVENT. {eventType}.");
+        var gridEvent = new GridInputDataEventArgs(Parent, e, DataItem);
+        callback?.Invoke(gridEvent);
+        if (gridEvent.NotifyStateChanged)
+            Parent.NotifyStateChanged();
+    }
+
+    private void RaiseOnCellCheckedChanged(ChangeEventArgs e)
+    {
+        Console.WriteLine($"GRID EVENT. {nameof(Column.OnCellCheckedChanged)}.");
+        var gridEvent = new GridCellCheckedEventArgs(Parent, Column, DataItem, (bool)e.Value);
+        Column.OnCellCheckedChanged?.Invoke(gridEvent);
+        if (gridEvent.NotifyStateChanged)
+            Parent.NotifyStateChanged();
+    }
+}

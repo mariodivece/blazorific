@@ -76,70 +76,9 @@
                     {
                         @foreach (var item in DataItems)
                         {
-                            <tr @ondblclick="async (e) => await RaiseOnBodyRowDoubleClick(e, item)"
-                                @onclick="async (e) => await RaiseOnBodyRowClick(e, item)">
-                                @foreach (var col in Columns)
-                                {
-                                    <td>
-                                        @if (col.DataTemplate != null)
-                                        {
-                                            @col.DataTemplate(item)
-                                        }
-                                        else
-                                        {
-                                        <div class="@col.CssClass">
-                                            @{
-                                                var showButtonGroup = col.OnDeleteButtonClick.HasDelegate ||
-                                                    col.OnDetailsButtonClick.HasDelegate ||
-                                                    col.OnEditButtonClick.HasDelegate;
-                                            }
-
-                                            @if (showButtonGroup)
-                                            {
-                                                <div class="btn-group btn-group-sm candygrid-btn-group-sm mr-2 float-left">
-                                                    @if (col.OnDetailsButtonClick.HasDelegate)
-                                                    {
-                                                        <button class="btn btn-info" type="button" title="Details"
-                                                                @onclick="async (e) => await RaiseOnRowDetailsButtonClick(col, e, item)">
-                                                            <i class="fas fa-ellipsis-h"></i>
-                                                        </button>
-                                                    }
-
-                                                    @if (col.OnEditButtonClick.HasDelegate)
-                                                    {
-                                                        <button class="btn btn-warning" type="button" title="Edit"
-                                                                @onclick="async (e) => await RaiseOnRowEditButtonClick(col, e, item)">
-                                                            <i class="fas fa-pen"></i>
-                                                        </button>
-                                                    }
-
-                                                    @if (col.OnDeleteButtonClick.HasDelegate)
-                                                    {
-                                                        <button class="btn btn-danger " type="button" title="Delete"
-                                                                @onclick="async (e) => await RaiseOnRowDeleteButtonClick(col, e, item)">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    }
-                                                </div>
-                                            }
-
-                                            @if (col.OnCellCheckedChanged.HasDelegate)
-                                            {
-                                                <label class="custom-control custom-checkbox mb-0 float-left mr-1">
-                                                    <input type="checkbox" class="custom-control-input"
-                                                           @onchange="async (e) => await RaiseOnCellCheckedChanged(col, e, item)">
-                                                    <span class="custom-control-label">@col.GetFormattedValue(item)</span>
-                                                </label>
-                                            }
-                                            else
-                                            {
-                                                <div class="float-left">@col.GetFormattedValue(item)</div>
-                                            }
-                                        </div>
-                                        }
-                                    </td>
-                                }
-                            </tr>
+                            <CascadingValue Name="DataItem" Value="item">
+                                <CandyGridRow />
+                            </CascadingValue>
                         }
                     }
                 </tbody>

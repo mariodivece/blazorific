@@ -49,6 +49,7 @@
 
     private void OnDetailsButtonClick(GridInputDataEventArgs e)
     {
+        e.NotifyStateChanged = true;
         Console.WriteLine($"Clicked DETAILS for ID: {(e.DataItem as Product)?.ProductId}");
     }
 
