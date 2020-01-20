@@ -16,7 +16,10 @@
             </div>
         </ToolbarTemplate>
         <CandyGridColumns>
-            <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" IsSortable="true" />
+            <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" IsSortable="true"
+                             OnDetailsButtonClick="OnDetailsButtonClick"
+                             OnEditButtonClick="OnEditButtonClick"
+                             OnCellCheckedChanged="OnCellCheckChanged"/>
             <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" IsSearchable="true">
                 <HeaderTemplate>
                     @($"Field: {context.Field}")
@@ -36,13 +39,32 @@
 </div>
 
 @code{
-    protected void OnBodyRowDoubleClick(GridInputEventArgs<object> e)
+    private void OnBodyRowDoubleClick(GridInputDataEventArgs e)
     {
-        var product = e.Argument as Product;
+        var product = e.DataItem as Product;
         if (product == null)
             return;
 
         Console.WriteLine($"Item on {product.ProductId} Double clicked");
         product.Name = "Item was clicked!";
+    }
+
+    private void OnDetailsButtonClick(GridInputDataEventArgs e)
+    {
+        Console.WriteLine($"Clicked DETAILS for ID: {(e.DataItem as Product)?.ProductId}");
+    }
+
+    private void OnEditButtonClick(GridInputDataEventArgs e)
+    {
+        Console.WriteLine($"Clicked EDIT for ID: {(e.DataItem as Product)?.ProductId}");
+    }
+
+    private void OnCellCheckChanged(GridCellCheckedEventArgs e)
+    {
+        var product = e.DataItem as Product;
+        if (product == null)
+            return;
+
+        Console.WriteLine($"Checkd Change for ID: {product.ProductId}. Column: {e.Column.Field}. Value: {e.IsChecked}");
     }
 }

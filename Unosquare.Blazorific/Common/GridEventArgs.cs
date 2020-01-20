@@ -13,15 +13,26 @@
         public CandyGrid Sender { get; }
     }
 
-    public class GridEventArgs<T> : GridEventArgs
+    public class GridExceptionEventArgs : GridEventArgs
     {
-        public GridEventArgs(CandyGrid sender, T argument)
+        public GridExceptionEventArgs(CandyGrid sender, Exception exception)
             : base(sender)
         {
-            Argument = argument;
+            Exception = exception;
         }
 
-        public T Argument { get; }
+        public Exception Exception { get; }
+    }
+
+    public class GridDataEventArgs : GridEventArgs
+    {
+        public GridDataEventArgs(CandyGrid sender, object dataItem)
+            : base(sender)
+        {
+            DataItem = dataItem;
+        }
+
+        public object DataItem { get; }
     }
 
     public class GridInputEventArgs : GridEventArgs
@@ -35,14 +46,28 @@
         public MouseEventArgs Input { get; }
     }
 
-    public class GridInputEventArgs<T> : GridInputEventArgs
+    public class GridInputDataEventArgs : GridInputEventArgs
     {
-        public GridInputEventArgs(CandyGrid sender, MouseEventArgs input, T argument)
+        public GridInputDataEventArgs(CandyGrid sender, MouseEventArgs input, object dataItem)
             : base(sender, input)
         {
-            Argument = argument;
+            DataItem = dataItem;
         }
 
-        public T Argument { get; }
+        public object DataItem { get; }
+    }
+
+    public class GridCellCheckedEventArgs : GridDataEventArgs
+    {
+        public GridCellCheckedEventArgs(CandyGrid sender, CandyGridColumn column, object dataItem, bool isChecked)
+            : base(sender, dataItem)
+        {
+            IsChecked = isChecked;
+            Column = column;
+        }
+
+        public bool IsChecked { get; }
+
+        public CandyGridColumn Column { get; }
     }
 }

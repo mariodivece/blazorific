@@ -69,6 +69,18 @@
         [Parameter]
         public string CssClass { get; set; } = "candygrid-cell clearfix";
 
+        [Parameter]
+        public EventCallback<GridInputDataEventArgs> OnDeleteButtonClick { get; set; }
+
+        [Parameter]
+        public EventCallback<GridInputDataEventArgs> OnDetailsButtonClick { get; set; }
+
+        [Parameter]
+        public EventCallback<GridInputDataEventArgs> OnEditButtonClick { get; set; }
+
+        [Parameter]
+        public EventCallback<GridCellCheckedEventArgs> OnCellCheckedChanged { get; set; }
+
         public GridDataFilter Filter { get; } = new GridDataFilter();
 
         [CascadingParameter(Name = nameof(Parent))]

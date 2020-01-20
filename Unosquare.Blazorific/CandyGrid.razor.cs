@@ -73,10 +73,10 @@
                 if (value == null)
                     throw new InvalidOperationException($"The {nameof(DataAdapter)} cannot be set to null.");
 
-                if (m_DataAdapter != null)
+                if (m_DataAdapter != null && value.DataItemType != m_DataAdapter.DataItemType)
                     throw new InvalidOperationException($"The {nameof(DataAdapter)} cannot be changed once it has been set.");
 
-                if (value == m_DataAdapter)
+                if (value == m_DataAdapter || (m_DataAdapter != null && m_DataAdapter.DataItemType == value.DataItemType))
                     return;
 
                 m_DataAdapter = value;
@@ -125,16 +125,16 @@
         #region Parameters: Event Callbacks
 
         [Parameter]
-        public EventCallback<GridInputEventArgs<object>> OnBodyRowDoubleClick { get; set; }
+        public EventCallback<GridInputDataEventArgs> OnBodyRowDoubleClick { get; set; }
 
         [Parameter]
-        public EventCallback<GridInputEventArgs<object>> OnBodyRowClick { get; set; }
+        public EventCallback<GridInputDataEventArgs> OnBodyRowClick { get; set; }
 
         [Parameter]
         public EventCallback<GridEventArgs> OnDataLoaded { get; set; }
 
         [Parameter]
-        public EventCallback<GridEventArgs<Exception>> OnDataLoadFailed { get; set; }
+        public EventCallback<GridExceptionEventArgs> OnDataLoadFailed { get; set; }
 
         #endregion
 
@@ -281,7 +281,7 @@
             {
                 Console.WriteLine($"Failed to update {nameof(CandyGrid)}: {ex.Message} - {ex.StackTrace}");
                 if (OnDataLoadFailed.HasDelegate)
-                    await OnDataLoadFailed.InvokeAsync(new GridEventArgs<Exception>(this, ex));
+                    await OnDataLoadFailed.InvokeAsync(new GridExceptionEventArgs(this, ex));
             }
             finally
             {
@@ -307,7 +307,7 @@
             if (!OnBodyRowDoubleClick.HasDelegate)
                 return;
 
-            await OnBodyRowDoubleClick.InvokeAsync(new GridInputEventArgs<object>(this, e, dataItem));
+            await OnBodyRowDoubleClick.InvokeAsync(new GridInputDataEventArgs(this, e, dataItem));
         }
 
         private async Task RaiseOnBodyRowClick(MouseEventArgs e, object dataItem)
@@ -315,7 +315,36 @@
             if (!OnBodyRowClick.HasDelegate)
                 return;
 
-            await OnBodyRowClick.InvokeAsync(new GridInputEventArgs<object>(this, e, dataItem));
+            await OnBodyRowClick.InvokeAsync(new GridInputDataEventArgs(this, e, dataItem));
+        }
+
+        private async Task RaiseOnRowDetailsButtonClick(CandyGridColumn col, MouseEventArgs e, object dataItem)
+        {
+            var callback = col.OnDetailsButtonClick;
+            if (!callback.HasDelegate) return;
+            await callback.InvokeAsync(new GridInputDataEventArgs(this, e, dataItem));
+        }
+
+        private async Task RaiseOnRowEditButtonClick(CandyGridColumn col, MouseEventArgs e, object dataItem)
+        {
+            var callback = col.OnEditButtonClick;
+            if (!callback.HasDelegate) return;
+            await callback.InvokeAsync(new GridInputDataEventArgs(this, e, dataItem));
+        }
+
+        private async Task RaiseOnRowDeleteButtonClick(CandyGridColumn col, MouseEventArgs e, object dataItem)
+        {
+            var callback = col.OnDeleteButtonClick;
+            if (!callback.HasDelegate) return;
+            await callback.InvokeAsync(new GridInputDataEventArgs(this, e, dataItem));
+        }
+
+        private async Task RaiseOnCellCheckedChanged(CandyGridColumn col, ChangeEventArgs e, object dataItem)
+        {
+            var callback = col.OnCellCheckedChanged;
+            if (!callback.HasDelegate) return;
+            var isChecked = (bool)e.Value;
+            await callback.InvokeAsync(new GridCellCheckedEventArgs(this, col, dataItem, isChecked));
         }
 
         private CandyGridColumn[] GenerateColumnsFromType(Type t)

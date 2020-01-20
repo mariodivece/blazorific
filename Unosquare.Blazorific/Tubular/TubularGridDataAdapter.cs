@@ -1,7 +1,6 @@
 ﻿namespace Unosquare.Blazorific.Tubular
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Reflection;

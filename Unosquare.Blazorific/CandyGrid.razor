@@ -42,7 +42,7 @@
                     @if (DataItems == null || DataItems.Count == 0)
                     {
                         <tr>
-                            <td colspan="@Columns.Count">
+                            <td colspan="@(Columns.Count)">
                                 @if (IsLoading)
                                 {
                                     if (LoadingRecordsTemplate != null)
@@ -76,8 +76,8 @@
                     {
                         @foreach (var item in DataItems)
                         {
-                            <tr @ondblclick="(async (e) => await RaiseOnBodyRowDoubleClick(e, item))"
-                                @onclick="(async (e) => await RaiseOnBodyRowClick(e, item))">
+                            <tr @ondblclick="async (e) => await RaiseOnBodyRowDoubleClick(e, item)"
+                                @onclick="async (e) => await RaiseOnBodyRowClick(e, item)">
                                 @foreach (var col in Columns)
                                 {
                                     <td>
@@ -87,28 +87,55 @@
                                         }
                                         else
                                         {
-                                            <div class="@col.CssClass">
-                                                <!--
+                                        <div class="@col.CssClass">
+                                            @{
+                                                var showButtonGroup = col.OnDeleteButtonClick.HasDelegate ||
+                                                    col.OnDetailsButtonClick.HasDelegate ||
+                                                    col.OnEditButtonClick.HasDelegate;
+                                            }
 
-                                                // Needs clearfix in parent container
+                                            @if (showButtonGroup)
+                                            {
                                                 <div class="btn-group btn-group-sm candygrid-btn-group-sm mr-2 float-left">
-                                                    <button class="btn btn-info" type="button" title="Go to details">
-                                                        <i class="fas fa-ellipsis-h"></i>
-                                                    </button>
-                                                    <button class="btn btn-warning" type="button" title="Edit">
-                                                        <i class="fas fa-pen"></i>
-                                                    </button>
-                                                    <button class="btn btn-danger " type="button" title="Delete">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
+                                                    @if (col.OnDetailsButtonClick.HasDelegate)
+                                                    {
+                                                        <button class="btn btn-info" type="button" title="Details"
+                                                                @onclick="async (e) => await RaiseOnRowDetailsButtonClick(col, e, item)">
+                                                            <i class="fas fa-ellipsis-h"></i>
+                                                        </button>
+                                                    }
+
+                                                    @if (col.OnEditButtonClick.HasDelegate)
+                                                    {
+                                                        <button class="btn btn-warning" type="button" title="Edit"
+                                                                @onclick="async (e) => await RaiseOnRowEditButtonClick(col, e, item)">
+                                                            <i class="fas fa-pen"></i>
+                                                        </button>
+                                                    }
+
+                                                    @if (col.OnDeleteButtonClick.HasDelegate)
+                                                    {
+                                                        <button class="btn btn-danger " type="button" title="Delete"
+                                                                @onclick="async (e) => await RaiseOnRowDeleteButtonClick(col, e, item)">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    }
                                                 </div>
+                                            }
+
+                                            @if (col.OnCellCheckedChanged.HasDelegate)
+                                            {
                                                 <label class="custom-control custom-checkbox mb-0 float-left mr-1">
-                                                    <input type="checkbox" class="custom-control-input">
-                                                    <span class="custom-control-label">KB 4320</span>
+                                                    <input type="checkbox" class="custom-control-input"
+                                                           @onchange="async (e) => await RaiseOnCellCheckedChanged(col, e, item)">
+                                                    <span class="custom-control-label">@col.GetFormattedValue(item)</span>
                                                 </label>
-                                                -->
-                                                <div class="text-nowrap text-truncate">@col.GetFormattedValue(item)</div>
-                                            </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="float-left">@col.GetFormattedValue(item)</div>
+                                            }
+                                        </div>
                                         }
                                     </td>
                                 }
