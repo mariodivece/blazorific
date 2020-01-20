@@ -1,6 +1,6 @@
 ﻿namespace Unosquare.Blazorific.Common
 {
-    public class GridDataColumn : IGridColumn
+    public class GridDataColumn : IGridDataColumn
     {
         public string Name { get; set; }
 

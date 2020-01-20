@@ -1,6 +1,6 @@
 ﻿namespace Unosquare.Blazorific.Common
 {
-    public interface IGridColumn
+    public interface IGridDataColumn
     {
         string Name { get; }
 

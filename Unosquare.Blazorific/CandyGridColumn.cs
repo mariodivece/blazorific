@@ -7,7 +7,7 @@
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
 
-    public class CandyGridColumn : IComponent, IGridColumn
+    public class CandyGridColumn : IComponent, IGridDataColumn
     {
         private static readonly int MinSortDirection = Enum.GetValues(typeof(SortDirection)).Cast<int>().Min();
         private static readonly int MaxSortDirection = Enum.GetValues(typeof(SortDirection)).Cast<int>().Max();
@@ -74,13 +74,11 @@
         [CascadingParameter(Name = nameof(Parent))]
         protected CandyGrid Parent { get; set; }
 
-        internal IPropertyProxy Property { get; set; }
+        string IGridDataColumn.Name => Field;
 
-        string IGridColumn.Name => Field;
+        bool IGridDataColumn.Sortable => IsSortable;
 
-        bool IGridColumn.Sortable => IsSortable;
-
-        bool IGridColumn.Searchable => IsSearchable;
+        bool IGridDataColumn.Searchable => IsSearchable;
 
         public void ChangeSortDirection(bool multiColumnSorting)
         {

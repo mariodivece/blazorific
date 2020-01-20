@@ -1,11 +1,11 @@
 ﻿namespace Unosquare.Blazorific.Common
 {
     using System;
-    using System.Collections;
+    using System.Collections.Generic;
 
     public class GridDataResponse
     {
-        public IEnumerable DataItems { get; set; }
+        public IReadOnlyList<object> DataItems { get; set; }
 
         public Type DataItemType { get; set; }
 

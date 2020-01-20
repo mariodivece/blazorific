@@ -84,7 +84,7 @@
         /// <param name="obj">The instance.</param>
         /// <returns>A dictionary with property names as keys and <see cref="IPropertyProxy"/> objects as values.</returns>
         public static Dictionary<string, IPropertyProxy> PropertyProxies<T>(this T obj) =>
-            typeof(T).PropertyProxies();
+            (obj?.GetType() ?? typeof(T)).PropertyProxies();
 
         /// <summary>
         /// Gets the property proxy given the property name.
@@ -93,7 +93,10 @@
         /// <param name="propertyName">Name of the property.</param>
         /// <returns>The associated <see cref="IPropertyProxy"/></returns>
         public static IPropertyProxy PropertyProxy(this Type t, string propertyName)
-            => t.PropertyProxies()[propertyName];
+        {
+            var proxies = t.PropertyProxies();
+            return proxies.ContainsKey(propertyName) ? proxies[propertyName] : null;
+        }
 
         /// <summary>
         /// Gets the property proxy given the property name.
@@ -103,7 +106,11 @@
         /// <param name="propertyName">Name of the property.</param>
         /// <returns>The associated <see cref="IPropertyProxy"/></returns>
         public static IPropertyProxy PropertyProxy<T>(this T obj, string propertyName)
-            => typeof(T).PropertyProxies()[propertyName];
+        {
+            var proxies = (obj?.GetType() ?? typeof(T)).PropertyProxies();
+            return proxies.ContainsKey(propertyName) ? proxies[propertyName] : null;
+        }
+
 
         /// <summary>
         /// Gets the property proxy given the property name as an expression.
@@ -114,49 +121,66 @@
         /// <param name="propertyExpression">The property expression.</param>
         /// <returns>The associated <see cref="IPropertyProxy"/></returns>
         public static IPropertyProxy PropertyProxy<T, V>(this T obj, Expression<Func<T, V>> propertyExpression)
-            => typeof(T).PropertyProxies()[propertyExpression.PropertyName()];
+        {
+            var proxies = (obj?.GetType() ?? typeof(T)).PropertyProxies();
+            var propertyName = propertyExpression.PropertyName();
+            return proxies.ContainsKey(propertyName) ? proxies[propertyName] : null;
+        }
+
 
         /// <summary>
         /// Reads the property value.
         /// </summary>
         /// <typeparam name="T">The type to get property proxies from.</typeparam>
         /// <typeparam name="V">The type of the property.</typeparam>
-        /// <param name="instance">The instance.</param>
+        /// <param name="obj">The instance.</param>
         /// <param name="propertyExpression">The property expression.</param>
         /// <returns>The value obtained from the associated <see cref="IPropertyProxy"/></returns>
-        public static V ReadProperty<T, V>(this T instance, Expression<Func<T, V>> propertyExpression) =>
-            (V)typeof(T).PropertyProxies()[propertyExpression.PropertyName()].GetValue(instance);
+        public static V ReadProperty<T, V>(this T obj, Expression<Func<T, V>> propertyExpression)
+        {
+            var proxy = obj.PropertyProxy(propertyExpression);
+            return (V)(proxy?.GetValue(obj) ?? default);
+        }
 
         /// <summary>
         /// Reads the property value.
         /// </summary>
         /// <typeparam name="T">The type to get property proxies from.</typeparam>
-        /// <param name="instance">The instance.</param>
+        /// <param name="obj">The instance.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <returns>The value obtained from the associated <see cref="IPropertyProxy"/></returns>
-        public static object ReadProperty<T>(this T instance, string propertyName) =>
-            typeof(T).PropertyProxies()[propertyName].GetValue(instance);
+        public static object ReadProperty<T>(this T obj, string propertyName)
+        {
+            var proxy = obj.PropertyProxy(propertyName);
+            return proxy?.GetValue(obj) ?? default;
+        }
 
         /// <summary>
         /// Writes the property value.
         /// </summary>
         /// <typeparam name="T">The type to get property proxies from.</typeparam>
         /// <typeparam name="V">The type of the property.</typeparam>
-        /// <param name="instance">The instance.</param>
+        /// <param name="obj">The instance.</param>
         /// <param name="propertyExpression">The property expression.</param>
         /// <param name="value">The value.</param>
-        public static void WriteProperty<T, V>(this T instance, Expression<Func<T, V>> propertyExpression, V value) =>
-            typeof(T).PropertyProxies()[propertyExpression.PropertyName()].SetValue(instance, value);
+        public static void WriteProperty<T, V>(this T obj, Expression<Func<T, V>> propertyExpression, V value)
+        {
+            var proxy = obj.PropertyProxy(propertyExpression);
+            proxy?.SetValue(obj, value);
+        }
 
         /// <summary>
         /// Writes the property value using the property proxy.
         /// </summary>
         /// <typeparam name="T">The type to get property proxies from.</typeparam>
-        /// <param name="instance">The instance.</param>
+        /// <param name="obj">The instance.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="value">The value.</param>
-        public static void WriteProperty<T>(this T instance, string propertyName, object value) =>
-            typeof(T).PropertyProxies()[propertyName].SetValue(instance, value);
+        public static void WriteProperty<T>(this T obj, string propertyName, object value)
+        {
+            var proxy = obj.PropertyProxy(propertyName);
+            proxy?.SetValue(obj, value);
+        }
 
         private static string PropertyName<T, V>(this Expression<Func<T, V>> propertyExpression)
         {

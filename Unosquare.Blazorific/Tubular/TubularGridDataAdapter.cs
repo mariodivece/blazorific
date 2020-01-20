@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Reflection;
     using System.Text;
@@ -50,9 +51,9 @@
             };
         }
 
-        private IList ParsePayload(TubularGridDataResponse response)
+        private IReadOnlyList<object> ParsePayload(TubularGridDataResponse response)
         {
-            var result = DataItemType.CreateGenericList();
+            var result = new List<object>();
             var props = DataItemType.PropertyProxies().Values;
 
             foreach (var itemData in response.Payload)

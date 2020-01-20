@@ -1,27 +1,24 @@
 ﻿namespace Unosquare.Blazorific.Common
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
 
     public static class Extensions
     {
-        internal static IGridColumn[] GetGridDataRequestColumns(this Type t, CandyGrid grid)
+        internal static IGridDataColumn[] GetGridDataRequestColumns(this CandyGrid grid)
         {
-            var properties = t.PropertyProxies().Values;
-            var result = new List<IGridColumn>(properties.Count);
+            var comparison = StringComparison.InvariantCultureIgnoreCase;
+            var properties = grid.DataAdapter.DataItemType.PropertyProxies().Values;
+            var result = new List<IGridDataColumn>(properties.Count);
 
             foreach (var property in properties)
             {
-                if (grid.Columns.FirstOrDefault(c => c.Property != null && c.Property.Name == property.Name) is IGridColumn column)
-                {
-                    result.Add(column);
-                    continue;
-                }
-
-                result.Add(new GridDataColumn
+                var column = grid.Columns
+                    .FirstOrDefault(c => property.Name.Equals(c.Field, comparison));
+                
+                result.Add(column as IGridDataColumn ?? new GridDataColumn
                 {
                     Name = property.Name,
                 });
@@ -53,11 +50,37 @@
 
         internal static object GetDefault(this Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
 
-        internal static IList CreateGenericList(this Type t)
+        internal static int ComputeTotalPages(int pageSize, int totalCount)
         {
-            var listType = typeof(List<>);
-            var constructedListType = listType.MakeGenericType(t);
-            return Activator.CreateInstance(constructedListType) as IList;
+            if (totalCount <= 0) return 0;
+            if (pageSize <= 0) return 1;
+
+            return (totalCount / pageSize) + (totalCount % pageSize > 0 ? 1 : 0);
+        }
+
+        internal static object GetColumnValue(this CandyGridColumn column, object dataItem)
+        {
+            if (column == null)
+                return null;
+
+            return !string.IsNullOrWhiteSpace(column.Field)
+                ? dataItem?.PropertyProxy(column.Field)?.GetValue(dataItem)
+                : null;
+        }
+
+        internal static string GetFormattedValue(this CandyGridColumn column, object dataItem)
+        {
+            var columnValue = column.GetColumnValue(dataItem);
+            if (columnValue == null) return column.EmptyDisplayString;
+
+            var stringValue = columnValue?.ToString() ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(column.FormatString))
+            {
+                try { stringValue = string.Format(column.FormatString, columnValue); }
+                catch { /* ignore */ }
+            }
+
+            return stringValue;
         }
     }
 }

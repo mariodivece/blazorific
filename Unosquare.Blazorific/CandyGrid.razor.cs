@@ -23,16 +23,12 @@
         private bool HasRendered;
         private bool IsProcessingQueue;
         private int PendingAdapterUpdates;
-        private int GridDataRequestIndex;
 
         private IGridDataAdapter m_DataAdapter;
-        private int m_RequestedPageSize = 20;
-        private int m_RequestedPageNumber = 1;
-
-        private List<object> DataItems;
 
         public CandyGrid()
         {
+            Request = new GridDataRequest(this);
             QueueProcessor = new Timer(async (s) =>
             {
                 var pendingUpdates = 0;
@@ -144,7 +140,7 @@
 
         public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
 
-        public IReadOnlyList<object> Data => DataItems;
+        public IReadOnlyList<object> DataItems { get; protected set; }
 
         public int PageNumber { get; protected set; }
 
@@ -162,33 +158,7 @@
 
         public bool IsLoading { get; protected set; }
 
-        private int RequestedPageSize
-        {
-            get => m_RequestedPageSize > 0 ? m_RequestedPageSize : -1;
-            set => m_RequestedPageSize = value;
-        }
-
-        private int RequestedPageNumber
-        {
-            get
-            {
-                var maxPageNumber = RequestedPageSize > 0
-                    ? ComputeTotalPages(RequestedPageSize, FilteredRecordCount)
-                    : 1;
-
-                return m_RequestedPageNumber < 1
-                    ? 1
-                    : m_RequestedPageNumber > maxPageNumber
-                    ? maxPageNumber
-                    : m_RequestedPageNumber;
-            }
-            set
-            {
-                m_RequestedPageNumber = value;
-            }
-        }
-
-        private GridDataFilter SearchFilter { get; } = new GridDataFilter();
+        private GridDataRequest Request { get; }
 
         public IReadOnlyList<T> GetData<T>() => DataItems?.Cast<T>()?.ToList();
 
@@ -207,9 +177,15 @@
             if (pageSize == PageSize)
                 return PageSize;
 
-            RequestedPageSize = pageSize;
-            QueueDataUpdate();
-            return RequestedPageSize;
+            try
+            {
+                Request.PageSize = pageSize;
+                return Request.PageSize;
+            }
+            finally
+            {
+                QueueDataUpdate();
+            }
         }
 
         public int ChangePageNumber(int pageNumber)
@@ -217,27 +193,33 @@
             if (pageNumber == PageNumber)
                 return PageNumber;
 
-            RequestedPageNumber = pageNumber;
-            QueueDataUpdate();
-            return RequestedPageNumber;
+            try
+            {
+                Request.PageNumber = pageNumber;
+                return Request.PageNumber;
+            }
+            finally
+            {
+                QueueDataUpdate();
+            }
         }
 
         public void ChangeSearchText(string searchText)
         {
-            SearchFilter.Text = searchText ?? string.Empty;
+            Request.Search.Text = searchText ?? string.Empty;
 
-            if (SearchFilter.Text.Length > 2)
+            if (Request.Search.Text.Length > 2)
             {
-                RequestedPageNumber = 1;
-                SearchFilter.Operator = CompareOperators.Auto;
+                Request.PageNumber = 1;
+                Request.Search.Operator = CompareOperators.Auto;
                 QueueDataUpdate();
                 return;
             }
 
-            if (SearchFilter.Operator != CompareOperators.None)
+            if (Request.Search.Operator != CompareOperators.None)
             {
-                RequestedPageNumber = 1;
-                SearchFilter.Operator = CompareOperators.None;
+                Request.PageNumber = 1;
+                Request.Search.Operator = CompareOperators.None;
                 QueueDataUpdate();
             }
         }
@@ -262,9 +244,9 @@
                     GenerateColumnsFromType(m_DataAdapter.DataItemType));
             }
 
-            IsLoading = true;
             try
             {
+                IsLoading = true;
                 if (DataAdapter == null)
                 {
                     DataItems = default;
@@ -275,27 +257,29 @@
                     return;
                 }
 
-                var request = CreateGridDataRequest();
-                var response = await DataAdapter.RetrieveDataAsync(request);
+                var response = await DataAdapter.RetrieveDataAsync(Request);
 
-                DataItems = new List<object>(response.DataItems.OfType<object>());
-                FilteredRecordCount = response.FilteredRecordCount;
-                TotalRecordCount = response.TotalRecordCount;
-
-                PageSize = request.Take <= 0 ? response.FilteredRecordCount : request.Take;
-                TotalPages = ComputeTotalPages(PageSize, response.FilteredRecordCount);
-
-                PageNumber = response.CurrentPage > TotalPages
-                    ? TotalPages
-                    : response.CurrentPage < 0
-                    ? 1
-                    : response.CurrentPage;
+                lock (SyncLock)
+                {
+                    Request.Counter++;
+                    DataItems = response.DataItems;
+                    FilteredRecordCount = response.FilteredRecordCount;
+                    TotalRecordCount = response.TotalRecordCount;
+                    PageSize = Request.PageSize <= 0 ? response.FilteredRecordCount : Request.PageSize;
+                    TotalPages = Extensions.ComputeTotalPages(PageSize, response.FilteredRecordCount);
+                    PageNumber = response.CurrentPage > TotalPages
+                        ? TotalPages
+                        : response.CurrentPage < 0
+                        ? 1
+                        : response.CurrentPage;
+                }
 
                 if (OnDataLoaded.HasDelegate)
                     await OnDataLoaded.InvokeAsync(new GridEventArgs(this));
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Failed to update {nameof(CandyGrid)}: {ex.Message} - {ex.StackTrace}");
                 if (OnDataLoadFailed.HasDelegate)
                     await OnDataLoadFailed.InvokeAsync(new GridEventArgs<Exception>(this, ex));
             }
@@ -318,41 +302,6 @@
             QueueProcessor.Change(QueueProcessorDueTimeMs, Timeout.Infinite);
         }
 
-        private object GetColumnValue(CandyGridColumn column, object dataItem)
-        {
-            if (string.IsNullOrWhiteSpace(column.Field))
-                return null;
-
-            if (dataItem == null)
-                return null;
-
-            var proxies = dataItem.GetType().PropertyProxies();
-            if (column.Property == null && !string.IsNullOrWhiteSpace(column.Field))
-            {
-                column.Property = proxies.ContainsKey(column.Field)
-                    ? proxies[column.Field]
-                    : null;
-            }
-
-            return column.Property?.GetValue(dataItem);
-        }
-
-        private GridDataRequest CreateGridDataRequest()
-        {
-            lock (SyncLock)
-            {
-                return new GridDataRequest
-                {
-                    Counter = GridDataRequestIndex++,
-                    Skip = Math.Max(0, RequestedPageNumber - 1) * RequestedPageSize,
-                    Take = RequestedPageSize,
-                    TimezoneOffset = (int)Math.Round(DateTime.UtcNow.Subtract(DateTime.Now).TotalMinutes, 0),
-                    Search = SearchFilter,
-                    Columns = DataAdapter.DataItemType.GetGridDataRequestColumns(this)
-                };
-            }
-        }
-
         private async Task RaiseOnBodyRowDoubleClick(MouseEventArgs e, object dataItem)
         {
             if (!OnBodyRowDoubleClick.HasDelegate)
@@ -367,40 +316,6 @@
                 return;
 
             await OnBodyRowClick.InvokeAsync(new GridInputEventArgs<object>(this, e, dataItem));
-        }
-
-        private int ComputeTotalPages(int pageSize, int totalCount)
-        {
-            if (totalCount <= 0) return 0;
-            if (pageSize <= 0) return totalCount;
-
-            return (totalCount / pageSize) + (totalCount % pageSize > 0 ? 1 : 0);
-        }
-
-        private string GetColumnValueText(CandyGridColumn col, object item)
-        {
-            var columnValue = GetColumnValue(col, item);
-            var stringValue = columnValue as string;
-
-            if (columnValue == null)
-            {
-                return col.EmptyDisplayString;
-            }
-
-            stringValue = columnValue?.ToString() ?? string.Empty;
-            if (!string.IsNullOrWhiteSpace(col.FormatString))
-            {
-                try
-                {
-                    stringValue = string.Format(col.FormatString, columnValue);
-                }
-                catch
-                {
-                    // ignore
-                }
-            }
-
-            return stringValue;
         }
 
         private CandyGridColumn[] GenerateColumnsFromType(Type t)
