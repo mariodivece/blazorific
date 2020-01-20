@@ -82,5 +82,12 @@
 
             return stringValue;
         }
+
+        internal static void Log(this string info, string source, string member)
+        {
+            var sourceFormat = $"{source,16}";
+            var memberFormat = $"{member,-22}";
+            Console.WriteLine($"DBG {sourceFormat}.{memberFormat} | {info}");
+        }
     }
 }

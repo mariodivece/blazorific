@@ -19,5 +19,7 @@
         public DateTime DateCreated { get; set; }
 
         public DateTime? DateModified { get; set; }
+
+        public bool IsChecked { get; set; }
     }
 }

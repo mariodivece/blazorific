@@ -23,6 +23,7 @@
         private bool HasRendered;
         private bool IsProcessingQueue;
         private int PendingAdapterUpdates;
+        private int PendingRenderUpdates;
         private DateTime LastRenderTime;
 
         private IGridDataAdapter m_DataAdapter;
@@ -32,28 +33,32 @@
             Request = new GridDataRequest(this);
             QueueProcessor = new Timer(async (s) =>
             {
-                var pendingUpdates = 0;
+                var pendingDataUpdates = 0;
+                var pendingRenderUpdates = 0;
                 lock (SyncLock)
                 {
                     if (IsProcessingQueue)
                         return;
 
                     IsProcessingQueue = true;
-                    pendingUpdates = PendingAdapterUpdates;
+                    pendingDataUpdates = PendingAdapterUpdates;
+                    pendingRenderUpdates = PendingRenderUpdates;
                 }
 
                 try
                 {
-                    if (pendingUpdates <= 0 || IsDisposed)
-                        return;
+                    if (pendingDataUpdates > 0 && !IsDisposed)
+                        await UpdateDataAsync();
 
-                    await UpdateDataAsync();
+                    if (pendingRenderUpdates > 0 && !IsDisposed)
+                        StateHasChanged();
                 }
                 finally
                 {
                     lock (SyncLock)
                     {
-                        PendingAdapterUpdates -= pendingUpdates;
+                        PendingAdapterUpdates -= pendingDataUpdates;
+                        PendingRenderUpdates -= pendingRenderUpdates;
                         IsProcessingQueue = false;
                     }
                 }
@@ -71,7 +76,7 @@
             }
             set
             {
-                Console.WriteLine("DataAdapter Rebound");
+                $"SET Called".Log(nameof(CandyGrid), nameof(DataAdapter));
                 if (value == null)
                     throw new InvalidOperationException($"The {nameof(DataAdapter)} cannot be set to null.");
 
@@ -174,6 +179,16 @@
             }
         }
 
+        public void QueueRenderUpdate()
+        {
+            lock (SyncLock)
+            {
+                if (IsDisposed) return;
+                PendingRenderUpdates++;
+                QueueProcessor.Change(QueueProcessorDueTimeMs, Timeout.Infinite);
+            }
+        }
+
         public int ChangePageSize(int pageSize)
         {
             if (pageSize == PageSize)
@@ -235,10 +250,8 @@
         internal void AddColumn(CandyGridColumn column)
         {
             m_Columns.Add(column);
-            StateHasChanged();
+            QueueRenderUpdate();
         }
-
-        internal void NotifyStateChanged() => StateHasChanged();
 
         private async Task UpdateDataAsync()
         {
@@ -282,7 +295,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to update {nameof(CandyGrid)}: {ex.Message} - {ex.StackTrace}");
+                $"Failed to update. {ex.Message} - {ex.StackTrace}".Log(nameof(CandyGrid), nameof(UpdateDataAsync));
                 OnDataLoadFailed?.Invoke(new GridExceptionEventArgs(this, ex));
             }
             finally
@@ -297,9 +310,10 @@
             var intervalDuration = LastRenderTime == default
                 ? 0
                 : DateTime.UtcNow.Subtract(LastRenderTime).TotalMilliseconds;
-
             LastRenderTime = DateTime.UtcNow;
-            Console.WriteLine($"GRID RENDER. {LastRenderTime.Minute:00}:{LastRenderTime.Second:00}:{LastRenderTime.Millisecond:000}. Interval: {intervalDuration:0.00}");
+            var currentRenderTime = $"{LastRenderTime.Minute:00}:{LastRenderTime.Second:00}:{LastRenderTime.Millisecond:000}";
+
+            $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago".Log(nameof(CandyGrid), nameof(OnAfterRender));
             await base.OnAfterRenderAsync(firstRender);
 
             if (!firstRender)
@@ -308,6 +322,12 @@
             HasRendered = true;
             await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
             QueueDataUpdate();
+        }
+
+        protected override void OnParametersSet()
+        {
+            base.OnParametersSet();
+            "CALLED".Log(nameof(CandyGrid), nameof(OnParametersSet));
         }
 
         private CandyGridColumn[] GenerateColumnsFromType(Type t)

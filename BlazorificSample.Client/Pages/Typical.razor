@@ -6,8 +6,8 @@
         <ToolbarTemplate>
             <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group btn-group-sm" role="group">
-                    <button class="btn btn-link" type="button" @onclick="context.QueueDataUpdate"><i class="fas fa-plus"></i>&nbsp;Add New</button>
-                    <button class="btn btn-link" type="button"><i class="far fa-check-square"></i>&nbsp;Select All</button>
+                    <button class="btn btn-link" type="button" @onclick="_ => context.QueueDataUpdate()"><i class="fas fa-plus"></i>&nbsp;Add New</button>
+                    <button class="btn btn-link" type="button" @onclick="_ => CheckAll(context)"><i class="far fa-check-square"></i>&nbsp;Select All</button>
                     <button class="btn btn-link" type="button"><i class="fas fa-print"></i>&nbsp;Print</button>
                     <button class="btn btn-link" type="button"><i class="fas fa-external-link-alt"></i>&nbsp;Export</button>
                 </div>
@@ -17,7 +17,7 @@
             <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" IsSortable="true"
                              OnDetailsButtonClick="OnDetailsButtonClick"
                              OnEditButtonClick="OnEditButtonClick"
-                             OnCellCheckedChanged="OnCellCheckChanged"/>
+                             OnCellCheckedChanged="OnCellCheckChanged" CheckedProperty="@nameof(Product.IsChecked)" />
             <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" IsSearchable="true" IsSortable="true">
                 <HeaderTemplate>
                     @($"Field: {context.Field}")
@@ -37,33 +37,43 @@
 </div>
 
 @code{
+    private void CheckAll(CandyGrid sender)
+    {
+        foreach (var item in sender.GetData<Product>())
+        {
+            item.IsChecked = true;
+        }
+    }
+
     private void OnBodyRowDoubleClick(GridInputDataEventArgs e)
     {
         var product = e.DataItem as Product;
-        if (product == null)
-            return;
+        if (product == null) return;
 
-        Console.WriteLine($"Item on {product.ProductId} Double clicked");
-        product.Name = "Item was clicked!";
+        product.Description = $"Item was {product.ProductId} double clicked!";
     }
 
     private void OnDetailsButtonClick(GridInputDataEventArgs e)
     {
-        e.NotifyStateChanged = true;
-        Console.WriteLine($"Clicked DETAILS for ID: {(e.DataItem as Product)?.ProductId}");
+        var product = e.DataItem as Product;
+        if (product == null) return;
+
+        product.Description = $"Details for item {product.ProductId} clicked. Show a modal or something!";
     }
 
     private void OnEditButtonClick(GridInputDataEventArgs e)
     {
-        Console.WriteLine($"Clicked EDIT for ID: {(e.DataItem as Product)?.ProductId}");
+        var product = e.DataItem as Product;
+        if (product == null) return;
+
+        product.Description = $"Product with ID = {product.ProductId} editing . . .";
     }
 
     private void OnCellCheckChanged(GridCellCheckedEventArgs e)
     {
         var product = e.DataItem as Product;
-        if (product == null)
-            return;
+        if (product == null) return;
 
-        Console.WriteLine($"Checkd Change for ID: {product.ProductId}. Column: {e.Column.Field}. Value: {e.IsChecked}");
+        product.Description = $"Product with ID = {product.ProductId}, on column {e.Column.Field} is now {(e.IsChecked ? "checked" : "unchecked")}.";
     }
 }

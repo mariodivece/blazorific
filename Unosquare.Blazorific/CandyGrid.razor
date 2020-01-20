@@ -1,6 +1,6 @@
 ﻿@inherits CandyComponentBase
 
-<CascadingValue Value="@this" Name="Parent">
+<CascadingValue Value="this" Name="Parent">
     @CandyGridColumns
 
     <div class="@RootCssClass">
@@ -42,7 +42,7 @@
                     @if (DataItems == null || DataItems.Count == 0)
                     {
                         <tr>
-                            <td colspan="@(Columns.Count)">
+                            <td colspan="@Columns.Count">
                                 @if (IsLoading)
                                 {
                                     if (LoadingRecordsTemplate != null)

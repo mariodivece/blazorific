@@ -184,9 +184,8 @@
 
         private static string PropertyName<T, V>(this Expression<Func<T, V>> propertyExpression)
         {
-            var memberExpression = propertyExpression.Body as MemberExpression == null
-                ? (propertyExpression.Body as UnaryExpression).Operand as MemberExpression
-                : propertyExpression.Body as MemberExpression;
+            var memberExpression = propertyExpression.Body as MemberExpression ??
+                (propertyExpression.Body as UnaryExpression).Operand as MemberExpression;
 
             return memberExpression.Member.Name;
         }

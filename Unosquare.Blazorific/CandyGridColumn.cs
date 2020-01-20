@@ -67,6 +67,9 @@
         public TextAlignment Alignment { get; set; } = TextAlignment.Auto;
 
         [Parameter]
+        public string CheckedProperty { get; set; }
+
+        [Parameter]
         public string CssClass { get; set; } = "candygrid-cell clearfix";
 
         [Parameter]

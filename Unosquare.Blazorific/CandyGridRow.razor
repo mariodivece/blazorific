@@ -1,13 +1,14 @@
-﻿<tr @ondblclick="e => RaiseOnBodyRowDoubleClick(e)"
-    @onclick="e => RaiseOnBodyRowClick(e)">
-    @foreach (var col in Parent.Columns)
-    {
-        <CascadingValue Name="Column" Value="col">
-            <CandyGridCell />
-        </CascadingValue>
-    }
-</tr>
-
+﻿<CascadingValue Name="Row" Value="this">
+    <tr @ondblclick="e => RaiseOnBodyRowDoubleClick(e)"
+        @onclick="e => RaiseOnBodyRowClick(e)">
+        @foreach (var col in Parent.Columns)
+        {
+            <CascadingValue Name="Column" Value="col">
+                <CandyGridCell />
+            </CascadingValue>
+        }
+    </tr>
+</CascadingValue>
 @code {
     [CascadingParameter(Name = nameof(Parent))]
     protected CandyGrid Parent { get; set; }
@@ -15,25 +16,17 @@
     [CascadingParameter(Name = nameof(DataItem))]
     protected object DataItem { get; set; }
 
+    internal void NotifyStateChanged() => StateHasChanged();
+
     protected void RaiseOnBodyRowDoubleClick(MouseEventArgs e)
     {
-        Console.WriteLine($"GRID EVENT. {nameof(Parent.OnBodyRowDoubleClick)}.");
-        var callback = Parent.OnBodyRowDoubleClick;
-        if (callback == null) return;
-        var gridEvent = new GridInputDataEventArgs(Parent, e, DataItem);
-        callback.Invoke(gridEvent);
-        if (gridEvent.NotifyStateChanged)
-            Parent.NotifyStateChanged();
+        $"EVENT".Log(nameof(CandyGridCell), $"On{nameof(Parent.OnBodyRowDoubleClick)}");
+        Parent.OnBodyRowDoubleClick?.Invoke(new GridInputDataEventArgs(Parent, e, DataItem));
     }
 
     protected void RaiseOnBodyRowClick(MouseEventArgs e)
     {
-        Console.WriteLine($"GRID EVENT. {nameof(Parent.OnBodyRowClick)}.");
-        var callback = Parent.OnBodyRowClick;
-        if (callback == null) return;
-        var gridEvent = new GridInputDataEventArgs(Parent, e, DataItem);
-        callback.Invoke(gridEvent);
-        if (gridEvent.NotifyStateChanged)
-            Parent.NotifyStateChanged();
+        $"EVENT".Log(nameof(CandyGridCell), $"On{nameof(Parent.OnBodyRowClick)}");
+        Parent.OnBodyRowClick?.Invoke(new GridInputDataEventArgs(Parent, e, DataItem));
     }
 }

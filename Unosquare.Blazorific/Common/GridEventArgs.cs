@@ -11,8 +11,6 @@
         }
 
         public CandyGrid Sender { get; }
-
-        public bool NotifyStateChanged { get; set; }
     }
 
     public class GridExceptionEventArgs : GridEventArgs
