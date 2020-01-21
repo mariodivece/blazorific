@@ -18,6 +18,7 @@
         private readonly object SyncLock = new object();
         private readonly Timer QueueProcessor;
         private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
+        private readonly List<CandyGridRow> m_Rows = new List<CandyGridRow>(1024);
 
         private bool IsDisposed;
         private bool HasRendered;
@@ -132,10 +133,10 @@
         #region Parameters: Event Callbacks
 
         [Parameter]
-        public Action<GridInputDataEventArgs> OnBodyRowDoubleClick { get; set; }
+        public Action<GridRowMouseEventArgs> OnBodyRowDoubleClick { get; set; }
 
         [Parameter]
-        public Action<GridInputDataEventArgs> OnBodyRowClick { get; set; }
+        public Action<GridRowMouseEventArgs> OnBodyRowClick { get; set; }
 
         [Parameter]
         public Action<GridEventArgs> OnDataLoaded { get; set; }
@@ -146,6 +147,8 @@
         #endregion
 
         public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
+
+        public IReadOnlyList<CandyGridRow> Rows => m_Rows;
 
         public IReadOnlyList<object> DataItems { get; protected set; }
 
@@ -250,7 +253,25 @@
         internal void AddColumn(CandyGridColumn column)
         {
             m_Columns.Add(column);
+            Console.WriteLine($"ColumnCount: {m_Columns.Count}");
             QueueRenderUpdate();
+        }
+
+        internal int AddRow(CandyGridRow row)
+        {
+            m_Rows.Add(row);
+            return m_Rows.Count - 1;
+        }
+            
+
+        internal void RemoveRow(CandyGridRow row)
+        {
+            var rowIndex = row == m_Rows[row.RowIndex]
+                ? row.RowIndex
+                : m_Rows.IndexOf(row);
+
+            if (rowIndex < 0) return;
+            m_Rows.RemoveAt(rowIndex);
         }
 
         private async Task UpdateDataAsync()

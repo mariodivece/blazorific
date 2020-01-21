@@ -5,18 +5,18 @@
 
     public class GridEventArgs : EventArgs
     {
-        public GridEventArgs(CandyGrid sender)
+        public GridEventArgs(CandyGrid grid)
         {
-            Sender = sender;
+            Grid = grid;
         }
 
-        public CandyGrid Sender { get; }
+        public CandyGrid Grid { get; }
     }
 
     public class GridExceptionEventArgs : GridEventArgs
     {
-        public GridExceptionEventArgs(CandyGrid sender, Exception exception)
-            : base(sender)
+        public GridExceptionEventArgs(CandyGrid grid, Exception exception)
+            : base(grid)
         {
             Exception = exception;
         }
@@ -24,50 +24,38 @@
         public Exception Exception { get; }
     }
 
-    public class GridDataEventArgs : GridEventArgs
+    public class GridRowMouseEventArgs : GridEventArgs
     {
-        public GridDataEventArgs(CandyGrid sender, object dataItem)
-            : base(sender)
+        public GridRowMouseEventArgs(CandyGridRow row, MouseEventArgs mouse)
+            : base(row?.Parent)
         {
-            DataItem = dataItem;
+            Row = row;
+            Mouse = mouse;
         }
 
-        public object DataItem { get; }
+        public CandyGridRow Row { get; }
+
+        public MouseEventArgs Mouse { get; }
+
+        public object DataItem => Row?.DataItem;
     }
 
-    public class GridInputEventArgs : GridEventArgs
+    public class GridCellCheckboxEventArgs : GridEventArgs
     {
-        public GridInputEventArgs(CandyGrid sender, MouseEventArgs input)
-            : base(sender)
-        {
-            Input = input;
-        }
-
-        public MouseEventArgs Input { get; }
-    }
-
-    public class GridInputDataEventArgs : GridInputEventArgs
-    {
-        public GridInputDataEventArgs(CandyGrid sender, MouseEventArgs input, object dataItem)
-            : base(sender, input)
-        {
-            DataItem = dataItem;
-        }
-
-        public object DataItem { get; }
-    }
-
-    public class GridCellCheckedEventArgs : GridDataEventArgs
-    {
-        public GridCellCheckedEventArgs(CandyGrid sender, CandyGridColumn column, object dataItem, bool isChecked)
-            : base(sender, dataItem)
+        public GridCellCheckboxEventArgs(CandyGridRow row, CandyGridColumn column, bool isChecked)
+            : base(row?.Parent)
         {
             IsChecked = isChecked;
+            Row = row;
             Column = column;
         }
 
-        public bool IsChecked { get; }
+        public CandyGridRow Row { get; }
 
         public CandyGridColumn Column { get; }
+
+        public object DataItem => Row?.DataItem;
+
+        public bool IsChecked { get; }
     }
 }

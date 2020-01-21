@@ -39,21 +39,26 @@
 @code{
     private void CheckAll(CandyGrid sender)
     {
-        foreach (var item in sender.GetData<Product>())
+        foreach (var row in sender.Rows)
         {
-            item.IsChecked = true;
+            row.CssClass = "table-active";
+            (row.DataItem as Product).IsChecked = true;
         }
     }
 
-    private void OnBodyRowDoubleClick(GridInputDataEventArgs e)
+    private void OnBodyRowDoubleClick(GridRowMouseEventArgs e)
     {
         var product = e.DataItem as Product;
         if (product == null) return;
 
+
+        product.IsChecked = !product.IsChecked;
+        e.Row.CssClass = product.IsChecked ? "table-active" : null;
+
         product.Description = $"Item was {product.ProductId} double clicked!";
     }
 
-    private void OnDetailsButtonClick(GridInputDataEventArgs e)
+    private void OnDetailsButtonClick(GridRowMouseEventArgs e)
     {
         var product = e.DataItem as Product;
         if (product == null) return;
@@ -61,7 +66,7 @@
         product.Description = $"Details for item {product.ProductId} clicked. Show a modal or something!";
     }
 
-    private void OnEditButtonClick(GridInputDataEventArgs e)
+    private void OnEditButtonClick(GridRowMouseEventArgs e)
     {
         var product = e.DataItem as Product;
         if (product == null) return;
@@ -69,11 +74,12 @@
         product.Description = $"Product with ID = {product.ProductId} editing . . .";
     }
 
-    private void OnCellCheckChanged(GridCellCheckedEventArgs e)
+    private void OnCellCheckChanged(GridCellCheckboxEventArgs e)
     {
         var product = e.DataItem as Product;
         if (product == null) return;
 
+        e.Row.CssClass = product.IsChecked ? "table-active" : null;
         product.Description = $"Product with ID = {product.ProductId}, on column {e.Column.Field} is now {(e.IsChecked ? "checked" : "unchecked")}.";
     }
 }

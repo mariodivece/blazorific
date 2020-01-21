@@ -121,14 +121,14 @@
         if (callback == null) return;
 
         $"EVENT".Log(nameof(CandyGridCell), $"On{eventType}");
-        callback?.Invoke(new GridInputDataEventArgs(Parent, e, DataItem));
+        callback?.Invoke(new GridRowMouseEventArgs(Row, e));
         Row.NotifyStateChanged();
     }
 
     protected void RaiseOnCellCheckedChanged(bool isChecked)
     {
         $"EVENT".Log(nameof(CandyGridCell), nameof(CandyGridColumn.OnCellCheckedChanged));
-        Column.OnCellCheckedChanged?.Invoke(new GridCellCheckedEventArgs(Parent, Column, DataItem, isChecked));
+        Column.OnCellCheckedChanged?.Invoke(new GridCellCheckboxEventArgs(Row, Column, isChecked));
         Row.NotifyStateChanged();
     }
 }
