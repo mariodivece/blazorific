@@ -11,7 +11,7 @@
 
     public class TubularGridDataAdapter : IGridDataAdapter
     {
-        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        protected static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             PropertyNameCaseInsensitive = true,
@@ -29,24 +29,37 @@
 
         public async Task<GridDataResponse> RetrieveDataAsync(GridDataRequest request)
         {
+            using var httpResponse = await RetrieveResponseAsync(RequestUrl, request);
+            return await ProcessResponseAsync(httpResponse);
+        }
+
+        protected virtual HttpContent SerializeRequest(GridDataRequest request) =>
+            new StringContent(JsonSerializer.Serialize(request, JsonOptions), Encoding.UTF8, "application/json");
+
+        protected virtual async Task<HttpResponseMessage> RetrieveResponseAsync(string requestUrl, GridDataRequest request)
+        {
+            var requestContent = SerializeRequest(request);
             using var client = new HttpClient();
-            var requestJson = new StringContent(JsonSerializer.Serialize(request, JsonOptions), Encoding.UTF8, "application/json");
-            var httpResponse = await client.PostAsync(RequestUrl, requestJson);
+            return await client.PostAsync(requestUrl, requestContent);
+        }
+
+        protected virtual async Task<GridDataResponse> ProcessResponseAsync(HttpResponseMessage httpResponse)
+        {
             var responseJson = await httpResponse.Content.ReadAsStringAsync();
             var response = JsonSerializer.Deserialize<TubularGridDataResponse>(responseJson, JsonOptions);
             return CreateGridDataResponse(response);
         }
 
-        private GridDataResponse CreateGridDataResponse(TubularGridDataResponse response)
+        private GridDataResponse CreateGridDataResponse(TubularGridDataResponse tubularResponse)
         {
             return new GridDataResponse
             {
-                CurrentPage = response.CurrentPage,
-                DataItems = ParsePayload(response),
+                CurrentPage = tubularResponse.CurrentPage,
+                DataItems = ParsePayload(tubularResponse),
                 DataItemType = DataItemType,
-                FilteredRecordCount = response.FilteredRecordCount,
-                TotalPages = response.TotalPages,
-                TotalRecordCount = response.TotalRecordCount
+                FilteredRecordCount = tubularResponse.FilteredRecordCount,
+                TotalPages = tubularResponse.TotalPages,
+                TotalRecordCount = tubularResponse.TotalRecordCount
             };
         }
 
