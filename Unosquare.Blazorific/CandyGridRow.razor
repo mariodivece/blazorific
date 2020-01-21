@@ -12,6 +12,7 @@
     </tr>
 </CascadingValue>
 @code {
+    private readonly List<CandyGridCell> m_Cells = new List<CandyGridCell>(32);
     private string m_CssClass;
 
     public string CssClass
@@ -26,6 +27,8 @@
 
     public int RowIndex { get; protected set; } = -1;
 
+    public IReadOnlyList<CandyGridCell> Cells => m_Cells;
+
     [CascadingParameter(Name = nameof(DataItem))]
     public object DataItem { get; protected set; }
 
@@ -33,6 +36,25 @@
     internal CandyGrid Parent { get; set; }
 
     internal void NotifyStateChanged() => StateHasChanged();
+
+    internal int AddCell(CandyGridCell cell)
+    {
+        m_Cells.Add(cell);
+        return m_Cells.Count - 1;
+    }
+
+    internal void RemoveCell(CandyGridCell cell)
+    {
+        if (m_Cells.Count == 0 || cell == null)
+            return;
+
+        var cellIndex = cell.CellIndex > 0 && cell.CellIndex < m_Cells.Count && cell == m_Cells[cell.CellIndex]
+            ? cell.CellIndex
+            : m_Cells.IndexOf(cell);
+
+        if (cellIndex < 0) return;
+        m_Cells.RemoveAt(cellIndex);
+    }
 
     protected void RaiseOnBodyRowDoubleClick(MouseEventArgs e)
     {

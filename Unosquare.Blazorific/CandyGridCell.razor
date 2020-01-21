@@ -1,5 +1,6 @@
 ﻿@using System.Reflection
-<td>
+@implements IDisposable
+<td class="@CssClass">
     @if (Column.DataTemplate != null)
     {
         @Column.DataTemplate(DataItem)
@@ -64,6 +65,7 @@
 @code {
 
     private IPropertyProxy CheckedProperty;
+    private string m_CssClass;
 
     protected enum GridButtonEventType
     {
@@ -72,17 +74,23 @@
         DeleteButtonClick,
     }
 
-    [CascadingParameter(Name = nameof(Parent))]
-    protected CandyGrid Parent { get; set; }
+    public string CssClass
+    {
+        get => m_CssClass;
+        set
+        {
+            m_CssClass = value;
+            StateHasChanged();
+        }
+    }
+
+    public int CellIndex { get; protected set; } = -1;
 
     [CascadingParameter(Name = nameof(Column))]
     protected CandyGridColumn Column { get; set; }
 
     [CascadingParameter(Name = nameof(Row))]
     protected CandyGridRow Row { get; set; }
-
-    [CascadingParameter(Name = nameof(DataItem))]
-    protected object DataItem { get; set; }
 
     protected bool IsChecked
     {
@@ -97,8 +105,11 @@
         }
     }
 
+    private object DataItem => Row.DataItem;
+
     protected override void OnInitialized()
     {
+        CellIndex = Row?.AddCell(this) ?? -1;
         var proxy = !string.IsNullOrWhiteSpace(Column.CheckedProperty)
             ? DataItem?.PropertyProxy(Column.CheckedProperty)
             : null;
@@ -130,5 +141,10 @@
         $"EVENT".Log(nameof(CandyGridCell), nameof(CandyGridColumn.OnCellCheckedChanged));
         Column.OnCellCheckedChanged?.Invoke(new GridCellCheckboxEventArgs(Row, Column, isChecked));
         Row.NotifyStateChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        Row.RemoveCell(this);
     }
 }

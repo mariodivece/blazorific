@@ -262,11 +262,13 @@
             m_Rows.Add(row);
             return m_Rows.Count - 1;
         }
-            
 
         internal void RemoveRow(CandyGridRow row)
         {
-            var rowIndex = row == m_Rows[row.RowIndex]
+            if (m_Rows.Count == 0 || row == null)
+                return;
+
+            var rowIndex = row.RowIndex > 0 && row.RowIndex < m_Rows.Count && row == m_Rows[row.RowIndex]
                 ? row.RowIndex
                 : m_Rows.IndexOf(row);
 

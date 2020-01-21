@@ -51,9 +51,9 @@
         var product = e.DataItem as Product;
         if (product == null) return;
 
-
         product.IsChecked = !product.IsChecked;
         e.Row.CssClass = product.IsChecked ? "table-active" : null;
+        e.Row.Cells[1].CssClass = "table-dark";
 
         product.Description = $"Item was {product.ProductId} double clicked!";
     }
