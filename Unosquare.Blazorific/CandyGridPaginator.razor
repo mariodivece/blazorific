@@ -1,4 +1,5 @@
-﻿@if (Parent.TotalPages > 0)
+﻿@inherits CandyGridChildComponent
+@if (Parent.TotalPages > 0)
 {
     <nav class="nav small" arial-label="Pagination">
         <ul class="pagination mb-0">
@@ -62,36 +63,4 @@
             }
         </ul>
     </nav>
-}
-
-@code {
-    private int m_ButtonCount = 5;
-
-    [CascadingParameter(Name = nameof(Parent))]
-    protected CandyGrid Parent { get; set; }
-
-    [Parameter]
-    public bool ShowFirstButton { get; set; } = true;
-
-    [Parameter]
-    public bool ShowLastButton { get; set; } = true;
-
-    [Parameter]
-    public bool ShowPreviousButton { get; set; } = true;
-
-    [Parameter]
-    public bool ShowNextButton { get; set; } = true;
-
-    [Parameter]
-    public int ButtonCount
-    {
-        get => m_ButtonCount < 1 ? 1 : m_ButtonCount;
-        set => m_ButtonCount = value;
-    }
-
-    public int PageNumber
-    {
-        get => Parent.PageNumber;
-        set => Parent.ChangePageNumber(value);
-    }
 }

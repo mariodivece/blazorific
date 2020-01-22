@@ -1,6 +1,6 @@
 ﻿@using System.Reflection
 @implements IDisposable
-<td class="@CssClass">
+<td class="@CssClass" @attributes="Attributes">
     @if (Column.DataTemplate != null)
     {
         @Column.DataTemplate(DataItem)
@@ -62,89 +62,3 @@
         </div>
     }
 </td>
-@code {
-
-    private IPropertyProxy CheckedProperty;
-    private string m_CssClass;
-
-    protected enum GridButtonEventType
-    {
-        DetailsButtonClick,
-        EditButtonClick,
-        DeleteButtonClick,
-    }
-
-    public string CssClass
-    {
-        get => m_CssClass;
-        set
-        {
-            m_CssClass = value;
-            StateHasChanged();
-        }
-    }
-
-    public int CellIndex { get; protected set; } = -1;
-
-    [CascadingParameter(Name = nameof(Column))]
-    protected CandyGridColumn Column { get; set; }
-
-    [CascadingParameter(Name = nameof(Row))]
-    protected CandyGridRow Row { get; set; }
-
-    protected bool IsChecked
-    {
-        get
-        {
-            return (bool)(CheckedProperty?.GetValue(DataItem) ?? false);
-        }
-        set
-        {
-            CheckedProperty?.SetValue(DataItem, value);
-            RaiseOnCellCheckedChanged(value);
-        }
-    }
-
-    private object DataItem => Row.DataItem;
-
-    protected override void OnInitialized()
-    {
-        CellIndex = Row?.AddCell(this) ?? -1;
-        var proxy = !string.IsNullOrWhiteSpace(Column.CheckedProperty)
-            ? DataItem?.PropertyProxy(Column.CheckedProperty)
-            : null;
-
-        if (proxy == null || (proxy.PropertyType != typeof(bool) && proxy.PropertyType != typeof(bool?)))
-            CheckedProperty = null;
-        else
-            CheckedProperty = proxy;
-    }
-
-    protected void RaiseOnRowButtonClick(MouseEventArgs e, GridButtonEventType eventType)
-    {
-        var callback = eventType switch
-        {
-            GridButtonEventType.EditButtonClick => Column.OnEditButtonClick,
-            GridButtonEventType.DeleteButtonClick => Column.OnDeleteButtonClick,
-            _ => Column.OnDetailsButtonClick
-        };
-
-        if (callback == null) return;
-
-        $"EVENT".Log(nameof(CandyGridCell), $"On{eventType}");
-        callback?.Invoke(new GridRowMouseEventArgs(Row, e));
-        Row.NotifyStateChanged();
-    }
-
-    protected void RaiseOnCellCheckedChanged(bool isChecked)
-    {
-        $"EVENT".Log(nameof(CandyGridCell), nameof(CandyGridColumn.OnCellCheckedChanged));
-        Column.OnCellCheckedChanged?.Invoke(new GridCellCheckboxEventArgs(Row, Column, isChecked));
-        Row.NotifyStateChanged();
-    }
-
-    void IDisposable.Dispose()
-    {
-        Row.RemoveCell(this);
-    }
-}

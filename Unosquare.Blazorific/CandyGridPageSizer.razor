@@ -1,5 +1,4 @@
-﻿@using System.Collections.Generic
-
+﻿@inherits CandyGridChildComponent
 <div class="form-group row mt-0 mb-0 small">
     <label class="col-sm-4 col-form-label text-right text-nowrap">@Label</label>
     <div class="col-sm-8">
@@ -11,27 +10,3 @@
         </select>
     </div>
 </div>
-
-@code {
-    [CascadingParameter(Name = nameof(Parent))]
-    protected CandyGrid Parent { get; set; }
-
-    [Parameter]
-    public string Label { get; set; } = "Page Size:";
-
-    public int PageSize
-    {
-        get => Parent.PageSize == Parent.FilteredRecordCount ? -1 : Parent.PageSize;
-        set => Parent.ChangePageSize(value);
-    }
-
-    [Parameter]
-    public IDictionary<int, string> PageSizeOptions { get; set; } = new Dictionary<int, string>
-    {
-        { 10, "10" },
-        { 20, "20" },
-        { 50, "50" },
-        { 100, "100" },
-        { -1, "All" },
-    };
-}

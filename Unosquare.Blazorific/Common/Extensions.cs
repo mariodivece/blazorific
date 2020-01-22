@@ -17,7 +17,7 @@
             {
                 var column = grid.Columns
                     .FirstOrDefault(c => property.Name.Equals(c.Field, comparison));
-                
+
                 result.Add(column as IGridDataColumn ?? new GridDataColumn
                 {
                     Name = property.Name,
@@ -88,6 +88,37 @@
             var sourceFormat = $"{source,16}";
             var memberFormat = $"{member,-22}";
             Console.WriteLine($"DBG {sourceFormat}.{memberFormat} | {info}");
+        }
+
+        internal static int AddAttachedComponent<T>(this IReadOnlyList<T> container, T child)
+            where T : IAttachedComponent
+        {
+            if (child == null) return -1;
+
+            if (container is IList<T> collection)
+            {
+                collection.Add(child);
+                return collection.Count -1;
+            }
+
+            return -1;
+        }
+
+        internal static void RemoveAttachedComponent<T>(this IReadOnlyList<T> container, T child)
+            where T : IAttachedComponent
+        {
+            if (!(container is IList<T> collection))
+                return;
+
+            if (collection.Count == 0 || child == null)
+                return;
+
+            var childindex = child.Index > 0 && child.Index < collection.Count && ReferenceEquals(child, collection[child.Index])
+                ? child.Index
+                : collection.IndexOf(child);
+
+            if (childindex < 0) return;
+            collection.RemoveAt(childindex);
         }
     }
 }

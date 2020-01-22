@@ -18,7 +18,6 @@
         private readonly object SyncLock = new object();
         private readonly Timer QueueProcessor;
         private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
-        private readonly List<CandyGridRow> m_Rows = new List<CandyGridRow>(1024);
 
         private bool IsDisposed;
         private bool HasRendered;
@@ -148,7 +147,7 @@
 
         public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
 
-        public IReadOnlyList<CandyGridRow> Rows => m_Rows;
+        public IReadOnlyList<CandyGridRow> Rows { get; } = new List<CandyGridRow>(1024);
 
         public IReadOnlyList<object> DataItems { get; protected set; }
 
@@ -257,24 +256,9 @@
             QueueRenderUpdate();
         }
 
-        internal int AddRow(CandyGridRow row)
-        {
-            m_Rows.Add(row);
-            return m_Rows.Count - 1;
-        }
+        internal int AddRow(CandyGridRow row) => Rows.AddAttachedComponent(row);
 
-        internal void RemoveRow(CandyGridRow row)
-        {
-            if (m_Rows.Count == 0 || row == null)
-                return;
-
-            var rowIndex = row.RowIndex > 0 && row.RowIndex < m_Rows.Count && row == m_Rows[row.RowIndex]
-                ? row.RowIndex
-                : m_Rows.IndexOf(row);
-
-            if (rowIndex < 0) return;
-            m_Rows.RemoveAt(rowIndex);
-        }
+        internal void RemoveRow(CandyGridRow row) => Rows.RemoveAttachedComponent(row);
 
         private async Task UpdateDataAsync()
         {

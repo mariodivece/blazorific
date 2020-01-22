@@ -1,6 +1,6 @@
-﻿@implements IDisposable
+﻿@inherits CandyGridChildComponent
 <CascadingValue Name="Row" Value="this">
-    <tr class="@CssClass"
+    <tr @attributes="Attributes"
         @ondblclick="e => RaiseOnBodyRowDoubleClick(e)"
         @onclick="e => RaiseOnBodyRowClick(e)">
         @foreach (var col in Parent.Columns)
@@ -11,71 +11,3 @@
         }
     </tr>
 </CascadingValue>
-@code {
-    private readonly List<CandyGridCell> m_Cells = new List<CandyGridCell>(32);
-    private string m_CssClass;
-
-    public string CssClass
-    {
-        get => m_CssClass;
-        set
-        {
-            m_CssClass = value;
-            StateHasChanged();
-        }
-    }
-
-    public int RowIndex { get; protected set; } = -1;
-
-    public IReadOnlyList<CandyGridCell> Cells => m_Cells;
-
-    [CascadingParameter(Name = nameof(DataItem))]
-    public object DataItem { get; protected set; }
-
-    [CascadingParameter(Name = nameof(Parent))]
-    internal CandyGrid Parent { get; set; }
-
-    internal void NotifyStateChanged() => StateHasChanged();
-
-    internal int AddCell(CandyGridCell cell)
-    {
-        m_Cells.Add(cell);
-        return m_Cells.Count - 1;
-    }
-
-    internal void RemoveCell(CandyGridCell cell)
-    {
-        if (m_Cells.Count == 0 || cell == null)
-            return;
-
-        var cellIndex = cell.CellIndex > 0 && cell.CellIndex < m_Cells.Count && cell == m_Cells[cell.CellIndex]
-            ? cell.CellIndex
-            : m_Cells.IndexOf(cell);
-
-        if (cellIndex < 0) return;
-        m_Cells.RemoveAt(cellIndex);
-    }
-
-    protected void RaiseOnBodyRowDoubleClick(MouseEventArgs e)
-    {
-        $"EVENT".Log(nameof(CandyGridCell), $"On{nameof(Parent.OnBodyRowDoubleClick)}");
-        Parent.OnBodyRowDoubleClick?.Invoke(new GridRowMouseEventArgs(this, e));
-    }
-
-    protected void RaiseOnBodyRowClick(MouseEventArgs e)
-    {
-        $"EVENT".Log(nameof(CandyGridCell), $"On{nameof(Parent.OnBodyRowClick)}");
-        Parent.OnBodyRowClick?.Invoke(new GridRowMouseEventArgs(this, e));
-    }
-
-    protected override void OnInitialized()
-    {
-        RowIndex = Parent.AddRow(this);
-        base.OnInitialized();
-    }
-
-    void IDisposable.Dispose()
-    {
-        Parent.RemoveRow(this);
-    }
-}

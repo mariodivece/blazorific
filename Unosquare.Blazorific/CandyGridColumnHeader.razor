@@ -1,4 +1,4 @@
-﻿<th class="candygrid-column-header" scope="col">
+﻿<th class="@CssClass" scope="col">
     <div class="clearfix text-nowrap">
         <div class="candygrid-column-sortable float-left">
             @if (Column.IsSortable)
@@ -38,27 +38,3 @@
         }
     </div>
 </th>
-
-@code {
-    [CascadingParameter(Name = nameof(Column))]
-    protected CandyGridColumn Column { get; set; }
-
-    protected bool ShowFilter => Column.Filter.Operator != CompareOperators.None && Column.Filter.Operator != CompareOperators.Auto;
-
-    private string CaretCssClass
-    {
-        get
-        {
-            return Column.SortDirection == SortDirection.Ascending
-                ? "fa-caret-up"
-                : Column.SortDirection == SortDirection.Descending
-                ? "fa-caret-down"
-                : string.Empty;
-        }
-    }
-
-    private void OnColumnSortClick(MouseEventArgs e)
-    {
-        Column.ChangeSortDirection(e.CtrlKey);
-    }
-}

@@ -27,7 +27,7 @@
     public class GridRowMouseEventArgs : GridEventArgs
     {
         public GridRowMouseEventArgs(CandyGridRow row, MouseEventArgs mouse)
-            : base(row?.Parent)
+            : base(row?.Grid)
         {
             Row = row;
             Mouse = mouse;
@@ -43,7 +43,7 @@
     public class GridCellCheckboxEventArgs : GridEventArgs
     {
         public GridCellCheckboxEventArgs(CandyGridRow row, CandyGridColumn column, bool isChecked)
-            : base(row?.Parent)
+            : base(row?.Grid)
         {
             IsChecked = isChecked;
             Row = row;
