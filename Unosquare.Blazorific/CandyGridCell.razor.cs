@@ -3,13 +3,18 @@
     using Common;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
+    using System;
     using System.Collections.Generic;
     using System.Reflection;
 
-    public sealed partial class CandyGridCell : IAttachedComponent
+    public sealed partial class CandyGridCell : IAttachedComponent, IDisposable
     {
         private IPropertyProxy CheckedProperty;
-        private string m_CssClass;
+
+        public CandyGridCell()
+        {
+            Attributes = new AttributeDictionary(StateHasChanged);
+        }
 
         private enum GridButtonEventType
         {
@@ -18,18 +23,7 @@
             DeleteButtonClick,
         }
 
-        public string CssClass
-        {
-            get => m_CssClass;
-            set
-            {
-                m_CssClass = value;
-                StateHasChanged();
-            }
-        }
-
-        [Parameter(CaptureUnmatchedValues = true)]
-        public Dictionary<string, object> Attributes { get; set; }
+        public AttributeDictionary Attributes { get; }
 
         public int Index { get; private set; } = -1;
 

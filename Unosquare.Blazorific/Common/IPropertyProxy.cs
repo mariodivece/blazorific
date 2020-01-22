@@ -64,8 +64,8 @@
         {
             lock (SyncLock)
             {
-                if (ProxyCache.ContainsKey(t))
-                    return ProxyCache[t];
+                if (ProxyCache.TryGetValue(t, out var proxies))
+                    return proxies;
 
                 var properties = t.GetProperties(BindingFlags.Instance | BindingFlags.Public);
                 var result = new Dictionary<string, IPropertyProxy>(properties.Length, StringComparer.InvariantCultureIgnoreCase);
@@ -95,7 +95,7 @@
         public static IPropertyProxy PropertyProxy(this Type t, string propertyName)
         {
             var proxies = t.PropertyProxies();
-            return proxies.ContainsKey(propertyName) ? proxies[propertyName] : null;
+            return proxies.TryGetValue(propertyName, out var proxy) ? proxy : null;
         }
 
         /// <summary>
@@ -108,7 +108,7 @@
         public static IPropertyProxy PropertyProxy<T>(this T obj, string propertyName)
         {
             var proxies = (obj?.GetType() ?? typeof(T)).PropertyProxies();
-            return proxies.ContainsKey(propertyName) ? proxies[propertyName] : null;
+            return proxies.TryGetValue(propertyName, out var proxy) ? proxy : null;
         }
 
 
@@ -124,7 +124,7 @@
         {
             var proxies = (obj?.GetType() ?? typeof(T)).PropertyProxies();
             var propertyName = propertyExpression.PropertyName();
-            return proxies.ContainsKey(propertyName) ? proxies[propertyName] : null;
+            return proxies.TryGetValue(propertyName, out var proxy) ? proxy : null;
         }
 
 

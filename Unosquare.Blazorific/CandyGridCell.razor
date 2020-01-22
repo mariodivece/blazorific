@@ -1,6 +1,4 @@
-﻿@using System.Reflection
-@implements IDisposable
-<td class="@CssClass" @attributes="Attributes">
+﻿<td @attributes="Attributes.Dictionary">
     @if (Column.DataTemplate != null)
     {
         @Column.DataTemplate(DataItem)

@@ -98,7 +98,7 @@
             if (container is IList<T> collection)
             {
                 collection.Add(child);
-                return collection.Count -1;
+                return collection.Count - 1;
             }
 
             return -1;

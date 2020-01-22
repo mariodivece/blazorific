@@ -41,11 +41,7 @@
     {
         foreach (var row in sender.Rows)
         {
-            row.Attributes = new Dictionary<string, object>()
-            {
-                { "class", "table-dark" }
-            };
-            (row.DataItem as Product).IsChecked = true;
+            row.Attributes.CssClass = "table-dark";
         }
     }
 
@@ -55,12 +51,10 @@
         if (product == null) return;
 
         product.IsChecked = !product.IsChecked;
-        e.Row.Attributes = new Dictionary<string, object>()
-        {
-            { "class", product.IsChecked ? "table-active" : null }
-        };
+        e.Row.Attributes.CssClass = product.IsChecked ? "table-active" : null;
 
-        e.Row.Cells[1].CssClass = "table-dark";
+        e.Row.Cells[1].Attributes.CssClass = "table-dark";
+        e.Row.Cells[1].Attributes.Style = "font-weight: bold";
 
         product.Description = $"Item was {product.ProductId} double clicked!";
     }
@@ -86,10 +80,7 @@
         var product = e.DataItem as Product;
         if (product == null) return;
 
-        e.Row.Attributes = new Dictionary<string, object>()
-        {
-            { "class", product.IsChecked ? "table-active" : null }
-        };
+        e.Row.Attributes.CssClass = product.IsChecked ? "table-active" : null;
         product.Description = $"Product with ID = {product.ProductId}, on column {e.Column.Field} is now {(e.IsChecked ? "checked" : "unchecked")}.";
     }
 }

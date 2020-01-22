@@ -6,22 +6,17 @@
     using System;
     using System.Collections.Generic;
 
-    public sealed partial class CandyGridRow : IAttachedComponent
+    public sealed partial class CandyGridRow : CandyGridChildComponent, IAttachedComponent
     {
-        private Dictionary<string, object> m_Attributes;
+        public CandyGridRow()
+        {
+            Attributes = new AttributeDictionary(StateHasChanged);
+        }
 
         [CascadingParameter(Name = nameof(DataItem))]
         public object DataItem { get; private set; }
 
-        public Dictionary<string, object> Attributes
-        {
-            get => m_Attributes;
-            set
-            {
-                m_Attributes = value;
-                StateHasChanged();
-            }
-        }
+        public AttributeDictionary Attributes { get; }
 
         public int Index { get; private set; } = -1;
 
