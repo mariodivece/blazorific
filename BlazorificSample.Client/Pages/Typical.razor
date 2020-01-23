@@ -25,9 +25,7 @@
             </CandyGridColumn>
             <CandyGridColumn Title="Description" Field="@nameof(Product.Description)" IsSortable="true">
                 <DataTemplate>
-                    <div class="text-truncate text-nowrap" style="width: 150px;">
-                        @($"{(context as Product).Description}")
-                    </div>
+                    @($"{(context as Product).Description}")
                 </DataTemplate>
             </CandyGridColumn>
             <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" FormatString="{0:c2}" />
@@ -35,9 +33,7 @@
 
             <CandyGridColumn Title="Date" Context="item">
                 <DataTemplate>
-                    <div class="text-truncate text-nowrap" style="max-width: 6em;">
-                        @($"UID: {(item as Product).DateCreated.ToShortDateString()}")
-                    </div>
+                    @($"UID: {(item as Product).DateCreated.ToShortDateString()}")
                 </DataTemplate>
             </CandyGridColumn>
         </CandyGridColumns>

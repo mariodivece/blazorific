@@ -48,6 +48,8 @@
             }
         }
 
+        private string RightAlignCssClass { get; set; }
+
         private object DataItem => Row?.DataItem;
 
         private bool HasAutomaticButtons => 
@@ -65,14 +67,18 @@
         protected override void OnInitialized()
         {
             Index = Row?.AddCell(this) ?? -1;
-            var proxy = !string.IsNullOrWhiteSpace(Column.CheckedProperty)
+
+            var fieldProxy = string.IsNullOrWhiteSpace(Column?.Field) ? null : Row?.DataItem?.PropertyProxy(Column.Field);
+            RightAlignCssClass = fieldProxy == null || !fieldProxy.PropertyType.IsNumeric() ? null : "text-right";
+
+            var checkedProxy = !string.IsNullOrWhiteSpace(Column.CheckedProperty)
                 ? DataItem?.PropertyProxy(Column.CheckedProperty)
                 : null;
 
-            if (proxy == null || (proxy.PropertyType != typeof(bool) && proxy.PropertyType != typeof(bool?)))
+            if (checkedProxy == null || (checkedProxy.PropertyType != typeof(bool) && checkedProxy.PropertyType != typeof(bool?)))
                 CheckedProperty = null;
             else
-                CheckedProperty = proxy;
+                CheckedProperty = checkedProxy;
         }
 
         private void RaiseOnRowButtonClick(MouseEventArgs e, GridButtonEventType eventType)

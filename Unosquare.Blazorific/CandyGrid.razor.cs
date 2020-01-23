@@ -100,10 +100,10 @@
         #region Parameters: CSS Classes
 
         [Parameter]
-        public string RootCssClass { get; set; } = "candygrid-container";
+        public string RootCssClass { get; set; }
 
         [Parameter]
-        public string TableContainerCssClass { get; set; } = "table-responsive table-borderless candygrid-table";
+        public string TableContainerCssClass { get; set; } = "table-responsive";
 
         [Parameter]
         public string TableCssClass { get; set; } = "table table-striped table-bordered table-hover table-sm";

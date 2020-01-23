@@ -1,7 +1,7 @@
 ﻿@inherits CandyComponentBase
 <CascadingValue Value="this" Name="Parent">
     @CandyGridColumns
-    <div class="@RootCssClass">
+    <div class="candygrid-container @RootCssClass">
         <div class="row mt-2 mb-2">
             <div class="col-lg-4 align-self-center">
                 <CandyGridPaginator ButtonCount="5" />
@@ -15,13 +15,13 @@
             </div>
         </div>
 
-        <div class="@TableContainerCssClass">
+        <div class="candygrid-table @TableContainerCssClass">
             <table class="@TableCssClass">
                 <thead class="@TableHeaderCssClass">
                     <tr>
                         @foreach (var col in Columns)
                         {
-                            <th class="@col.HeaderCssClass" scope="col">
+                            <th class="candygrid-column-header @col.HeaderCssClass" scope="col">
                                 @if (col.HeaderTemplate == null)
                                 {
                                     <CascadingValue Value="col" Name="Column">

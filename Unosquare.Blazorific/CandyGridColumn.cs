@@ -70,10 +70,10 @@
         public string CheckedProperty { get; set; }
 
         [Parameter]
-        public string HeaderCssClass { get; set; } = "candygrid-column-header";
+        public string HeaderCssClass { get; set; }
 
         [Parameter]
-        public string CellCssClass { get; set; } = "candygrid-cell";
+        public string CellCssClass { get; set; }
 
         [Parameter]
         public Action<GridRowMouseEventArgs> OnDeleteButtonClick { get; set; }

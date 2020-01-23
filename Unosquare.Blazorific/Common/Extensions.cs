@@ -27,25 +27,10 @@
             return result.ToArray();
         }
 
-        internal static bool IsNumeric(this object o)
+        internal static bool IsNumeric(this Type t)
         {
-            switch (Type.GetTypeCode(o.GetType()))
-            {
-                case TypeCode.Byte:
-                case TypeCode.SByte:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.Decimal:
-                case TypeCode.Double:
-                case TypeCode.Single:
-                    return true;
-                default:
-                    return false;
-            }
+            var type = Nullable.GetUnderlyingType(t) ?? t;
+            return type == typeof(decimal) || (type.IsPrimitive && type != typeof(bool) && type != typeof(char));
         }
 
         internal static object GetDefault(this Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
