@@ -3,9 +3,16 @@
     using Common;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
+    using Microsoft.JSInterop;
+    using System.Threading.Tasks;
 
     public sealed partial class CandyGridColumnHeader
     {
+        private ElementReference ColumnFilterElement;
+
+        [Inject]
+        private IJSRuntime Js { get; set; }
+
         [CascadingParameter(Name = nameof(Column))]
         private CandyGridColumn Column { get; set; }
 
@@ -26,6 +33,16 @@
         private void OnColumnSortClick(MouseEventArgs e)
         {
             Column.ChangeSortDirection(e.CtrlKey);
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+
+            if (!firstRender)
+                return;
+
+            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.bindColumnFilterDropdown", ColumnFilterElement);
         }
     }
 }

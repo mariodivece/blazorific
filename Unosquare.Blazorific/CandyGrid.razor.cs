@@ -339,13 +339,11 @@
             $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago".Log(nameof(CandyGrid), nameof(OnAfterRender));
             await base.OnAfterRenderAsync(firstRender);
             await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onRendered", RootElement);
-            
+
             if (!firstRender)
                 return;
 
             HasRendered = true;
-            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
-            
             QueueDataUpdate();
         }
 
