@@ -6,7 +6,7 @@
         <ToolbarTemplate>
             <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group btn-group-sm" role="group">
-                    <button class="btn btn-link" type="button" @onclick="_ => context.QueueDataUpdate()"><i class="fas fa-plus"></i>&nbsp;Add New</button>
+                    <button class="btn btn-link" type="button" @onclick="_ => context.QueueDataUpdate()"><i class="fas fa-plus"></i>&nbsp;Refresh</button>
                     <button class="btn btn-link" type="button" @onclick="_ => CheckAll(context)"><i class="far fa-check-square"></i>&nbsp;Select All</button>
                     <button class="btn btn-link" type="button"><i class="fas fa-print"></i>&nbsp;Print</button>
                     <button class="btn btn-link" type="button"><i class="fas fa-external-link-alt"></i>&nbsp;Export</button>
@@ -45,7 +45,7 @@
     {
         foreach (var row in sender.Rows)
         {
-            row.Attributes.CssClass = "table-dark";
+            UpdateSelected(row);
         }
     }
 
@@ -55,19 +55,14 @@
         if (product == null) return;
 
         product.IsChecked = !product.IsChecked;
-        e.Row.Attributes.CssClass = product.IsChecked ? "table-active" : null;
-
-        e.Row.Cells[1].Attributes.CssClass = "table-dark";
-        e.Row.Cells[1].Attributes.Style = "font-weight: bold";
-
         product.Description = $"Item was {product.ProductId} double clicked!";
+        UpdateSelected(e.Row);
     }
 
     private void OnDetailsButtonClick(GridRowMouseEventArgs e)
     {
         var product = e.DataItem as Product;
         if (product == null) return;
-
         product.Description = $"Details for item {product.ProductId} clicked. Show a modal or something!";
     }
 
@@ -75,7 +70,6 @@
     {
         var product = e.DataItem as Product;
         if (product == null) return;
-
         product.Description = $"Product with ID = {product.ProductId} editing . . .";
     }
 
@@ -83,8 +77,16 @@
     {
         var product = e.DataItem as Product;
         if (product == null) return;
-
-        e.Row.Attributes.CssClass = product.IsChecked ? "table-active" : null;
         product.Description = $"Product with ID = {product.ProductId}, on column {e.Column.Field} is now {(e.IsChecked ? "checked" : "unchecked")}.";
+        UpdateSelected(e.Row);
+    }
+
+    private void UpdateSelected(CandyGridRow row)
+    {
+        var product = row.DataItem as Product;
+        if (product == null) return;
+
+        row.Attributes.CssClass = product.IsChecked ? "table-active" : null;
+        row.Cells[1].Attributes.Style = product.IsChecked ? "font-weight: bold" : "font-weight: normal";
     }
 }
