@@ -1,7 +1,6 @@
 ﻿namespace Unosquare.Blazorific
 {
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.Web;
     using Microsoft.JSInterop;
     using System;
     using System.Collections.Generic;
@@ -13,12 +12,13 @@
 
     public partial class CandyGrid : IDisposable
     {
-        private const int QueueProcessorDueTimeMs = 1000;
+        private const int QueueProcessorDueTimeMs = 100;
 
         private readonly object SyncLock = new object();
         private readonly Timer QueueProcessor;
         private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
 
+        private ElementReference RootElement;
         private bool IsDisposed;
         private bool HasRendered;
         private bool IsProcessingQueue;
@@ -118,9 +118,6 @@
         public RenderFragment<CandyGrid> EmptyRecordsTemplate { get; set; }
 
         [Parameter]
-        public RenderFragment<CandyGrid> LoadingRecordsTemplate { get; set; }
-
-        [Parameter]
         public RenderFragment<CandyGrid> ToolbarTemplate { get; set; }
 
         [Parameter]
@@ -160,7 +157,9 @@
 
         public int TotalPages { get; protected set; }
 
-        public int StartRecordNumber => Math.Max(0, 1 + (PageSize * (PageNumber - 1)));
+        public int StartRecordNumber => (DataItems?.Count ?? 0) > 0
+            ? Math.Max(0, 1 + (PageSize * (PageNumber - 1)))
+            : 0;
 
         public int EndRecordNumber => Math.Max(0, StartRecordNumber + (DataItems?.Count ?? 0) - 1);
 
@@ -170,7 +169,7 @@
             {
                 lock (SyncLock)
                 {
-                    return !IsDisposed && (PendingAdapterUpdates > 0 || PendingRenderUpdates > 0);
+                    return !IsDisposed && (!HasRendered || PendingAdapterUpdates > 0 || PendingRenderUpdates > 0);
                 }
             }
         }
@@ -339,12 +338,14 @@
 
             $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago".Log(nameof(CandyGrid), nameof(OnAfterRender));
             await base.OnAfterRenderAsync(firstRender);
-
+            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onRendered", RootElement);
+            
             if (!firstRender)
                 return;
 
             HasRendered = true;
             await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.initialize");
+            
             QueueDataUpdate();
         }
 

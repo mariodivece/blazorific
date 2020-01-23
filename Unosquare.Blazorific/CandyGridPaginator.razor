@@ -47,7 +47,7 @@
             @if (ShowNextButton)
             {
                 <li class="page-item @(Parent.PageNumber >= Parent.TotalPages ? "disabled" : string.Empty)">
-                    <button class="page-link" href="#" aria-label="Next" @onclick="_ => PageNumber = Parent.PageNumber + 1">
+                    <button class="page-link" aria-label="Next" @onclick="_ => PageNumber = Parent.PageNumber + 1">
                         <i class="fas fa-forward"></i>
                     </button>
                 </li>
@@ -56,7 +56,7 @@
             @if (ShowLastButton)
             {
                 <li class="page-item @(Parent.PageNumber >= Parent.TotalPages ? "disabled" : string.Empty)">
-                    <button class="page-link" href="#" aria-label="Last" @onclick="_ => PageNumber = Parent.TotalPages">
+                    <button class="page-link" aria-label="Last" @onclick="_ => PageNumber = Parent.TotalPages">
                         <i class="fas fa-step-forward"></i>
                     </button>
                 </li>

@@ -15,5 +15,11 @@
         $('.candygrid-column-filter.dropdown').on('hide.bs.dropdown', function (e) {
             $(this).find('.dropdown-menu').first().stop(true, true).fadeOut(100);
         });
+    },
+
+    onRendered: function (rootElement) {
+        console.info("Rendered Grid: " + rootElement);
+        if (document.activeElement !== document.body)
+            document.activeElement.blur();
     }
 };
