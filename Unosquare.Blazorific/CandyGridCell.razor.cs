@@ -4,7 +4,6 @@
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
     using System;
-    using System.Collections.Generic;
     using System.Reflection;
 
     public sealed partial class CandyGridCell : IAttachedComponent, IDisposable
@@ -50,6 +49,13 @@
         }
 
         private object DataItem => Row?.DataItem;
+
+        private bool HasAutomaticButtons => 
+            Column.OnDeleteButtonClick != null ||
+            Column.OnDetailsButtonClick != null ||
+            Column.OnEditButtonClick != null;
+
+        private bool HasAutomaticCheckbox => CheckedProperty != null;
 
         public void Dispose()
         {

@@ -1,62 +1,64 @@
-﻿<td @attributes="Attributes.Dictionary">
+﻿<td class="@Column.CellCssClass" @attributes="Attributes.Dictionary">
     @if (Column.DataTemplate != null)
     {
         @Column.DataTemplate(DataItem)
     }
-    else
+    else if (HasAutomaticButtons || HasAutomaticCheckbox)
     {
-        <div class="@Column.CssClass">
-            @{
-                var showButtonGroup = Column.OnDeleteButtonClick != null ||
-                    Column.OnDetailsButtonClick != null ||
-                    Column.OnEditButtonClick != null;
-            }
-
-            @if (showButtonGroup)
+        <div class="d-flex flex-nowrap">
+            @if (HasAutomaticButtons)
             {
-                <div class="btn-group btn-group-sm candygrid-btn-group-sm mr-2 float-left"
-                     @onclick:stopPropagation="true"
-                     @ondblclick:stopPropagation="true">
+                <div class="flex-fill mr-2">
+                    <div class="btn-group btn-group-sm candygrid-btn-group-sm"
+                         @onclick:stopPropagation="true"
+                         @ondblclick:stopPropagation="true">
 
-                    @if (Column.OnDetailsButtonClick != null)
-                    {
-                        <button class="btn btn-info" type="button" title="Details"
-                                @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.DetailsButtonClick)">
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button>
-                    }
+                        @if (Column.OnDetailsButtonClick != null)
+                        {
+                            <button class="btn btn-info" type="button" title="Details"
+                                    @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.DetailsButtonClick)">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        }
 
-                    @if (Column.OnEditButtonClick != null)
-                    {
-                        <button class="btn btn-warning" type="button" title="Edit"
-                                @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.EditButtonClick)">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                    }
+                        @if (Column.OnEditButtonClick != null)
+                        {
+                            <button class="btn btn-warning" type="button" title="Edit"
+                                    @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.EditButtonClick)">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                        }
 
-                    @if (Column.OnDeleteButtonClick != null)
-                    {
-                        <button class="btn btn-danger " type="button" title="Delete"
-                                @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.DeleteButtonClick)">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    }
+                        @if (Column.OnDeleteButtonClick != null)
+                        {
+                            <button class="btn btn-danger " type="button" title="Delete"
+                                    @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.DeleteButtonClick)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        }
+                    </div>
                 </div>
             }
 
-            @if (!string.IsNullOrWhiteSpace(Column.CheckedProperty))
-            {
-                <label class="custom-control custom-checkbox mb-0 float-left mr-1"
-                       @onclick:stopPropagation="true"
-                       @ondblclick:stopPropagation="true">
-                    <input type="checkbox" class="custom-control-input" @bind="IsChecked" />
-                    <span class="custom-control-label">@Column.GetFormattedValue(DataItem)</span>
-                </label>
-            }
-            else
-            {
-                <div class="float-left">@Column.GetFormattedValue(DataItem)</div>
-            }
+            <div class="flex-grow-1 mb-0 mr-1">
+                @if (HasAutomaticCheckbox)
+                {
+                    <label class="custom-control custom-checkbox" style="margin-bottom: 0"
+                           @onclick:stopPropagation="true"
+                           @ondblclick:stopPropagation="true">
+                        <input type="checkbox" class="custom-control-input" @bind="IsChecked" />
+                        <span class="custom-control-label">@Column.GetFormattedValue(DataItem)</span>
+                    </label>
+                }
+                else
+                {
+                    @Column.GetFormattedValue(DataItem)
+                }
+            </div>
         </div>
+    }
+    else
+    {
+        @Column.GetFormattedValue(DataItem)
     }
 </td>

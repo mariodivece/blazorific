@@ -23,13 +23,21 @@
                     @($"Field: {context.Field}")
                 </HeaderTemplate>
             </CandyGridColumn>
-            <CandyGridColumn Title="Description" Field="@nameof(Product.Description)" IsSortable="true" />
+            <CandyGridColumn Title="Description" Field="@nameof(Product.Description)" IsSortable="true">
+                <DataTemplate>
+                    <div class="text-truncate text-nowrap" style="width: 150px;">
+                        @($"{(context as Product).Description}")
+                    </div>
+                </DataTemplate>
+            </CandyGridColumn>
             <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" FormatString="{0:c2}" />
             <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" />
 
             <CandyGridColumn Title="Date" Context="item">
                 <DataTemplate>
-                    @($"UID: {(item as Product).DateCreated.ToShortDateString()}")
+                    <div class="text-truncate text-nowrap" style="max-width: 6em;">
+                        @($"UID: {(item as Product).DateCreated.ToShortDateString()}")
+                    </div>
                 </DataTemplate>
             </CandyGridColumn>
         </CandyGridColumns>

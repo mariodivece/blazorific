@@ -6,9 +6,6 @@
 
     public sealed partial class CandyGridColumnHeader
     {
-        [Parameter]
-        public string CssClass { get; set; } = "candygrid-column-header";
-
         [CascadingParameter(Name = nameof(Column))]
         private CandyGridColumn Column { get; set; }
 

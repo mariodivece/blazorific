@@ -1,8 +1,6 @@
 ﻿@inherits CandyComponentBase
-
 <CascadingValue Value="this" Name="Parent">
     @CandyGridColumns
-
     <div class="@RootCssClass">
         <div class="row mt-2 mb-2">
             <div class="col-lg-4 align-self-center">
@@ -23,18 +21,18 @@
                     <tr>
                         @foreach (var col in Columns)
                         {
-                            if (col.HeaderTemplate == null)
-                            {
-                                <CascadingValue Value="col" Name="Column">
-                                    <CandyGridColumnHeader />
-                                </CascadingValue>
-                            }
-                            else
-                            {
-                                <th>
+                            <th class="@col.HeaderCssClass" scope="col">
+                                @if (col.HeaderTemplate == null)
+                                {
+                                    <CascadingValue Value="col" Name="Column">
+                                        <CandyGridColumnHeader @key="col" />
+                                    </CascadingValue>
+                                }
+                                else
+                                {
                                     @col.HeaderTemplate(col)
-                                </th>
-                            }
+                                }
+                            </th>
                         }
                     </tr>
                 </thead>

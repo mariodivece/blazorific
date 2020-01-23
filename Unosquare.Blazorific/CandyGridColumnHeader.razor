@@ -1,40 +1,38 @@
-﻿<th class="@CssClass" scope="col">
-    <div class="clearfix text-nowrap">
-        <div class="candygrid-column-sortable float-left">
-            @if (Column.IsSortable)
-            {
-                <a class="candygrid-column-sortable text-light" href="" @onclick:preventDefault
-                   @onclick="OnColumnSortClick">@(Column.Title ?? Column.Field)</a>
-            }
-            else
-            {
-                <span class="candygrid-column-sortable text-light">@(Column.Title ?? Column.Field)</span>
-            }
-            <i class="fas @CaretCssClass"></i>
-        </div>
-
-        @if (ShowFilter)
+﻿<div class="d-flex flex-nowrap">
+    <div class="candygrid-column-sortable text-nowrap">
+        @if (Column.IsSortable)
         {
-            <div class="float-right dropdown">
-                <button class="btn btn-light candygrid-column-header-button" type="button" data-toggle="dropdown" data-boundary="window"><i class="fas fa-filter"></i></button>
-                <div class="dropdown-menu candygrid-dropdown-menu" role="menu">
-                    <h6 class="popover-header mb-2">Filter Settings</h6>
-                    <form>
-                        <div class="pr-1 pl-1">
-                            <select class="form-control custom-select custom-select-sm">
-                                <option value="12" selected="">Contains</option>
-                                <option value="13">Equals</option>
-                                <option value="14">Does not equal</option>
-                            </select>
-                            <input class="form-control form-control form-control-sm mt-2" type="text" autocomplete="off" inputmode="verbatim" placeholder="filter string">
-                        </div>
-                        <div class="p-1 mt-2 clearfix">
-                            <button class="btn btn-danger float-right btn-sm" type="button"><i class="fas fa-times-circle"></i></button>
-                            <button class="btn btn-success float-right btn-sm mr-1" type="button"><i class="fas fa-check-circle"></i></button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <a class="candygrid-column-sortable text-light" href="" @onclick:preventDefault
+               @onclick="OnColumnSortClick">@(Column.Title ?? Column.Field)</a>
         }
+        else
+        {
+            <span class="candygrid-column-sortable text-light">@(Column.Title ?? Column.Field)</span>
+        }
+        <i class="fas @CaretCssClass"></i>
     </div>
-</th>
+
+    @if (ShowFilter && false) // Not yet ready for filters
+    {
+        <div class="ml-auto candygrid-column-filter dropdown">
+            <button class="btn btn-light candygrid-column-header-button" type="button" data-toggle="dropdown" data-boundary="window"><i class="fas fa-filter"></i></button>
+            <div class="dropdown-menu candygrid-dropdown-menu" role="menu">
+                <h6 class="popover-header mb-2">Filter Settings</h6>
+                <form>
+                    <div class="pr-1 pl-1">
+                        <select class="form-control custom-select custom-select-sm">
+                            <option value="12" selected="">Contains</option>
+                            <option value="13">Equals</option>
+                            <option value="14">Does not equal</option>
+                        </select>
+                        <input class="form-control form-control form-control-sm mt-2" type="text" autocomplete="off" inputmode="verbatim" placeholder="filter string">
+                    </div>
+                    <div class="p-1 mt-2 clearfix">
+                        <button class="btn btn-danger float-right btn-sm" type="button"><i class="fas fa-times-circle"></i></button>
+                        <button class="btn btn-success float-right btn-sm mr-1" type="button"><i class="fas fa-check-circle"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</div>
