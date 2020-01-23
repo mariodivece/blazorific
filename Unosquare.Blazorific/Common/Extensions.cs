@@ -17,7 +17,7 @@
             {
                 var column = grid.Columns
                     .FirstOrDefault(c => property.Name.Equals(c.Field, comparison));
-                
+
                 result.Add(column as IGridDataColumn ?? new GridDataColumn
                 {
                     Name = property.Name,
@@ -27,25 +27,10 @@
             return result.ToArray();
         }
 
-        internal static bool IsNumeric(this object o)
+        internal static bool IsNumeric(this Type t)
         {
-            switch (Type.GetTypeCode(o.GetType()))
-            {
-                case TypeCode.Byte:
-                case TypeCode.SByte:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.Decimal:
-                case TypeCode.Double:
-                case TypeCode.Single:
-                    return true;
-                default:
-                    return false;
-            }
+            var type = Nullable.GetUnderlyingType(t) ?? t;
+            return type == typeof(decimal) || (type.IsPrimitive && type != typeof(bool) && type != typeof(char));
         }
 
         internal static object GetDefault(this Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
@@ -88,6 +73,37 @@
             var sourceFormat = $"{source,16}";
             var memberFormat = $"{member,-22}";
             Console.WriteLine($"DBG {sourceFormat}.{memberFormat} | {info}");
+        }
+
+        internal static int AddAttachedComponent<T>(this IReadOnlyList<T> container, T child)
+            where T : IAttachedComponent
+        {
+            if (child == null) return -1;
+
+            if (container is IList<T> collection)
+            {
+                collection.Add(child);
+                return collection.Count - 1;
+            }
+
+            return -1;
+        }
+
+        internal static void RemoveAttachedComponent<T>(this IReadOnlyList<T> container, T child)
+            where T : IAttachedComponent
+        {
+            if (!(container is IList<T> collection))
+                return;
+
+            if (collection.Count == 0 || child == null)
+                return;
+
+            var childindex = child.Index > 0 && child.Index < collection.Count && ReferenceEquals(child, collection[child.Index])
+                ? child.Index
+                : collection.IndexOf(child);
+
+            if (childindex < 0) return;
+            collection.RemoveAt(childindex);
         }
     }
 }

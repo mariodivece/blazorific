@@ -1,5 +1,7 @@
-﻿<CascadingValue Name="Row" Value="this">
-    <tr @ondblclick="e => RaiseOnBodyRowDoubleClick(e)"
+﻿@inherits CandyGridChildComponent
+<CascadingValue Name="Row" Value="this">
+    <tr @attributes="Attributes.Dictionary"
+        @ondblclick="e => RaiseOnBodyRowDoubleClick(e)"
         @onclick="e => RaiseOnBodyRowClick(e)">
         @foreach (var col in Parent.Columns)
         {
@@ -9,24 +11,3 @@
         }
     </tr>
 </CascadingValue>
-@code {
-    [CascadingParameter(Name = nameof(Parent))]
-    protected CandyGrid Parent { get; set; }
-
-    [CascadingParameter(Name = nameof(DataItem))]
-    protected object DataItem { get; set; }
-
-    internal void NotifyStateChanged() => StateHasChanged();
-
-    protected void RaiseOnBodyRowDoubleClick(MouseEventArgs e)
-    {
-        $"EVENT".Log(nameof(CandyGridCell), $"On{nameof(Parent.OnBodyRowDoubleClick)}");
-        Parent.OnBodyRowDoubleClick?.Invoke(new GridInputDataEventArgs(Parent, e, DataItem));
-    }
-
-    protected void RaiseOnBodyRowClick(MouseEventArgs e)
-    {
-        $"EVENT".Log(nameof(CandyGridCell), $"On{nameof(Parent.OnBodyRowClick)}");
-        Parent.OnBodyRowClick?.Invoke(new GridInputDataEventArgs(Parent, e, DataItem));
-    }
-}

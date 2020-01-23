@@ -70,19 +70,25 @@
         public string CheckedProperty { get; set; }
 
         [Parameter]
-        public string CssClass { get; set; } = "candygrid-cell clearfix";
+        public string HeaderCssClass { get; set; }
 
         [Parameter]
-        public Action<GridInputDataEventArgs> OnDeleteButtonClick { get; set; }
+        public string CellCssClass { get; set; }
 
         [Parameter]
-        public Action<GridInputDataEventArgs> OnDetailsButtonClick { get; set; }
+        public int Width { get; set; }
 
         [Parameter]
-        public Action<GridInputDataEventArgs> OnEditButtonClick { get; set; }
+        public Action<GridRowMouseEventArgs> OnDeleteButtonClick { get; set; }
 
         [Parameter]
-        public Action<GridCellCheckedEventArgs> OnCellCheckedChanged { get; set; }
+        public Action<GridRowMouseEventArgs> OnDetailsButtonClick { get; set; }
+
+        [Parameter]
+        public Action<GridRowMouseEventArgs> OnEditButtonClick { get; set; }
+
+        [Parameter]
+        public Action<GridCellCheckboxEventArgs> OnCellCheckedChanged { get; set; }
 
         public GridDataFilter Filter { get; } = new GridDataFilter();
 

@@ -32,17 +32,23 @@
         margin-bottom: 0;
     }
 
-.candygrid-column-header .candygrid-dropdown-menu {
-    position: relative;
-    left: 0;
-    top: 0;
-    margin-right: 0;
-    margin-top: 0px;
-    margin-left: -95px;
-    font-size: small;
-    padding: 0;
-    width: 200px;
+.candygrid-column-header {
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 1px;
 }
+
+    .candygrid-column-header .candygrid-dropdown-menu {
+        position: relative;
+        left: 0;
+        top: 0;
+        margin-right: 0;
+        margin-top: 0px;
+        margin-left: -95px;
+        font-size: small;
+        padding: 0;
+        width: 200px;
+    }
 
 .candygrid-dropdown-menu .popover-header {
     font-size: small;
@@ -68,6 +74,10 @@
     line-height: 1.5rem;
     vertical-align: top;
     min-height: 1.5rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 1px;
 }
 
     .candygrid-cell .custom-control-label::before {

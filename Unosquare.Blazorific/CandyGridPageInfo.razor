@@ -1,12 +1,8 @@
-﻿<span class="small">
+﻿@inherits CandyGridChildComponent
+<span class="small">
     Showing @Parent.StartRecordNumber to @Parent.EndRecordNumber of @Parent.FilteredRecordCount records
     @if (Parent.FilteredRecordCount != Parent.TotalRecordCount)
     {
         <text> (Filtered from @Parent.TotalRecordCount total records)</text>
     }
 </span>
-
-@code {
-    [CascadingParameter(Name = nameof(Parent))]
-    protected CandyGrid Parent { get; set; }
-}

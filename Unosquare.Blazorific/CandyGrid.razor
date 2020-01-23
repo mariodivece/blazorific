@@ -1,12 +1,7 @@
 ﻿@inherits CandyComponentBase
-
 <CascadingValue Value="this" Name="Parent">
     @CandyGridColumns
-
-    <div class="@RootCssClass">
-        <div class="candygrid-overlay">
-            Loading . . .
-        </div>
+    <div class="candygrid-container @RootCssClass">
         <div class="row mt-2 mb-2">
             <div class="col-lg-4 align-self-center">
                 <CandyGridPaginator ButtonCount="5" />
@@ -20,24 +15,24 @@
             </div>
         </div>
 
-        <div class="@TableContainerCssClass">
+        <div class="candygrid-table @TableContainerCssClass">
             <table class="@TableCssClass">
                 <thead class="@TableHeaderCssClass">
                     <tr>
                         @foreach (var col in Columns)
                         {
-                            if (col.HeaderTemplate == null)
-                            {
-                                <CascadingValue Value="col" Name="Column">
-                                    <CandyGridColumnHeader />
-                                </CascadingValue>
-                            }
-                            else
-                            {
-                                <th>
+                            <th width="@GetRelativeWidth(col)" class="candygrid-column-header @col.HeaderCssClass" scope="col">
+                                @if (col.HeaderTemplate == null)
+                                {
+                                    <CascadingValue Value="col" Name="Column">
+                                        <CandyGridColumnHeader @key="col" />
+                                    </CascadingValue>
+                                }
+                                else
+                                {
                                     @col.HeaderTemplate(col)
-                                </th>
-                            }
+                                }
+                            </th>
                         }
                     </tr>
                 </thead>
@@ -80,7 +75,7 @@
                         @foreach (var item in DataItems)
                         {
                             <CascadingValue Name="DataItem" Value="item">
-                                <CandyGridRow />
+                                <CandyGridRow @key="item" />
                             </CascadingValue>
                         }
                     }

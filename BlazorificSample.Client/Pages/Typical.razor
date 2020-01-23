@@ -6,7 +6,7 @@
         <ToolbarTemplate>
             <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group btn-group-sm" role="group">
-                    <button class="btn btn-link" type="button" @onclick="_ => context.QueueDataUpdate()"><i class="fas fa-plus"></i>&nbsp;Add New</button>
+                    <button class="btn btn-link" type="button" @onclick="_ => context.QueueDataUpdate()"><i class="fas fa-plus"></i>&nbsp;Refresh</button>
                     <button class="btn btn-link" type="button" @onclick="_ => CheckAll(context)"><i class="far fa-check-square"></i>&nbsp;Select All</button>
                     <button class="btn btn-link" type="button"><i class="fas fa-print"></i>&nbsp;Print</button>
                     <button class="btn btn-link" type="button"><i class="fas fa-external-link-alt"></i>&nbsp;Export</button>
@@ -14,18 +14,22 @@
             </div>
         </ToolbarTemplate>
         <CandyGridColumns>
-            <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" IsSortable="true"
+            <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" IsSortable="true" Width="2"
                              OnDetailsButtonClick="OnDetailsButtonClick"
                              OnEditButtonClick="OnEditButtonClick"
                              OnCellCheckedChanged="OnCellCheckChanged" CheckedProperty="@nameof(Product.IsChecked)" />
-            <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" IsSearchable="true" IsSortable="true">
+            <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" IsSearchable="true" IsSortable="true" Width="2">
                 <HeaderTemplate>
                     @($"Field: {context.Field}")
                 </HeaderTemplate>
             </CandyGridColumn>
-            <CandyGridColumn Title="Description" Field="@nameof(Product.Description)" IsSortable="true" />
-            <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" FormatString="{0:c2}" />
-            <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" />
+            <CandyGridColumn Title="Description" Field="@nameof(Product.Description)" IsSortable="true" Width="6">
+                <DataTemplate>
+                    @($"{(context as Product).Description}")
+                </DataTemplate>
+            </CandyGridColumn>
+            <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" FormatString="{0:c2}" Width="2" IsSortable="true" />
+            <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" Width="1" IsSortable="true" />
 
             <CandyGridColumn Title="Date" Context="item">
                 <DataTemplate>
@@ -39,41 +43,50 @@
 @code{
     private void CheckAll(CandyGrid sender)
     {
-        foreach (var item in sender.GetData<Product>())
+        foreach (var row in sender.Rows)
         {
-            item.IsChecked = true;
+            UpdateSelected(row);
         }
     }
 
-    private void OnBodyRowDoubleClick(GridInputDataEventArgs e)
+    private void OnBodyRowDoubleClick(GridRowMouseEventArgs e)
     {
         var product = e.DataItem as Product;
         if (product == null) return;
 
+        product.IsChecked = !product.IsChecked;
         product.Description = $"Item was {product.ProductId} double clicked!";
+        UpdateSelected(e.Row);
     }
 
-    private void OnDetailsButtonClick(GridInputDataEventArgs e)
+    private void OnDetailsButtonClick(GridRowMouseEventArgs e)
     {
         var product = e.DataItem as Product;
         if (product == null) return;
-
         product.Description = $"Details for item {product.ProductId} clicked. Show a modal or something!";
     }
 
-    private void OnEditButtonClick(GridInputDataEventArgs e)
+    private void OnEditButtonClick(GridRowMouseEventArgs e)
     {
         var product = e.DataItem as Product;
         if (product == null) return;
-
         product.Description = $"Product with ID = {product.ProductId} editing . . .";
     }
 
-    private void OnCellCheckChanged(GridCellCheckedEventArgs e)
+    private void OnCellCheckChanged(GridCellCheckboxEventArgs e)
     {
         var product = e.DataItem as Product;
         if (product == null) return;
-
         product.Description = $"Product with ID = {product.ProductId}, on column {e.Column.Field} is now {(e.IsChecked ? "checked" : "unchecked")}.";
+        UpdateSelected(e.Row);
+    }
+
+    private void UpdateSelected(CandyGridRow row)
+    {
+        var product = row.DataItem as Product;
+        if (product == null) return;
+
+        row.Attributes.CssClass = product.IsChecked ? "table-active" : null;
+        row.Cells[1].Attributes.Style = product.IsChecked ? "font-weight: bold" : "font-weight: normal";
     }
 }

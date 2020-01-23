@@ -1,4 +1,5 @@
-﻿@if (Parent.Columns.Any(c => c.IsSearchable))
+﻿@inherits CandyGridChildComponent
+@if (IsVisible)
 {
     <div class="input-group input-group-sm">
         <div class="input-group-prepend">
@@ -6,18 +7,4 @@
         </div>
         <input type="search" class="form-control" placeholder="@Placeholder" @oninput="OnSearchInput">
     </div>
-}
-
-@code {
-    [CascadingParameter(Name = nameof(Parent))]
-    protected CandyGrid Parent { get; set; }
-
-    [Parameter]
-    public string Placeholder { get; set; } = "search . . .";
-
-    private void OnSearchInput(ChangeEventArgs e)
-    {
-        var searchInput = (e.Value as string ?? string.Empty).Trim();
-        Parent.ChangeSearchText(searchInput);
-    }
 }

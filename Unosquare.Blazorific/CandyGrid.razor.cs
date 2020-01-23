@@ -100,10 +100,10 @@
         #region Parameters: CSS Classes
 
         [Parameter]
-        public string RootCssClass { get; set; } = "candygrid-container";
+        public string RootCssClass { get; set; }
 
         [Parameter]
-        public string TableContainerCssClass { get; set; } = "table-responsive table-borderless candygrid-table";
+        public string TableContainerCssClass { get; set; } = "table-responsive";
 
         [Parameter]
         public string TableCssClass { get; set; } = "table table-striped table-bordered table-hover table-sm";
@@ -132,10 +132,10 @@
         #region Parameters: Event Callbacks
 
         [Parameter]
-        public Action<GridInputDataEventArgs> OnBodyRowDoubleClick { get; set; }
+        public Action<GridRowMouseEventArgs> OnBodyRowDoubleClick { get; set; }
 
         [Parameter]
-        public Action<GridInputDataEventArgs> OnBodyRowClick { get; set; }
+        public Action<GridRowMouseEventArgs> OnBodyRowClick { get; set; }
 
         [Parameter]
         public Action<GridEventArgs> OnDataLoaded { get; set; }
@@ -146,6 +146,8 @@
         #endregion
 
         public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
+
+        public IReadOnlyList<CandyGridRow> Rows { get; } = new List<CandyGridRow>(1024);
 
         public IReadOnlyList<object> DataItems { get; protected set; }
 
@@ -250,7 +252,25 @@
         internal void AddColumn(CandyGridColumn column)
         {
             m_Columns.Add(column);
+            Console.WriteLine($"ColumnCount: {m_Columns.Count}");
             QueueRenderUpdate();
+        }
+
+        internal int AddRow(CandyGridRow row) => Rows.AddAttachedComponent(row);
+
+        internal void RemoveRow(CandyGridRow row) => Rows.RemoveAttachedComponent(row);
+
+        private string GetRelativeWidth(CandyGridColumn col)
+        {
+            var automaticColumns = Columns.Where(c => c.Width <= 0).ToArray();
+            var specificColumns = Columns.Where(c => c.Width > 0).ToArray();
+
+            var sumSpecific = specificColumns.Length > 0 ? (double)specificColumns.Sum(c => c.Width) : 0;
+            var averageSpecific = specificColumns.Length > 0 ? sumSpecific / specificColumns.Length : 1;
+            var totalWidth = sumSpecific + (automaticColumns.Length * averageSpecific);
+            var relativeWidth = (col.Width <= 0 ? averageSpecific : col.Width) / totalWidth;
+
+            return $"{Math.Round((relativeWidth * 100),2):0.00}%"; 
         }
 
         private async Task UpdateDataAsync()
