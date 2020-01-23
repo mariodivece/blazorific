@@ -1,4 +1,16 @@
-﻿.candygrid-column-header-filter {
+﻿.candygrid-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 5000;
+    padding-left: 0;
+    padding-right: 0;
+    opacity: .4;
+    text-align: center;
+    color: #fff;
+}
+
+.candygrid-column-header-filter {
     display: none;
 }
 
