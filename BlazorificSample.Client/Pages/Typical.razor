@@ -14,22 +14,22 @@
             </div>
         </ToolbarTemplate>
         <CandyGridColumns>
-            <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" IsSortable="true"
+            <CandyGridColumn Title="ID" Field="@nameof(Product.ProductId)" IsSortable="true" Width="2"
                              OnDetailsButtonClick="OnDetailsButtonClick"
                              OnEditButtonClick="OnEditButtonClick"
                              OnCellCheckedChanged="OnCellCheckChanged" CheckedProperty="@nameof(Product.IsChecked)" />
-            <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" IsSearchable="true" IsSortable="true">
+            <CandyGridColumn Title="Name" Field="@nameof(Product.Name)" IsSearchable="true" IsSortable="true" Width="2">
                 <HeaderTemplate>
                     @($"Field: {context.Field}")
                 </HeaderTemplate>
             </CandyGridColumn>
-            <CandyGridColumn Title="Description" Field="@nameof(Product.Description)" IsSortable="true">
+            <CandyGridColumn Title="Description" Field="@nameof(Product.Description)" IsSortable="true" Width="6">
                 <DataTemplate>
                     @($"{(context as Product).Description}")
                 </DataTemplate>
             </CandyGridColumn>
-            <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" FormatString="{0:c2}" />
-            <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" />
+            <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" FormatString="{0:c2}" Width="2" IsSortable="true" />
+            <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" Width="1" IsSortable="true" />
 
             <CandyGridColumn Title="Date" Context="item">
                 <DataTemplate>

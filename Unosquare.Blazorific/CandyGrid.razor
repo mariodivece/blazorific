@@ -21,7 +21,7 @@
                     <tr>
                         @foreach (var col in Columns)
                         {
-                            <th class="candygrid-column-header @col.HeaderCssClass" scope="col">
+                            <th width="@GetRelativeWidth(col)" class="candygrid-column-header @col.HeaderCssClass" scope="col">
                                 @if (col.HeaderTemplate == null)
                                 {
                                     <CascadingValue Value="col" Name="Column">

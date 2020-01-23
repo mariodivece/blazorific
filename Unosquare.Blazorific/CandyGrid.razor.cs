@@ -260,6 +260,19 @@
 
         internal void RemoveRow(CandyGridRow row) => Rows.RemoveAttachedComponent(row);
 
+        private string GetRelativeWidth(CandyGridColumn col)
+        {
+            var automaticColumns = Columns.Where(c => c.Width <= 0).ToArray();
+            var specificColumns = Columns.Where(c => c.Width > 0).ToArray();
+
+            var sumSpecific = specificColumns.Length > 0 ? (double)specificColumns.Sum(c => c.Width) : 0;
+            var averageSpecific = specificColumns.Length > 0 ? sumSpecific / specificColumns.Length : 1;
+            var totalWidth = sumSpecific + (automaticColumns.Length * averageSpecific);
+            var relativeWidth = (col.Width <= 0 ? averageSpecific : col.Width) / totalWidth;
+
+            return $"{Math.Round((relativeWidth * 100),2):0.00}%"; 
+        }
+
         private async Task UpdateDataAsync()
         {
             if (HasRendered && Columns.Count == 0 && DataAdapter != null)

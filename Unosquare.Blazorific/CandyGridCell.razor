@@ -43,7 +43,7 @@
             <div class="flex-fill mb-0 mr-1">
                 @if (HasAutomaticCheckbox)
                 {
-                    <label class="custom-control custom-checkbox" style="margin-bottom: 0"
+                    <label class="custom-control custom-checkbox" style="margin-bottom: 0; cursor: pointer"
                            @onclick:stopPropagation="true"
                            @ondblclick:stopPropagation="true">
                         <input type="checkbox" class="custom-control-input" @bind="IsChecked" />
@@ -59,8 +59,15 @@
     }
     else
     {
-        <div class="@RightAlignCssClass">
+        if (!string.IsNullOrWhiteSpace(RightAlignCssClass))
+        {
+            <div class="@RightAlignCssClass">
+                @Column.GetFormattedValue(DataItem)
+            </div>
+        }
+        else
+        {
             @Column.GetFormattedValue(DataItem)
-        </div>
+        }
     }
 </td>

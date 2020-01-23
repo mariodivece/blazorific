@@ -76,6 +76,9 @@
         public string CellCssClass { get; set; }
 
         [Parameter]
+        public int Width { get; set; }
+
+        [Parameter]
         public Action<GridRowMouseEventArgs> OnDeleteButtonClick { get; set; }
 
         [Parameter]
