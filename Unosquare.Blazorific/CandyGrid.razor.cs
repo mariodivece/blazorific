@@ -13,7 +13,7 @@
 
     public partial class CandyGrid : IDisposable
     {
-        private const int QueueProcessorDueTimeMs = 50;
+        private const int QueueProcessorDueTimeMs = 1000;
 
         private readonly object SyncLock = new object();
         private readonly Timer QueueProcessor;
@@ -49,9 +49,6 @@
                 {
                     if (pendingDataUpdates > 0 && !IsDisposed)
                         await UpdateDataAsync();
-
-                    if (pendingRenderUpdates > 0 && !IsDisposed)
-                        StateHasChanged();
                 }
                 finally
                 {
@@ -60,6 +57,9 @@
                         PendingAdapterUpdates -= pendingDataUpdates;
                         PendingRenderUpdates -= pendingRenderUpdates;
                         IsProcessingQueue = false;
+
+                        if (PendingAdapterUpdates <= 0 && PendingRenderUpdates <= 0)
+                            StateHasChanged();
                     }
                 }
             }, null, Timeout.Infinite, Timeout.Infinite);
@@ -87,7 +87,6 @@
                     return;
 
                 m_DataAdapter = value;
-                IsLoading = true;
                 QueueDataUpdate();
             }
         }
@@ -165,7 +164,16 @@
 
         public int EndRecordNumber => Math.Max(0, StartRecordNumber + (DataItems?.Count ?? 0) - 1);
 
-        public bool IsLoading { get; protected set; }
+        public bool IsLoading
+        {
+            get
+            {
+                lock (SyncLock)
+                {
+                    return !IsDisposed && (PendingAdapterUpdates > 0 || PendingRenderUpdates > 0);
+                }
+            }
+        }
 
         private GridDataRequest Request { get; }
 
@@ -177,6 +185,7 @@
             {
                 if (IsDisposed) return;
                 PendingAdapterUpdates++;
+                StateHasChanged();
                 QueueProcessor.Change(QueueProcessorDueTimeMs, Timeout.Infinite);
             }
         }
@@ -187,6 +196,7 @@
             {
                 if (IsDisposed) return;
                 PendingRenderUpdates++;
+                StateHasChanged();
                 QueueProcessor.Change(QueueProcessorDueTimeMs, Timeout.Infinite);
             }
         }
@@ -283,7 +293,6 @@
 
             try
             {
-                IsLoading = true;
                 if (DataAdapter == null)
                 {
                     DataItems = default;
@@ -317,11 +326,6 @@
             {
                 $"Failed to update. {ex.Message} - {ex.StackTrace}".Log(nameof(CandyGrid), nameof(UpdateDataAsync));
                 OnDataLoadFailed?.Invoke(new GridExceptionEventArgs(this, ex));
-            }
-            finally
-            {
-                IsLoading = false;
-                StateHasChanged();
             }
         }
 

@@ -1,4 +1,8 @@
-﻿.candygrid-overlay {
+﻿.candygrid-container {
+    position: relative;
+}
+
+.candygrid-overlay {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -7,8 +11,14 @@
     padding-right: 0;
     opacity: .4;
     text-align: center;
-    color: #fff;
+    background-color: #fff;
+    vertical-align: middle;
 }
+
+    .candygrid-overlay .candygrid-overlay-content {
+        position: relative;
+        top: 40%;
+    }
 
 .candygrid-column-header-filter {
     display: none;

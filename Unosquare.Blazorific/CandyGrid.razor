@@ -2,6 +2,15 @@
 <CascadingValue Value="this" Name="Parent">
     @CandyGridColumns
     <div class="candygrid-container @RootCssClass">
+        <div class="candygrid-overlay" style="display: @(IsLoading ? "block" : "none")">
+            <div class="candygrid-overlay-content">
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row mt-2 mb-2">
             <div class="col-lg-4 align-self-center">
                 <CandyGridPaginator ButtonCount="5" />
