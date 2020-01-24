@@ -328,6 +328,11 @@
             }
         }
 
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+        }
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             var intervalDuration = LastRenderTime == default
@@ -338,7 +343,7 @@
 
             $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago".Log(nameof(CandyGrid), nameof(OnAfterRender));
             await base.OnAfterRenderAsync(firstRender);
-            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onRendered", RootElement);
+            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onRendered", RootElement, firstRender);
 
             if (!firstRender)
                 return;
@@ -347,9 +352,9 @@
             QueueDataUpdate();
         }
 
-        protected override void OnParametersSet()
+        protected override async Task OnParametersSetAsync()
         {
-            base.OnParametersSet();
+            await base.OnParametersSetAsync();
             "CALLED".Log(nameof(CandyGrid), nameof(OnParametersSet));
         }
 
