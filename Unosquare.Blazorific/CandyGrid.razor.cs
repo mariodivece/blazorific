@@ -319,12 +319,13 @@
                         : response.CurrentPage;
                 }
 
-                OnDataLoaded?.Invoke(new GridEventArgs(this));
+                await InvokeAsync(() => OnDataLoaded?.Invoke(new GridEventArgs(this)));
+                await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onDataLoaded", RootElement);
             }
             catch (Exception ex)
             {
                 $"Failed to update. {ex.Message} - {ex.StackTrace}".Log(nameof(CandyGrid), nameof(UpdateDataAsync));
-                OnDataLoadFailed?.Invoke(new GridExceptionEventArgs(this, ex));
+                await InvokeAsync(() => OnDataLoadFailed?.Invoke(new GridExceptionEventArgs(this, ex)));
             }
         }
 

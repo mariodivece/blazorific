@@ -2,10 +2,18 @@
     constants: {
         filterOpenAttribute: 'data-cg-filter-isopen',
         renderedEventName: 'candygrid.rendred',
+        dataLoadedEventName: 'candygrid.data.loaded',
     },
 
     onRendered: function (rootElement, firstRender) {
+        CandyGrid.hideColumnFilterDropdowns(rootElement);
         var event = new CustomEvent(CandyGrid.constants.renderedEventName, { firstRender: firstRender });
+        rootElement.dispatchEvent(event);
+    },
+
+    onDataLoaded: function (rootElement) {
+        CandyGrid.hideColumnFilterDropdowns(rootElement);
+        var event = new Event(CandyGrid.constants.dataLoadedEventName);
         rootElement.dispatchEvent(event);
     },
 
@@ -44,8 +52,12 @@
 
         buttonEl.on('click', function (event) {
             var isOpen = buttonEl.attr(isOpenAttr) === 'true';
-            gridEl.find("[" + isOpenAttr + "]").popover('hide');
+            CandyGrid.hideColumnFilterDropdowns(gridEl);
             buttonEl.popover(isOpen ? 'hide' : 'show');
         });
+    },
+
+    hideColumnFilterDropdowns: function (rootElement) {
+        $(rootElement).find("[" + CandyGrid.constants.filterOpenAttribute + "]").popover('hide');
     }
 };
