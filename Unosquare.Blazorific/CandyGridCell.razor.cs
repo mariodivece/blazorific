@@ -32,7 +32,7 @@
         [CascadingParameter(Name = nameof(Row))]
         public CandyGridRow Row { get; private set; }
 
-        internal CandyGridRow Container => Row;
+        public IPropertyProxy Property => Column?.Property;
 
         private bool IsChecked
         {
@@ -48,11 +48,11 @@
             }
         }
 
-        private string RightAlignCssClass { get; set; }
+        private string TextAlignCssClass { get; set; }
 
         private object DataItem => Row?.DataItem;
 
-        private bool HasAutomaticButtons => 
+        private bool HasAutomaticButtons =>
             Column.OnDeleteButtonClick != null ||
             Column.OnDetailsButtonClick != null ||
             Column.OnEditButtonClick != null;
@@ -67,18 +67,45 @@
         protected override void OnInitialized()
         {
             Index = Row?.AddCell(this) ?? -1;
+            TextAlignCssClass = GetTextAlignCssClass();
+            CheckedProperty = GetCheckedProperty();
+            base.OnInitialized();
+        }
 
-            var fieldProxy = string.IsNullOrWhiteSpace(Column?.Field) ? null : Row?.DataItem?.PropertyProxy(Column.Field);
-            RightAlignCssClass = fieldProxy == null || !fieldProxy.PropertyType.IsNumeric() ? null : "text-right";
-
+        private IPropertyProxy GetCheckedProperty()
+        {
             var checkedProxy = !string.IsNullOrWhiteSpace(Column.CheckedProperty)
                 ? DataItem?.PropertyProxy(Column.CheckedProperty)
                 : null;
 
             if (checkedProxy == null || (checkedProxy.PropertyType != typeof(bool) && checkedProxy.PropertyType != typeof(bool?)))
-                CheckedProperty = null;
-            else
-                CheckedProperty = checkedProxy;
+                return null;
+
+            return checkedProxy;
+        }
+
+        private string GetTextAlignCssClass()
+        {
+            if (Column.Alignment != TextAlignment.Auto)
+            {
+                return Column.Alignment switch
+                {
+                    TextAlignment.Center => "text-center",
+                    TextAlignment.Left => "text-left",
+                    TextAlignment.Right => "text-right",
+                    TextAlignment.Justify => "text-justify",
+                    _ => null
+                };
+            }
+
+            if (Property == null) return null;
+
+            var t = Property.PropertyType;
+            return t.IsNumeric() || t.IsDateTime()
+                ? "text-right"
+                : t.IsBoolean()
+                ? "text-center"
+                : null;
         }
 
         private void RaiseOnRowButtonClick(MouseEventArgs e, GridButtonEventType eventType)
@@ -94,14 +121,14 @@
 
             $"EVENT".Log(nameof(CandyGridCell), $"On{eventType}");
             callback?.Invoke(new GridRowMouseEventArgs(Row, e));
-            Row.NotifyStateChanged();
+            Row?.NotifyStateChanged();
         }
 
         private void RaiseOnCellCheckedChanged(bool isChecked)
         {
             $"EVENT".Log(nameof(CandyGridCell), nameof(CandyGridColumn.OnCellCheckedChanged));
             Column.OnCellCheckedChanged?.Invoke(new GridCellCheckboxEventArgs(Row, Column, isChecked));
-            Row.NotifyStateChanged();
+            Row?.NotifyStateChanged();
         }
     }
 }

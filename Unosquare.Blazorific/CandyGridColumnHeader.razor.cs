@@ -11,7 +11,6 @@
     public sealed partial class CandyGridColumnHeader
     {
         private readonly Dictionary<CompareOperators, string> FilterOperators = new Dictionary<CompareOperators, string>(16);
-        private string FilterInputType = "text";
 
         private CompareOperators FilterOperator;
         private string FilterText1;
@@ -24,7 +23,7 @@
         [CascadingParameter(Name = nameof(Column))]
         private CandyGridColumn Column { get; set; }
 
-        private bool ShowFilter => Column.Filter.Operator != CompareOperators.None && Column.Filter.Operator != CompareOperators.Auto;
+        private bool ShowFilter => (Column?.ShowFilter ?? false) && FilterOperators.Count > 1;
 
         private string CaretCssClass
         {
@@ -38,42 +37,58 @@
             }
         }
 
-        private IPropertyProxy Property { get; set; }
+        private IPropertyProxy Property => Column?.Property;
+
+        private string FilterInputType
+        {
+            get
+            {
+                if (Column is IGridDataColumn col)
+                {
+                    return col.DataType switch
+                    {
+                        DataType.Boolean => "checkbox",
+                        DataType.Date => "date",
+                        DataType.Numeric => "number",
+                        DataType.DateTime => "datetime-local",
+                        DataType.DateTimeUtc => "datetime-local",
+                        _ => "text"
+                    };
+                }
+                
+                return "text";
+            }
+            
+        }
 
         private void OnColumnSortClick(MouseEventArgs e)
         {
             Column.ChangeSortDirection(e.CtrlKey);
         }
 
-        private void OnApplyFilterClick(MouseEventArgs e)
+        private void OnApplyFilterClick()
         {
-            Column.Filter.Operator = FilterOperator;
-            Column.Filter.Text = FilterText1;
-            Grid.QueueDataUpdate();
+            Column?.ApplyFilter(FilterOperator, FilterText1, FilterText2);
+            FilterOperator = Column?.Filter.Operator ?? CompareOperators.None;
+            FilterText1 = Column?.Filter.Text;
         }
 
-        private void OnClearFilterClick(MouseEventArgs e)
+        private void OnClearFilterClick()
         {
-            FilterOperator = CompareOperators.None;
-            FilterText1 = null;
-            FilterText2 = null;
-
-            OnApplyFilterClick(e);
+            Column?.ApplyFilter(CompareOperators.None);
+            FilterOperator = Column?.Filter.Operator ?? CompareOperators.None;
+            FilterText1 = Column?.Filter.Text;
         }
 
         protected override void OnInitialized()
         {
             try
             {
-                Property = !string.IsNullOrWhiteSpace(Column?.Field)
-                    ? Grid?.DataAdapter?.DataItemType?.PropertyProxy(Column.Field) : null;
-
                 if (Property == null)
                     return;
 
                 if (Property.PropertyType.IsNumeric())
                 {
-                    FilterInputType = "number";
                     FilterOperators[CompareOperators.None] = "(Select)";
                     FilterOperators[CompareOperators.Equals] = "Equals";
                     FilterOperators[CompareOperators.Between] = "Between";
@@ -87,7 +102,6 @@
 
                 if (Property.PropertyType == typeof(string))
                 {
-                    FilterInputType = "text";
                     FilterOperators[CompareOperators.None] = "(Select)";
                     FilterOperators[CompareOperators.Equals] = "Equals";
                     FilterOperators[CompareOperators.Contains] = "Contains";

@@ -8,6 +8,8 @@
 
         int SortOrder { get; }
 
+        DataType DataType { get; }
+
         SortDirection SortDirection { get; }
 
         GridDataFilter Filter { get; }

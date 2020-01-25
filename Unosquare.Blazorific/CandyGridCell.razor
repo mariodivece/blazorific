@@ -52,7 +52,7 @@
                 }
                 else
                 {
-                    <div class="@RightAlignCssClass">
+                    <div class="@TextAlignCssClass">
                         @Column.GetFormattedValue(DataItem)
                     </div>
                 }
@@ -61,9 +61,9 @@
     }
     else
     {
-        if (!string.IsNullOrWhiteSpace(RightAlignCssClass))
+        if (!string.IsNullOrWhiteSpace(TextAlignCssClass))
         {
-            <div class="@RightAlignCssClass">
+            <div class="@TextAlignCssClass">
                 @Column.GetFormattedValue(DataItem)
             </div>
         }

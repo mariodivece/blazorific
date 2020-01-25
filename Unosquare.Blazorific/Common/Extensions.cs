@@ -18,10 +18,7 @@
                 var column = grid.Columns
                     .FirstOrDefault(c => property.Name.Equals(c.Field, comparison));
 
-                result.Add(column as IGridDataColumn ?? new GridDataColumn
-                {
-                    Name = property.Name,
-                });
+                result.Add(column as IGridDataColumn ?? new CandyGridColumn(property));
             }
 
             return result.ToArray();
@@ -37,6 +34,21 @@
         {
             var type = Nullable.GetUnderlyingType(t) ?? t;
             return type == typeof(DateTime);
+        }
+
+        internal static bool IsBoolean(this Type t)
+        {
+            var type = Nullable.GetUnderlyingType(t) ?? t;
+            return type == typeof(bool);
+        }
+
+        internal static DataType GetDataType(this Type t)
+        {
+            if (t.IsBoolean()) return DataType.Boolean;
+            if (t.IsDateTime()) return DataType.DateTime;
+            if (t.IsNumeric()) return DataType.Numeric;
+
+            return DataType.String;
         }
 
         internal static object GetDefault(this Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
