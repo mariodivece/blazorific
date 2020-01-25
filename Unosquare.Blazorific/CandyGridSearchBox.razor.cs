@@ -8,13 +8,7 @@
         [Parameter]
         public string Placeholder { get; set; } = "search . . .";
 
-        public bool IsVisible { get; protected set; }
-
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-            IsVisible = Parent.Columns.Any(c => c.IsSearchable);
-        }
+        public bool IsVisible => Parent?.Columns.Any(c => c.IsSearchable) ?? false;
 
         private void OnSearchInput(ChangeEventArgs e)
         {

@@ -30,7 +30,7 @@
 
         protected override void OnInitialized()
         {
-            Index = Parent.AddRow(this);
+            Index = Parent?.AddRow(this) ?? -1;
             base.OnInitialized();
         }
 

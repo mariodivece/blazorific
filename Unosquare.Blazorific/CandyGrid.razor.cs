@@ -18,7 +18,6 @@
         private readonly Timer QueueProcessor;
         private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
 
-        private ElementReference RootElement;
         private bool IsDisposed;
         private bool HasRendered;
         private bool IsProcessingQueue;
@@ -140,6 +139,8 @@
         public Action<GridExceptionEventArgs> OnDataLoadFailed { get; set; }
 
         #endregion
+
+        private ElementReference RootElement { get; set; }
 
         public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
 
@@ -329,11 +330,6 @@
             }
         }
 
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync();
-        }
-
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             var intervalDuration = LastRenderTime == default
@@ -364,7 +360,7 @@
             var proxies = t.PropertyProxies().Values;
             var result = new List<CandyGridColumn>(proxies.Count());
             foreach (var proxy in proxies)
-                result.Add(new CandyGridColumn(proxy));
+                result.Add(new CandyGridColumn(proxy, this));
 
             return result.ToArray();
         }

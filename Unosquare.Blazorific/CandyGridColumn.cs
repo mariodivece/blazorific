@@ -21,13 +21,17 @@
             // placeholder
         }
 
-        internal CandyGridColumn(IPropertyProxy property)
+        internal CandyGridColumn(IPropertyProxy property, CandyGrid parent)
         {
             // TODO: Create automatic columns from type.
             // Make it smarter
             m_Property = property;
             Title = property.Name;
             Field = property.Name;
+            IsSortable = true;
+            IsSearchable = property.PropertyType == typeof(string);
+            Parent = parent;
+            HasInitialized = true;
         }
 
         [Parameter]

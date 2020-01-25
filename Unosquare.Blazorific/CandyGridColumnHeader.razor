@@ -20,16 +20,43 @@
                 <div class="candygrid-filter-dialog">
                     <form @onsubmit="OnApplyFilterClick">
                         <div class="pr-1 pl-1">
-                            <select class="form-control custom-select custom-select-sm" @bind="FilterOperator">
-                                @foreach (var kvp in FilterOperators)
-                                {
-                                    <option value="@(kvp.Key)">@kvp.Value</option>
-                                }
-                            </select>
-                            <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterText1" autocomplete="off" inputmode="verbatim" placeholder="value">
+                            @if (FilterOperators.Count == 2)
+                            {
+                                <input type="hidden" @bind="FilterOperator" />
+                            }
+                            else
+                            {
+                                <select class="form-control custom-select custom-select-sm" @bind="FilterOperator">
+                                    @foreach (var kvp in FilterOperators)
+                                    {
+                                        <option value="@(kvp.Key)">@kvp.Value</option>
+                                    }
+                                </select>
+                            }
+
+                            @if (IsBooleanInputType)
+                            {
+                                <input class="form-control form-control form-control-sm mt-2" type="checkbox" @bind="BooleanFilterArg" />
+                            }
+                            else if (IsDateInputType)
+                            {
+                                <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="DateFilterArg1" />
+                            }
+                            else
+                            {
+                                <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterArg1" autocomplete="off" inputmode="verbatim" placeholder="value" />
+                            }
+
                             @if (FilterOperator == CompareOperators.Between)
                             {
-                                <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterText2" autocomplete="off" inputmode="verbatim" placeholder="value">
+                                if (IsDateInputType)
+                                {
+                                    <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="DateFilterArg2" />
+                                }
+                                else
+                                {
+                                    <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterArg2" autocomplete="off" inputmode="verbatim" placeholder="and value">
+                                }
                             }
                         </div>
                         <div class="p-1 mt-2 clearfix">

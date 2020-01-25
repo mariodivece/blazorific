@@ -18,7 +18,8 @@
                 var column = grid.Columns
                     .FirstOrDefault(c => property.Name.Equals(c.Field, comparison));
 
-                result.Add(column as IGridDataColumn ?? new CandyGridColumn(property));
+                result.Add(column as IGridDataColumn
+                    ?? new CandyGridColumn(property, null));
             }
 
             return result.ToArray();
