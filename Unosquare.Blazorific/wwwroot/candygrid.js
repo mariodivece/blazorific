@@ -27,6 +27,7 @@
             html: true,
             placement: 'bottom',
             trigger: 'manual',
+            container: 'body',
             template:
                 '<div class="popover" role="tooltip">' +
                 '  <div class="arrow"></div>' +
@@ -58,6 +59,7 @@
     },
 
     hideColumnFilterDropdowns: function (rootElement) {
-        $(rootElement).find("[" + CandyGrid.constants.filterOpenAttribute + "]").popover('hide');
+        $(rootElement).find("thead").first()
+            .find("[" + CandyGrid.constants.filterOpenAttribute + "]").popover('hide');
     }
 };

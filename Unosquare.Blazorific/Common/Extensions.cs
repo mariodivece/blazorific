@@ -33,6 +33,12 @@
             return type == typeof(decimal) || (type.IsPrimitive && type != typeof(bool) && type != typeof(char));
         }
 
+        internal static bool IsDateTime(this Type t)
+        {
+            var type = Nullable.GetUnderlyingType(t) ?? t;
+            return type == typeof(DateTime);
+        }
+
         internal static object GetDefault(this Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
 
         internal static int ComputeTotalPages(int pageSize, int totalCount)
