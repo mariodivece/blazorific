@@ -29,7 +29,8 @@
                 </DataTemplate>
             </CandyGridColumn>
             <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" FormatString="{0:c2}" Width="2" IsSortable="true" />
-            <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" Width="1" IsSortable="true" />
+            <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" Width="1" IsSortable="true"
+                             FilterOptionsProvider="@(async () => await DataAccess.GetProductFilterOptionsAsync(nameof(Product.StockCount)))"/>
 
             <CandyGridColumn Title="Date" Context="item">
                 <DataTemplate>

@@ -77,6 +77,9 @@
         public DataType? FilterDataType { get; set; }
 
         [Parameter]
+        public Func<Task<Dictionary<string, string>>> FilterOptionsProvider { get; set; }
+
+        [Parameter]
         public bool ShowFilter { get; set; } = true;
 
         [Parameter]
@@ -171,9 +174,9 @@
             Parent.QueueDataUpdate();
         }
 
-        public void ApplyFilter(CompareOperators filter, params string[] args)
+        public void ApplyFilter(CompareOperators filterOp, params string[] args)
         {
-            if (filter == CompareOperators.Auto || filter == CompareOperators.None || args == null || args.Length <= 0)
+            if (filterOp == CompareOperators.Auto || filterOp == CompareOperators.None || args == null || args.Length <= 0)
             {
                 Filter.Argument = null;
                 Filter.Text = null;
@@ -182,13 +185,23 @@
                 return;
             }
 
-            Filter.Operator = filter;
-            Filter.Text = args[0];
-            var arguments = new List<string>(args.Length - 1);
-            for (var i = 1; i < args.Length; i++)
-                arguments.Add(args[i]);
+            Filter.Operator = filterOp;
 
-            Filter.Argument = arguments.ToArray();
+            if (Filter.Operator == CompareOperators.Multiple)
+            {
+                Filter.Text = null;
+                Filter.Argument = args;
+            }
+            else
+            {
+                Filter.Text = args[0];
+                var arguments = new List<string>(args.Length - 1);
+                for (var i = 1; i < args.Length; i++)
+                    arguments.Add(args[i]);
+
+                Filter.Argument = arguments.ToArray();
+            }
+
             Parent?.QueueDataUpdate();
         }
 

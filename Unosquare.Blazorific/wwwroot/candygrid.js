@@ -27,7 +27,9 @@
             html: true,
             placement: 'bottom',
             trigger: 'manual',
+            boundary: 'viewport',
             container: 'body',
+            offset: 20000,
             template:
                 '<div class="popover" role="tooltip">' +
                 '  <div class="arrow"></div>' +

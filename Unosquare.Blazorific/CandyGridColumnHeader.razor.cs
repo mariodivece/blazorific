@@ -6,6 +6,7 @@
     using Microsoft.JSInterop;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
 
@@ -46,6 +47,7 @@
             { CompareOperators.NotEquals, "Not Equals" }
         };
 
+        private readonly Dictionary<string, bool> CheckedFilterOptions = new Dictionary<string, bool>(32);
         private CompareOperators FilterOperator;
         private string FilterArg1;
         private string FilterArg2;
@@ -78,7 +80,12 @@
         {
             get
             {
-                if (Property == null) return EmptyOperators;
+                if (Property == null)
+                    return EmptyOperators;
+
+                if (HasFilterOptions)
+                    return BooleanOperators;
+
                 var dataType = (Column as IGridDataColumn)?.DataType ?? DataType.String;
                 return dataType switch
                 {
@@ -88,6 +95,8 @@
                 };
             }
         }
+
+        private IReadOnlyDictionary<string, string> FilterOptions { get; set; } = new Dictionary<string, string>(0);
 
         private bool BooleanFilterArg
         {
@@ -133,6 +142,8 @@
 
         private bool IsDateInputType => FilterInputType == "date" || FilterInputType == "datetime-local";
 
+        private bool HasFilterOptions => FilterOptions != null && FilterOptions.Count > 0;
+
         private void OnColumnSortClick(MouseEventArgs e)
         {
             Column.ChangeSortDirection(e.CtrlKey);
@@ -140,27 +151,85 @@
 
         private void OnApplyFilterClick()
         {
-            FilterOperator = IsBooleanInputType ? CompareOperators.Equals : FilterOperator;
-            Column?.ApplyFilter(FilterOperator, FilterArg1, FilterArg2);
-            FilterOperator = Column?.Filter.Operator ?? CompareOperators.None;
-            FilterArg1 = Column?.Filter.Text;
+            FilterOperator = HasFilterOptions
+                ? CompareOperators.Multiple
+                : IsBooleanInputType
+                ? CompareOperators.Equals
+                : FilterOperator;
+
+            if (FilterOperator == CompareOperators.Multiple)
+                Column?.ApplyFilter(FilterOperator, CheckedFilterOptions.Where(kvp => kvp.Value).Select(kvp => kvp.Key).ToArray());
+            else
+                Column?.ApplyFilter(FilterOperator, FilterArg1, FilterArg2);
+
+            CoerceFilterState();
         }
 
         private void OnClearFilterClick()
         {
             Column?.ApplyFilter(CompareOperators.None);
+            CoerceFilterState();
+        }
+
+        private void OnFilterOptionCheckedChanged(ChangeEventArgs e, string key)
+        {
+            var isChecked = (bool)e.Value;
+            CheckedFilterOptions[key] = isChecked;
+        }
+
+        private void OnFilterOptionCheckTool(bool checkAll)
+        {
+            CheckedFilterOptions.Clear();
+            if (!checkAll) return;
+
+            foreach (var kvp in FilterOptions)
+                CheckedFilterOptions[kvp.Key] = true;
+        }
+
+        private void CoerceFilterState()
+        {
             FilterOperator = Column?.Filter.Operator ?? CompareOperators.None;
             FilterArg1 = Column?.Filter.Text;
+            FilterArg2 = Column?.Filter.Argument != null && Column?.Filter.Argument.Length > 0
+                ? Column?.Filter.Argument[0]
+                : null;
+
+            if (Column?.Filter.Argument == null)
+            {
+                CheckedFilterOptions.Clear();
+                return;
+            }
+
+            foreach (var key in CheckedFilterOptions.Keys.ToArray())
+                CheckedFilterOptions[key] = Column?.Filter.Argument?.Contains(key) ?? false;
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await base.OnAfterRenderAsync(firstRender);
+            try
+            {
+                if (!firstRender)
+                    return;
 
-            if (!firstRender)
-                return;
+                await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.bindColumnFilterDropdown", ColumnFilterElement);
+            }
+            finally
+            {
+                await base.OnAfterRenderAsync(firstRender);
+            }
+        }
 
-            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.bindColumnFilterDropdown", ColumnFilterElement);
+        protected override async Task OnInitializedAsync()
+        {
+            try
+            {
+                if (Column?.FilterOptionsProvider != null)
+                    FilterOptions = await Column.FilterOptionsProvider.Invoke();
+            }
+            finally
+            {
+                await base.OnInitializedAsync();
+            }
         }
     }
 }
