@@ -28,7 +28,7 @@
         internal static bool IsNumeric(this Type t)
         {
             var type = Nullable.GetUnderlyingType(t) ?? t;
-            return type == typeof(decimal) || (type.IsPrimitive && type != typeof(bool) && type != typeof(char));
+            return type == typeof(decimal) || type.IsEnum || (type.IsPrimitive && type != typeof(bool) && type != typeof(char));
         }
 
         internal static bool IsDateTime(this Type t)
