@@ -1,49 +1,61 @@
 ﻿namespace Unosquare.Blazorific
 {
-    using Common;
     using Microsoft.AspNetCore.Components;
-    using System;
+    using Microsoft.JSInterop;
+    using System.Threading.Tasks;
 
     public partial class CandyModal
     {
-        [Inject]
-        protected CandyModalService ModalService { get; set; }
+        protected ElementReference ModalElement { get; set; }
 
-        protected bool IsVisible { get; set; }
-
-        protected string Title { get; set; }
-
-        protected RenderFragment Content { get; set; }
-
-        protected override void OnInitialized()
+        public enum Sizes
         {
-            ModalService.OnShowRequested += OnShowModalRequested;
-            ModalService.OnCloseRequested += OnCloseModalRequested;
-            base.OnInitialized();
+            Default,
+            Small,
+            Large,
+            ExtraLarge,
         }
 
-        protected void OnShowModalRequested(object sender, ModalShowEventArgs e)
-        {
-            Title = e.Title;
-            Content = e.Content;
-            IsVisible = true;
+        [Parameter]
+        public string Title { get; set; }
 
-            StateHasChanged();
+        [Parameter]
+        public RenderFragment Content { get; set; }
+
+        [Parameter]
+        public RenderFragment Footer { get; set; }
+
+        [Parameter]
+        public Sizes Size { get; set; }
+
+        [Parameter]
+        public bool Center { get; set; }
+
+        private string OptionsClasses
+        {
+            get
+            {
+                var sizeClass = Size switch
+                {
+                    Sizes.Default => string.Empty,
+                    Sizes.ExtraLarge => "modal-xl",
+                    Sizes.Large => "modal-lg",
+                    Sizes.Small => "modal-sam",
+                    _ => string.Empty
+                };
+
+                return $"{(Center ? "modal-dialog-centered" : string.Empty)} {sizeClass}".Trim();
+            }
         }
 
-        protected void OnCloseModalRequested(object sender, EventArgs e)
+        public async Task Show()
         {
-            IsVisible = false;
-            Title = null;
-            Content = null;
-
-            StateHasChanged();
+            await Js.InvokeVoidAsync($"{nameof(CandyModal)}.show", ModalElement);
         }
 
-        public virtual void Dispose()
+        public async Task Hide()
         {
-            ModalService.OnShowRequested -= OnShowModalRequested;
-            ModalService.OnCloseRequested -= OnCloseModalRequested;
+            await Js.InvokeVoidAsync($"{nameof(CandyModal)}.hide", ModalElement);
         }
     }
 }

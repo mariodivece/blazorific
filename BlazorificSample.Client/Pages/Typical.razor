@@ -8,8 +8,7 @@
                 <div class="btn-group btn-group-sm" role="group">
                     <button class="btn btn-link" type="button" @onclick="_ => context.QueueDataUpdate()"><i class="fas fa-plus"></i>&nbsp;Refresh</button>
                     <button class="btn btn-link" type="button" @onclick="_ => CheckAll(context)"><i class="far fa-check-square"></i>&nbsp;Select All</button>
-                    <button class="btn btn-link" type="button"><i class="fas fa-print"></i>&nbsp;Print</button>
-                    <button class="btn btn-link" type="button"><i class="fas fa-external-link-alt"></i>&nbsp;Export</button>
+                    <button class="btn btn-link" type="button" @onclick="OnModalButtonClick"><i class="fas fa-print"></i>&nbsp;Test Modal</button>
                 </div>
             </div>
         </ToolbarTemplate>
@@ -41,7 +40,19 @@
     </CandyGrid>
 </div>
 
+<CandyModal @ref="TestDialog" Title="Hey There!" Size="CandyModal.Sizes.Large" Center="true">
+    <Content>
+        <div>This is some sample content!</div>
+    </Content>
+    <Footer>
+        Footer text is optional
+    </Footer>
+</CandyModal>
+
 @code{
+
+    private CandyModal TestDialog { get; set; }
+
     private void CheckAll(CandyGrid sender)
     {
         foreach (var row in sender.Rows)
@@ -72,6 +83,11 @@
         var product = e.DataItem as Product;
         if (product == null) return;
         product.Description = $"Product with ID = {product.ProductId} editing . . .";
+    }
+
+    private async Task OnModalButtonClick(MouseEventArgs e)
+    {
+        await TestDialog.Show();
     }
 
     private void OnCellCheckChanged(GridCellCheckboxEventArgs e)
