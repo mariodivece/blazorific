@@ -107,14 +107,15 @@
             var targetType = type;
             var isNullable = false;
 
+            var nullableType = Nullable.GetUnderlyingType(type);
+            if (nullableType != null)
             {
-                var nullableType = Nullable.GetUnderlyingType(type);
-                if (nullableType != null)
-                {
-                    targetType = nullableType;
-                    isNullable = true;
-                }
+                targetType = nullableType;
+                isNullable = true;
             }
+
+            if (targetType.IsEnum)
+                targetType = Enum.GetUnderlyingType(targetType);
 
             switch (valueKind)
             {
