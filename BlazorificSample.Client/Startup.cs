@@ -2,7 +2,6 @@ namespace BlazorificSample.Client
 {
     using Microsoft.AspNetCore.Components.Builder;
     using Microsoft.Extensions.DependencyInjection;
-    using Unosquare.Blazorific;
 
     public class Startup
     {
@@ -10,7 +9,6 @@ namespace BlazorificSample.Client
         {
             services
                 .AddSingleton<ApplicationState>()
-                .AddCandyModal()
                 .AddDataAccessService();
         }
 

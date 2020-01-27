@@ -51,6 +51,7 @@
         public async Task Show()
         {
             await Js.InvokeVoidAsync($"{nameof(CandyModal)}.show", ModalElement);
+            StateHasChanged();
         }
 
         public async Task Hide()
