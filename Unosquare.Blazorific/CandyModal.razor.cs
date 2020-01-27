@@ -20,7 +20,7 @@
         public string Title { get; set; }
 
         [Parameter]
-        public RenderFragment Content { get; set; }
+        public RenderFragment ChildContent { get; set; }
 
         [Parameter]
         public RenderFragment Footer { get; set; }

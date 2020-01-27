@@ -29,7 +29,7 @@
             </CandyGridColumn>
             <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" FormatString="{0:c2}" Width="2" IsSortable="true" />
             <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" Width="1" IsSortable="true"
-                             FilterOptionsProvider="@(async () => await DataAccess.GetProductFilterOptionsAsync(nameof(Product.StockCount)))"/>
+                             FilterOptionsProvider="@(async () => await DataAccess.GetProductFilterOptionsAsync(nameof(Product.StockCount)))" />
 
             <CandyGridColumn Title="Date" Context="item">
                 <DataTemplate>
@@ -41,16 +41,16 @@
 </div>
 
 <CandyModal @ref="TestDialog" Title="Hey There!" Size="CandyModal.Sizes.Large" Center="false">
-    <Content>
+    <ChildContent>
         <div>This is some sample content!</div>
-    </Content>
+    </ChildContent>
     <Footer>
         Footer content is optional
     </Footer>
 </CandyModal>
 
 <CandyModal @ref="EditDialog" Title="Editing Item" Size="CandyModal.Sizes.Default" Center="true">
-    <Content>
+    <ChildContent>
         @if (EditorItem == null)
         {
             <div>No item to edit :(</div>
@@ -59,7 +59,7 @@
         {
             <div>Show and editor for @EditorItem.Name</div>
         }
-    </Content>
+    </ChildContent>
     <Footer>
         <button class="btn btn-success"><i class="fas fa-check"></i>&nbsp;Save Item! (It actually doesn't)</button>
     </Footer>
