@@ -7,16 +7,17 @@
 
     public static class Extensions
     {
+        private static readonly StringComparison PropertyNameComparer = StringComparison.InvariantCultureIgnoreCase;
+
         internal static IGridDataColumn[] GetGridDataRequestColumns(this CandyGrid grid)
         {
-            var comparison = StringComparison.InvariantCultureIgnoreCase;
-            var properties = grid.DataAdapter.DataItemType.PropertyProxies().Values;
-            var result = new List<IGridDataColumn>(properties.Count);
+            var properties = grid.DataAdapter.DataItemType.PropertyProxies().Values.Where(t => t.IsFlatType);
+            var result = new List<IGridDataColumn>(properties.Count());
 
             foreach (var property in properties)
             {
                 var column = grid.Columns
-                    .FirstOrDefault(c => property.Name.Equals(c.Field, comparison));
+                    .FirstOrDefault(c => property.Name.Equals(c.Field, PropertyNameComparer));
 
                 result.Add(column as IGridDataColumn
                     ?? new CandyGridColumn(property, null));

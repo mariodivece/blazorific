@@ -357,7 +357,7 @@
 
         private CandyGridColumn[] GenerateColumnsFromType(Type t)
         {
-            var proxies = t.PropertyProxies().Values;
+            var proxies = t.PropertyProxies().Values.Where(t => t.IsFlatType);
             var result = new List<CandyGridColumn>(proxies.Count());
             foreach (var proxy in proxies)
                 result.Add(new CandyGridColumn(proxy, this));

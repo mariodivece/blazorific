@@ -5,7 +5,9 @@
     using System.Linq.Expressions;
 
     /// <summary>
-    /// Represents a generic interface to store getters and setters for high speed access to properties.
+    /// Represents a generic interface to store getters and setters for dynamic, high speed access to object properties.
+    /// Author: Mario Di Vece
+    /// Last Update: 2020-01-26
     /// </summary>
     public interface IPropertyProxy
     {
@@ -28,6 +30,13 @@
         /// Gets the type owning this property proxy.
         /// </summary>
         Type EnclosingType { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the property type is considered a flat type.
+        /// Flat types are all value types (including nullable value types) and strings as they
+        /// contain no hierarchical depth to its structure.
+        /// </summary>
+        bool IsFlatType => PropertyType.IsFlatType();
 
         /// <summary>
         /// Gets the property value via a stored delegate.
@@ -54,6 +63,21 @@
         private static readonly object SyncLock = new object();
         private static readonly Dictionary<Type, Dictionary<string, IPropertyProxy>> ProxyCache =
             new Dictionary<Type, Dictionary<string, IPropertyProxy>>(32);
+
+        /// <summary>
+        /// Determines whether the specified type is considered flat.
+        /// Flat types are all value types and strings as they contain no structural depth.
+        /// Nullable value types are also considered flat types.
+        /// </summary>
+        /// <param name="t">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified type is considered flat; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsFlatType(this Type t)
+        {
+            var type = Nullable.GetUnderlyingType(t) ?? t;
+            return type.IsValueType || type == typeof(string);
+        }
 
         /// <summary>
         /// Gets the property proxies associated with a given type.
