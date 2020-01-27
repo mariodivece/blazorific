@@ -39,10 +39,16 @@
                             @if (HasFilterOptions)
                             {
                                 <div class="d-flex btn-group btn-group-sm">
-                                    <button type="button" class="btn btn-sm btn-secondary" @onclick="_ => OnFilterOptionCheckTool(true)">
+                                    <button type="button" class="btn btn-sm btn-secondary"
+                                            @onclick="_ => OnFilterOptionCheckTool(true)"
+                                            @onclick:preventDefault="true"
+                                            @onclick:stopPropagation="true">
                                         <i class="fas fa-check-double"></i>&nbsp;
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-secondary" @onclick="_ => OnFilterOptionCheckTool(false)">
+                                    <button type="button" class="btn btn-sm btn-secondary"
+                                            @onclick="_ => OnFilterOptionCheckTool(false)"
+                                            @onclick:preventDefault="true"
+                                            @onclick:stopPropagation="true">
                                         <i class="fas fa-backspace"></i>&nbsp;
                                     </button>
                                 </div>
