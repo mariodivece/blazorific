@@ -29,7 +29,7 @@
             Title = property.Name;
             Field = property.Name;
             IsSortable = true;
-            IsSearchable = property.PropertyType == typeof(string);
+            IsSearchable = false; // property.PropertyType == typeof(string); // default false because it might be dbqueries.
             Parent = parent;
             HasInitialized = true;
         }
