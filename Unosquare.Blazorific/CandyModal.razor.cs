@@ -48,8 +48,13 @@
             }
         }
 
-        public async Task Show()
+        public async Task Show() => await Show(null);
+
+        public async Task Show(string title)
         {
+            if (!string.IsNullOrWhiteSpace(title))
+                Title = title;
+
             await Js.InvokeVoidAsync($"{nameof(CandyModal)}.show", ModalElement);
             StateHasChanged();
         }
