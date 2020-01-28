@@ -56,7 +56,9 @@
                                     @foreach (var kvp in FilterOptions)
                                     {
                                         var key = kvp.Key;
-                                        <label class="custom-control custom-checkbox ml-1" style="margin-bottom: 0; cursor: pointer; display:block;">
+                                        <label class="custom-control custom-checkbox"
+                                               @onclick:stopPropagation="true"
+                                               @ondblclick:stopPropagation="true">
                                             <input type="checkbox" class="custom-control-input"
                                                    @onchange="(e) => OnFilterOptionCheckedChanged(e, key)"
                                                    checked="@(CheckedFilterOptions.ContainsKey(key) ? "checked" : null)" />
