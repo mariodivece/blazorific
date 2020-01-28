@@ -38,7 +38,7 @@
                 '</div>'
         });
 
-        dialogEl.find("button").on('click', function (e) {
+        dialogEl.find("button.candygrid-column-filter-apply").on('click', function (e) {
             buttonEl.popover('hide');
         });
 
