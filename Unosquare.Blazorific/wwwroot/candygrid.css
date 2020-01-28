@@ -1,21 +1,13 @@
-﻿/*
-label.custom-control.custom-checkbox {
-    margin-bottom: 0;
-    cursor: pointer;
-    display: block;
-}
-    label.custom-control.custom-checkbox input[type='checkbox'].custom-control-input .custom-control-label {
-        padding-top: 0.2rem;
-        cursor: pointer;
-    }
-*/
-
-label.custom-control.custom-checkbox {
+﻿label.custom-control.custom-checkbox {
     margin-bottom: 0;
     cursor: pointer;
     display: block;
     padding-left: 1.7rem;
 }
+
+    label.custom-control.custom-checkbox span.custom-control-label {
+        padding-top: 1px;
+    }
 
 .candygrid-container {
     position: relative;
