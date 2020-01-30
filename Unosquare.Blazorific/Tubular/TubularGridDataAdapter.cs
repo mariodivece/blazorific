@@ -125,6 +125,7 @@
                 case JsonValueKind.Object:
                     return isNullable ? null : targetType.GetDefault();
                 case JsonValueKind.False:
+                case JsonValueKind.True:
                     return jsonEl.GetBoolean();
                 case JsonValueKind.String:
                     return targetType == typeof(string)
