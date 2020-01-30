@@ -206,6 +206,31 @@
             proxy?.SetValue(obj, value);
         }
 
+        /// <summary>
+        /// Copies the flat (shallow) properties between objects of the same type.
+        /// </summary>
+        /// <typeparam name="T">The property type</typeparam>
+        /// <param name="source">The source object.</param>
+        /// <param name="target">The target object.</param>
+        public static void CopyFlatPropertiesTo<T>(this T source, T target)
+        {
+            var properties = typeof(T).PropertyProxies();
+            foreach (var p in properties)
+            {
+                if (!p.Value.IsFlatType)
+                    continue;
+
+                try
+                {
+                    p.Value.SetValue(target, p.Value.GetValue(source));
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+        }
+
         private static string PropertyName<T, V>(this Expression<Func<T, V>> propertyExpression)
         {
             var memberExpression = propertyExpression.Body as MemberExpression ??
