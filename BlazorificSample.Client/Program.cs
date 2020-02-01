@@ -1,16 +1,21 @@
 namespace BlazorificSample.Client
 {
     using Microsoft.AspNetCore.Blazor.Hosting;
+    using Microsoft.Extensions.DependencyInjection;
+    using System.Threading.Tasks;
 
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
-        }
+            Extensions.SetCultureInfo("en-US");
+            var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.Services.AddSingleton<ApplicationState>()
+                .AddDataAccessService();
 
-        public static IWebAssemblyHostBuilder CreateHostBuilder(string[] args) =>
-            BlazorWebAssemblyHost.CreateDefaultBuilder()
-                .UseBlazorStartup<Startup>();
+            builder.RootComponents.Add<App>("app");
+
+            await builder.Build().RunAsync();
+        }
     }
 }
