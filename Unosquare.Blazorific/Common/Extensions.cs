@@ -18,13 +18,13 @@
             PropertyNameCaseInsensitive = true,
         };
 
-        public static string ToJson<T>(this T item) =>
+        public static string SerializeJson<T>(this T item) =>
             JsonSerializer.Serialize<T>(item, JsonOptions);
 
         public static HttpContent ToJsonContent<T>(this T item) =>
-            new StringContent(item.ToJson(), Encoding.UTF8, "application/json");
+            new StringContent(item.SerializeJson(), Encoding.UTF8, "application/json");
 
-        public static T FromJson<T>(this string json) =>
+        public static T DeserializeJson<T>(this string json) =>
             JsonSerializer.Deserialize<T>(json, JsonOptions);
 
         internal static IGridDataColumn[] GetGridDataRequestColumns(this CandyGrid grid)

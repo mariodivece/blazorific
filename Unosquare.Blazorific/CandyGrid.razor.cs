@@ -27,6 +27,8 @@
 
         private IGridDataAdapter m_DataAdapter;
 
+        public event EventHandler<GridStateEventArgs> StateLoaded;
+
         public CandyGrid()
         {
             Request = new GridDataRequest();
@@ -62,6 +64,13 @@
                     }
                 }
             }, null, Timeout.Infinite, Timeout.Infinite);
+
+            StateLoaded += (s, e) =>
+            {
+                SearchText = e.State.SearchText;
+                PageNumber = e.State.PageNumber;
+                PageSize = e.State.PageSize;
+            };
         }
 
         #region Parameters: Data
@@ -169,8 +178,6 @@
 
         public string SearchText { get; protected set; }
 
-        public GridState InitialState { get; protected set; }
-
         public bool IsLoading
         {
             get
@@ -242,6 +249,16 @@
             }
         }
 
+        public async Task ResetState()
+        {
+            if (!string.IsNullOrWhiteSpace(LocalStorageKey))
+                await Js.InvokeVoidAsync("localStorage.removeItem", LocalStorageKey);
+
+            var state = GridState.CreateDefault(this);
+            await InvokeAsync(() => StateLoaded?.Invoke(this, new GridStateEventArgs(this, state, true)));
+            QueueDataUpdate();
+        }
+
         public void Dispose()
         {
             Dispose(true);
@@ -251,13 +268,69 @@
         internal void AddColumn(CandyGridColumn column)
         {
             m_Columns.Add(column);
-            Console.WriteLine($"ColumnCount: {m_Columns.Count}");
             QueueRenderUpdate();
         }
 
         internal int AddRow(CandyGridRow row) => Rows.AddAttachedComponent(row);
 
         internal void RemoveRow(CandyGridRow row) => Rows.RemoveAttachedComponent(row);
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            var intervalDuration = LastRenderTime == default
+                ? 0
+                : DateTime.UtcNow.Subtract(LastRenderTime).TotalMilliseconds;
+            LastRenderTime = DateTime.UtcNow;
+            var currentRenderTime = $"{LastRenderTime.Minute:00}:{LastRenderTime.Second:00}:{LastRenderTime.Millisecond:000}";
+
+            $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago".Log(nameof(CandyGrid), nameof(OnAfterRender));
+            await base.OnAfterRenderAsync(firstRender);
+            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onRendered", RootElement, firstRender);
+
+            if (!firstRender)
+                return;
+
+            HasRendered = true;
+            QueueDataUpdate();
+        }
+
+        protected override async Task OnParametersSetAsync()
+        {
+            await base.OnParametersSetAsync();
+            "CALLED".Log(nameof(CandyGrid), nameof(OnParametersSet));
+        }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await LoadState();
+            await base.OnInitializedAsync();
+        }
+
+        protected virtual void Dispose(bool alsoManaged)
+        {
+            lock (SyncLock)
+            {
+                if (IsDisposed)
+                    return;
+
+                QueueProcessor.Change(Timeout.Infinite, Timeout.Infinite);
+
+                if (alsoManaged)
+                    QueueProcessor.Dispose();
+
+                IsDisposed = true;
+            }
+        }
+
+        private CandyGridColumn[] GenerateColumnsFromType(Type t)
+        {
+            var proxies = t.PropertyProxies().Values.Where(t => t.IsFlatType);
+            var result = new List<CandyGridColumn>(proxies.Count());
+            foreach (var proxy in proxies)
+                result.Add(new CandyGridColumn(proxy, this));
+
+            return result.ToArray();
+        }
 
         private string GetRelativeWidth(CandyGridColumn col)
         {
@@ -270,6 +343,41 @@
             var relativeWidth = (col.Width <= 0 ? averageSpecific : col.Width) / totalWidth;
 
             return $"{Math.Round((relativeWidth * 100), 2):0.00}%";
+        }
+
+        private async Task LoadState()
+        {
+            if (string.IsNullOrWhiteSpace(LocalStorageKey))
+                return;
+
+            var json = await Js.InvokeAsync<string>("localStorage.getItem", LocalStorageKey);
+            if (string.IsNullOrWhiteSpace(json))
+                return;
+
+            GridState state = null;
+            try
+            {
+                state = GridState.Deserialize(json);
+            }
+            catch (Exception ex)
+            {
+                $"Unable to deserialize state. {ex.Message}".Log(nameof(CandyGrid), nameof(LoadState));
+                await Js.InvokeVoidAsync("localStorage.removeItem", LocalStorageKey);
+            }
+
+            if (state == null)
+                return;
+
+            await InvokeAsync(() => StateLoaded?.Invoke(this, new GridStateEventArgs(this, state, false)));
+        }
+
+        private async Task SaveState()
+        {
+            if (string.IsNullOrWhiteSpace(LocalStorageKey))
+                return;
+
+            var json = GridState.FromGrid(this, Request).Serialize();
+            await Js.InvokeAsync<object>("localStorage.setItem", LocalStorageKey, json);
         }
 
         private async Task UpdateDataAsync()
@@ -318,106 +426,6 @@
                 $"Failed to update. {ex.Message} - {ex.StackTrace}".Log(nameof(CandyGrid), nameof(UpdateDataAsync));
                 await InvokeAsync(() => OnDataLoadFailed?.Invoke(new GridExceptionEventArgs(this, ex)));
             }
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            var intervalDuration = LastRenderTime == default
-                ? 0
-                : DateTime.UtcNow.Subtract(LastRenderTime).TotalMilliseconds;
-            LastRenderTime = DateTime.UtcNow;
-            var currentRenderTime = $"{LastRenderTime.Minute:00}:{LastRenderTime.Second:00}:{LastRenderTime.Millisecond:000}";
-
-            $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago".Log(nameof(CandyGrid), nameof(OnAfterRender));
-            await base.OnAfterRenderAsync(firstRender);
-            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onRendered", RootElement, firstRender);
-
-            if (!firstRender)
-                return;
-
-            HasRendered = true;
-            QueueDataUpdate();
-        }
-
-        protected override async Task OnParametersSetAsync()
-        {
-            await base.OnParametersSetAsync();
-            "CALLED".Log(nameof(CandyGrid), nameof(OnParametersSet));
-        }
-
-        protected override async Task OnInitializedAsync()
-        {
-            await LoadState();
-            await base.OnInitializedAsync();
-        }
-
-        private CandyGridColumn[] GenerateColumnsFromType(Type t)
-        {
-            var proxies = t.PropertyProxies().Values.Where(t => t.IsFlatType);
-            var result = new List<CandyGridColumn>(proxies.Count());
-            foreach (var proxy in proxies)
-                result.Add(new CandyGridColumn(proxy, this));
-
-            return result.ToArray();
-        }
-
-        protected virtual void Dispose(bool alsoManaged)
-        {
-            lock (SyncLock)
-            {
-                if (IsDisposed)
-                    return;
-
-                QueueProcessor.Change(Timeout.Infinite, Timeout.Infinite);
-
-                if (alsoManaged)
-                    QueueProcessor.Dispose();
-
-                IsDisposed = true;
-            }
-        }
-
-        private async Task ClearState()
-        {
-            throw new NotImplementedException();
-        }
-
-        private async Task LoadState()
-        {
-            if (string.IsNullOrWhiteSpace(LocalStorageKey))
-                return;
-
-            var json = await Js.InvokeAsync<string>("localStorage.getItem", LocalStorageKey);
-            if (string.IsNullOrWhiteSpace(json))
-                return;
-
-            InitialState = json.FromJson<GridState>();
-            SearchText = InitialState.SearchText;
-            PageNumber = InitialState.PageNumber;
-            PageSize = InitialState.PageSize;
-        }
-
-        private async Task SaveState()
-        {
-            if (string.IsNullOrWhiteSpace(LocalStorageKey))
-                return;
-
-            var data = new GridState
-            {
-                PageNumber = PageNumber,
-                PageSize = PageSize,
-                SearchText = SearchText,
-            };
-
-            var columns = new List<GridColumnState>(Request.Columns.Count);
-            foreach (var col in Request.Columns)
-            {
-                columns.Add(new GridColumnState(col));
-            }
-
-            data.Columns = columns;
-            var json = data.ToJson();
-            await Js.InvokeAsync<object>("localStorage.setItem", LocalStorageKey, json);
         }
     }
 }

@@ -39,7 +39,7 @@
         protected virtual async Task<GridDataResponse> ProcessResponseAsync(HttpResponseMessage httpResponse)
         {
             var responseJson = await httpResponse.Content.ReadAsStringAsync();
-            var response = responseJson.FromJson<TubularGridDataResponse>();
+            var response = responseJson.DeserializeJson<TubularGridDataResponse>();
             return CreateGridDataResponse(response);
         }
 

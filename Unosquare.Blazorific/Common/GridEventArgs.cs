@@ -13,6 +13,20 @@
         public CandyGrid Grid { get; }
     }
 
+    public class GridStateEventArgs : GridEventArgs
+    {
+        public GridStateEventArgs(CandyGrid grid, GridState state, bool isReset)
+            : base(grid)
+        {
+            State = state;
+            IsReset = isReset;
+        }
+
+        public GridState State { get; }
+
+        public bool IsReset { get; }
+    }
+
     public class GridExceptionEventArgs : GridEventArgs
     {
         public GridExceptionEventArgs(CandyGrid grid, Exception exception)

@@ -225,6 +225,11 @@
             {
                 if (Column?.FilterOptionsProvider != null)
                     FilterOptions = await Column.FilterOptionsProvider.Invoke();
+
+                Grid.StateLoaded += (s, e) =>
+                {
+                    CoerceFilterState();
+                };
             }
             finally
             {

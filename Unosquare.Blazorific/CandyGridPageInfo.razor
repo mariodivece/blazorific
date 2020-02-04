@@ -13,4 +13,6 @@
     {
         <text> (Filtered from @Parent.TotalRecordCount total records)</text>
     }
+
+    &nbsp;<a style="padding: 8px;" class="badge badge-info" href="" @onclick="async () => await Grid.ResetState()" @onclick:preventDefault><i class="fas fa-undo"></i>&nbsp;Reset</a>
 </span>

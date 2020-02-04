@@ -218,6 +218,22 @@
                 return Task.CompletedTask;
 
             Parent.AddColumn(this);
+            Parent.StateLoaded += (s, e) =>
+            {
+                var state = e.State.Columns.FirstOrDefault(c => c.Name == Field);
+                if (state == null) return;
+
+                Aggregate = state.Aggregate;
+                SortDirection = state.SortDirection;
+                SortOrder = state.SortOrder;
+                Filter.Operator = state.Filter?.Operator ?? CompareOperators.None;
+                if (Filter.Operator != CompareOperators.None)
+                {
+                    Filter.Text = state.Filter.Text;
+                    Filter.Argument = state.Filter.Argument;
+                }
+            };
+
             HasInitialized = true;
 
             return Task.CompletedTask;

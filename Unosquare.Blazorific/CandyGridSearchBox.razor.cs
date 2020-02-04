@@ -1,10 +1,8 @@
 ﻿namespace Unosquare.Blazorific
 {
     using Microsoft.AspNetCore.Components;
-    using System;
     using System.Linq;
     using System.Threading;
-    using System.Threading.Tasks;
 
     public partial class CandyGridSearchBox
     {
@@ -15,7 +13,6 @@
         {
             DebounceTimer = new Timer((s) =>
             {
-                Console.WriteLine($"Search: {SearchText}");
                 Parent.ChangeSearchText(SearchText);
             }, null, Timeout.Infinite, Timeout.Infinite);
         }
@@ -31,12 +28,14 @@
             DebounceTimer.Change(250, Timeout.Infinite);
         }
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
-            if (Grid.InitialState != null)
-                SearchText = Grid.InitialState.SearchText;
+            Grid.StateLoaded += (s, e) =>
+            {
+                SearchText = e.State.SearchText;
+            };
 
-            await base.OnInitializedAsync();
+            base.OnInitialized();
         }
     }
 }
