@@ -1,6 +1,7 @@
 ﻿namespace Unosquare.Blazorific
 {
     using Microsoft.AspNetCore.Components;
+    using System;
     using System.Linq;
     using System.Threading;
 
@@ -13,6 +14,7 @@
         {
             DebounceTimer = new Timer((s) =>
             {
+                Console.WriteLine($"Search: {SearchText}");
                 Parent.ChangeSearchText(SearchText);
             }, null, Timeout.Infinite, Timeout.Infinite);
         }

@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Represents a Data Request from a Tubular Grid.
@@ -10,19 +9,10 @@
     /// </summary>
     public sealed class GridDataRequest
     {
-        private readonly CandyGrid Grid;
-        private int m_PageSize = 20;
-        private int m_PageNumber = 1;
-
-        internal GridDataRequest(CandyGrid grid)
-        {
-            Grid = grid;
-        }
-
         /// <summary>
         /// Request's counter.
         /// </summary>
-        public int Counter { get; internal set; } = 1;
+        public int Counter { get; private set; } = 1;
 
         /// <summary>
         /// The free-text search.
@@ -36,18 +26,17 @@
         /// <summary>
         /// Set how many records skip, for pagination.
         /// </summary>
-        public int Skip => PageSize <= 0 ? 0 : Math.Max(0, PageNumber - 1) * PageSize;
+        public int Skip { get; private set; }
 
         /// <summary>
         /// Set how many records take, for pagination.
         /// </summary>
-        public int Take => PageSize;
+        public int Take { get; private set; }
 
         /// <summary>
         /// Defines the columns.
         /// </summary>
-        public IGridDataColumn[] Columns =>
-            Grid.GetGridDataRequestColumns();
+        public IReadOnlyCollection<IGridDataColumn> Columns { get; private set; }
 
         /// <summary>
         /// Sent the minutes difference between UTC and local time.
@@ -56,30 +45,16 @@
         public int TimezoneOffset =>
             (int)Math.Round(DateTime.UtcNow.Subtract(DateTime.Now).TotalMinutes, 0);
 
-        public int PageSize
+        internal void UpdateFrom(CandyGrid grid)
         {
-            get => m_PageSize > 0 ? m_PageSize : -1;
-            set => m_PageSize = value;
-        }
-
-        public int PageNumber
-        {
-            get
-            {
-                var maxPageNumber = PageSize > 0
-                    ? Extensions.ComputeTotalPages(PageSize, Grid.FilteredRecordCount)
-                    : 1;
-
-                return m_PageNumber < 1
-                    ? 1
-                    : m_PageNumber > maxPageNumber
-                    ? maxPageNumber
-                    : m_PageNumber;
-            }
-            set
-            {
-                m_PageNumber = value;
-            }
+            Counter += 1;
+            Columns = grid.GetGridDataRequestColumns();
+            Skip = grid.PageSize <= 0 ? 0 : Math.Max(0, grid.PageNumber - 1) * grid.PageSize;
+            Take = grid.PageSize < 0 ? -1 : grid.PageSize;
+            Search.Text = grid.SearchText ?? string.Empty;
+            Search.Operator = string.IsNullOrWhiteSpace(Search.Text)
+                ? CompareOperators.None
+                : CompareOperators.Auto;
         }
     }
 }

@@ -29,8 +29,7 @@
 
         public CandyGrid()
         {
-            GridState = new StateManager(this);
-            Request = new GridDataRequest(this);
+            Request = new GridDataRequest();
             QueueProcessor = new Timer(async (s) =>
             {
                 var pendingDataUpdates = 0;
@@ -152,9 +151,9 @@
 
         public IReadOnlyList<object> DataItems { get; protected set; }
 
-        public int PageNumber { get; protected set; }
+        public int PageNumber { get; protected set; } = 1;
 
-        public int PageSize { get; protected set; }
+        public int PageSize { get; protected set; } = 20;
 
         public int TotalRecordCount { get; protected set; }
 
@@ -168,6 +167,8 @@
 
         public int EndRecordNumber => Math.Max(0, StartRecordNumber + (DataItems?.Count ?? 0) - 1);
 
+        public string SearchText { get; protected set; }
+
         public bool IsLoading
         {
             get
@@ -178,8 +179,6 @@
                 }
             }
         }
-
-        private StateManager GridState { get; }
 
         private GridDataRequest Request { get; }
 
@@ -209,52 +208,34 @@
 
         public int ChangePageSize(int pageSize)
         {
-            if (pageSize == PageSize)
-                return PageSize;
-
-            try
+            if (pageSize != PageSize)
             {
-                Request.PageSize = pageSize;
-                return Request.PageSize;
-            }
-            finally
-            {
+                PageSize = pageSize;
                 QueueDataUpdate();
             }
+
+            return PageSize;
         }
 
         public int ChangePageNumber(int pageNumber)
         {
-            if (pageNumber == PageNumber)
-                return PageNumber;
-
-            try
+            if (pageNumber != PageNumber)
             {
-                Request.PageNumber = pageNumber;
-                return Request.PageNumber;
-            }
-            finally
-            {
+                PageNumber = pageNumber;
                 QueueDataUpdate();
             }
+
+            return PageNumber;
         }
 
         public void ChangeSearchText(string searchText)
         {
-            Request.Search.Text = searchText ?? string.Empty;
+            var effectiveTerm = (searchText ?? string.Empty).Length > 2 ? searchText : string.Empty;
+            if (string.IsNullOrWhiteSpace(SearchText)) SearchText = string.Empty;
 
-            if (Request.Search.Text.Length > 2)
+            if (effectiveTerm != SearchText)
             {
-                Request.PageNumber = 1;
-                Request.Search.Operator = CompareOperators.Auto;
-                QueueDataUpdate();
-                return;
-            }
-
-            if (Request.Search.Operator != CompareOperators.None)
-            {
-                Request.PageNumber = 1;
-                Request.Search.Operator = CompareOperators.None;
+                SearchText = effectiveTerm;
                 QueueDataUpdate();
             }
         }
@@ -286,7 +267,7 @@
             var totalWidth = sumSpecific + (automaticColumns.Length * averageSpecific);
             var relativeWidth = (col.Width <= 0 ? averageSpecific : col.Width) / totalWidth;
 
-            return $"{Math.Round((relativeWidth * 100),2):0.00}%"; 
+            return $"{Math.Round((relativeWidth * 100), 2):0.00}%";
         }
 
         private async Task UpdateDataAsync()
@@ -309,16 +290,15 @@
                     return;
                 }
 
+                Request.UpdateFrom(this);
                 var response = await DataAdapter.RetrieveDataAsync(Request);
-                await GridState.SaveState();
 
                 lock (SyncLock)
                 {
-                    Request.Counter++;
                     DataItems = response.DataItems;
                     FilteredRecordCount = response.FilteredRecordCount;
                     TotalRecordCount = response.TotalRecordCount;
-                    PageSize = Request.PageSize <= 0 ? response.FilteredRecordCount : Request.PageSize;
+                    PageSize = Request.Take <= 0 ? response.FilteredRecordCount : Request.Take;
                     TotalPages = Extensions.ComputeTotalPages(PageSize, response.FilteredRecordCount);
                     PageNumber = response.CurrentPage > TotalPages
                         ? TotalPages
@@ -353,7 +333,6 @@
                 return;
 
             HasRendered = true;
-            await GridState.LoadState();
             QueueDataUpdate();
         }
 
@@ -424,15 +403,6 @@
                 }
 
                 var request = json.FromJson<RequestState>();
-                request.Search.CopyFlatPropertiesTo(Grid.Request.Search);
-                Grid.Request.PageNumber = request.PageNumber;
-                Grid.Request.PageSize = request.PageSize;
-                
-                foreach (var sourceColumn in request.Columns)
-                {
-                    var targetColumn = Grid.Columns.FirstOrDefault();
-                }
-
                 HasLoaded = true;
             }
 
