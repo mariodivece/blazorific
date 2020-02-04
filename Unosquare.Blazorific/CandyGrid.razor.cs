@@ -169,6 +169,8 @@
 
         public string SearchText { get; protected set; }
 
+        public GridState InitialState { get; protected set; }
+
         public bool IsLoading
         {
             get
@@ -307,6 +309,7 @@
                         : response.CurrentPage;
                 }
 
+                await SaveState();
                 await InvokeAsync(() => OnDataLoaded?.Invoke(new GridEventArgs(this)));
                 await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onDataLoaded", RootElement);
             }
@@ -342,6 +345,12 @@
             "CALLED".Log(nameof(CandyGrid), nameof(OnParametersSet));
         }
 
+        protected override async Task OnInitializedAsync()
+        {
+            await LoadState();
+            await base.OnInitializedAsync();
+        }
+
         private CandyGridColumn[] GenerateColumnsFromType(Type t)
         {
             var proxies = t.PropertyProxies().Values.Where(t => t.IsFlatType);
@@ -368,71 +377,47 @@
             }
         }
 
-        private sealed class StateManager
+        private async Task ClearState()
         {
-            private readonly CandyGrid Grid;
-
-            public StateManager(CandyGrid grid)
-            {
-                Grid = grid;
-            }
-
-            public bool HasLoaded { get; private set; }
-
-            public async Task ClearState()
-            {
-                if (string.IsNullOrWhiteSpace(Grid.LocalStorageKey))
-                    return;
-
-                await Grid.Js.InvokeAsync<object>("localStorage.removeItem", Grid.LocalStorageKey);
-            }
-
-            public async Task LoadState()
-            {
-                if (string.IsNullOrWhiteSpace(Grid.LocalStorageKey))
-                    return;
-
-                if (HasLoaded)
-                    return;
-
-                var json = await Grid.Js.InvokeAsync<string>("localStorage.getItem", Grid.LocalStorageKey);
-                if (string.IsNullOrWhiteSpace(json))
-                {
-                    HasLoaded = true;
-                    return;
-                }
-
-                var request = json.FromJson<RequestState>();
-                HasLoaded = true;
-            }
-
-            public async Task SaveState()
-            {
-                if (string.IsNullOrWhiteSpace(Grid.LocalStorageKey))
-                    return;
-
-                var data = Grid.Request.ToJson();
-                await Grid.Js.InvokeAsync<object>("localStorage.setItem", Grid.LocalStorageKey, data);
-            }
+            throw new NotImplementedException();
         }
 
-        private sealed class RequestState
+        private async Task LoadState()
         {
-            public int Counter { get; set; }
+            if (string.IsNullOrWhiteSpace(LocalStorageKey))
+                return;
 
-            public GridDataFilter Search { get; set; }
+            var json = await Js.InvokeAsync<string>("localStorage.getItem", LocalStorageKey);
+            if (string.IsNullOrWhiteSpace(json))
+                return;
 
-            public int Skip { get; set; }
+            InitialState = json.FromJson<GridState>();
+            SearchText = InitialState.SearchText;
+            PageNumber = InitialState.PageNumber;
+            PageSize = InitialState.PageSize;
+        }
 
-            public int Take { get; set; }
+        private async Task SaveState()
+        {
+            if (string.IsNullOrWhiteSpace(LocalStorageKey))
+                return;
 
-            public CandyGridColumn[] Columns { get; set; }
+            var data = new GridState
+            {
+                PageNumber = PageNumber,
+                PageSize = PageSize,
+                SearchText = SearchText,
+            };
 
-            public int TimezoneOffset { get; set; }
+            var columns = new List<GridColumnState>(Request.Columns.Count);
+            foreach (var col in Request.Columns)
+            {
+                columns.Add(new GridColumnState(col));
+            }
 
-            public int PageSize { get; set; }
-
-            public int PageNumber { get; set; }
+            data.Columns = columns;
+            var json = data.ToJson();
+            await Js.InvokeAsync<object>("localStorage.setItem", LocalStorageKey, json);
         }
     }
 }

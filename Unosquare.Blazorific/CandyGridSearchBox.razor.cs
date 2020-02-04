@@ -4,6 +4,7 @@
     using System;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
 
     public partial class CandyGridSearchBox
     {
@@ -28,6 +29,14 @@
         {
             SearchText = (e.Value as string ?? string.Empty).Trim();
             DebounceTimer.Change(250, Timeout.Infinite);
+        }
+
+        protected override async Task OnInitializedAsync()
+        {
+            if (Grid.InitialState != null)
+                SearchText = Grid.InitialState.SearchText;
+
+            await base.OnInitializedAsync();
         }
     }
 }
