@@ -194,14 +194,19 @@
                 ? Column?.Filter.Argument[0]
                 : null;
 
-            if (Column?.Filter.Argument == null)
-            {
-                CheckedFilterOptions.Clear();
-                return;
-            }
+            CheckedFilterOptions.Clear();
 
-            foreach (var key in CheckedFilterOptions.Keys.ToArray())
-                CheckedFilterOptions[key] = Column?.Filter.Argument?.Contains(key) ?? false;
+            if (FilterOperator != CompareOperators.Multiple)
+                return;
+
+            var checkedOptions = Column?.Filter?.Argument ?? Array.Empty<string>();
+            foreach (var key in checkedOptions)
+            {
+                if (string.IsNullOrWhiteSpace(key))
+                    continue;
+
+                CheckedFilterOptions[key] = true;
+            }
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -219,17 +224,18 @@
             }
         }
 
+        protected override void OnInitialized()
+        {
+            Grid.StateLoaded += (s, e) => CoerceFilterState();
+            base.OnInitialized();
+        }
+
         protected override async Task OnInitializedAsync()
         {
             try
             {
                 if (Column?.FilterOptionsProvider != null)
                     FilterOptions = await Column.FilterOptionsProvider.Invoke();
-
-                Grid.StateLoaded += (s, e) =>
-                {
-                    CoerceFilterState();
-                };
             }
             finally
             {

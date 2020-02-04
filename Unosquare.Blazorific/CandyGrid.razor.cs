@@ -20,6 +20,7 @@
 
         private bool IsDisposed;
         private bool HasRendered;
+        private bool HasLoadedState;
         private bool IsProcessingQueue;
         private int PendingAdapterUpdates;
         private int PendingRenderUpdates;
@@ -300,12 +301,6 @@
             "CALLED".Log(nameof(CandyGrid), nameof(OnParametersSet));
         }
 
-        protected override async Task OnInitializedAsync()
-        {
-            await LoadState();
-            await base.OnInitializedAsync();
-        }
-
         protected virtual void Dispose(bool alsoManaged)
         {
             lock (SyncLock)
@@ -398,6 +393,12 @@
                     TotalRecordCount = default;
                     TotalPages = default;
                     return;
+                }
+
+                if (!HasLoadedState)
+                {
+                    await LoadState();
+                    HasLoadedState = true;
                 }
 
                 Request.UpdateFrom(this);
