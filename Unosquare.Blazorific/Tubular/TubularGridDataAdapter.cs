@@ -5,19 +5,12 @@
     using System.Linq;
     using System.Net.Http;
     using System.Reflection;
-    using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
 
     public class TubularGridDataAdapter : IGridDataAdapter
     {
-        protected static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true,
-        };
-
         public TubularGridDataAdapter(Type dataItemType, string requestUrl)
         {
             DataItemType = dataItemType;
@@ -34,8 +27,7 @@
             return await ProcessResponseAsync(httpResponse);
         }
 
-        protected virtual HttpContent SerializeRequest(GridDataRequest request) =>
-            new StringContent(JsonSerializer.Serialize(request, JsonOptions), Encoding.UTF8, "application/json");
+        protected virtual HttpContent SerializeRequest(GridDataRequest request) => request.ToJsonContent();
 
         protected virtual async Task<HttpResponseMessage> RetrieveResponseAsync(string requestUrl, GridDataRequest request)
         {
@@ -47,7 +39,7 @@
         protected virtual async Task<GridDataResponse> ProcessResponseAsync(HttpResponseMessage httpResponse)
         {
             var responseJson = await httpResponse.Content.ReadAsStringAsync();
-            var response = JsonSerializer.Deserialize<TubularGridDataResponse>(responseJson, JsonOptions);
+            var response = responseJson.FromJson<TubularGridDataResponse>();
             return CreateGridDataResponse(response);
         }
 

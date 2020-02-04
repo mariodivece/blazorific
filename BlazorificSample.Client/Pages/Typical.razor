@@ -2,7 +2,7 @@
 @page "/"
 
 <div class="container mt-4">
-    <CandyGrid DataAdapter="DataAccess.ProductsDataAdapter" OnBodyRowDoubleClick="@OnBodyRowDoubleClick">
+    <CandyGrid DataAdapter="DataAccess.ProductsDataAdapter" OnBodyRowDoubleClick="@OnBodyRowDoubleClick" LocalStorageKey="Grid.Sample.State">
         <ToolbarTemplate>
             <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group btn-group-sm" role="group">

@@ -2,9 +2,21 @@
 {
     using Microsoft.AspNetCore.Components;
     using System.Linq;
+    using System.Threading;
 
     public partial class CandyGridSearchBox
     {
+        private readonly Timer DebounceTimer;
+        private string SearchText;
+
+        public CandyGridSearchBox()
+        {
+            DebounceTimer = new Timer((s) =>
+            {
+                Parent.ChangeSearchText(SearchText);
+            }, null, Timeout.Infinite, Timeout.Infinite);
+        }
+
         [Parameter]
         public string Placeholder { get; set; } = "search . . .";
 
@@ -12,8 +24,8 @@
 
         private void OnSearchInput(ChangeEventArgs e)
         {
-            var searchInput = (e.Value as string ?? string.Empty).Trim();
-            Parent.ChangeSearchText(searchInput);
+            SearchText = (e.Value as string ?? string.Empty).Trim();
+            DebounceTimer.Change(250, Timeout.Infinite);
         }
     }
 }

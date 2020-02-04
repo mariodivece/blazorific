@@ -46,7 +46,7 @@
         /// <summary>
         /// Defines the columns.
         /// </summary>
-        public IReadOnlyList<IGridDataColumn> Columns =>
+        public IGridDataColumn[] Columns =>
             Grid.GetGridDataRequestColumns();
 
         /// <summary>
@@ -56,14 +56,12 @@
         public int TimezoneOffset =>
             (int)Math.Round(DateTime.UtcNow.Subtract(DateTime.Now).TotalMinutes, 0);
 
-        [JsonIgnore]
         public int PageSize
         {
             get => m_PageSize > 0 ? m_PageSize : -1;
             set => m_PageSize = value;
         }
 
-        [JsonIgnore]
         public int PageNumber
         {
             get

@@ -3,11 +3,29 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net.Http;
     using System.Reflection;
+    using System.Text;
+    using System.Text.Json;
 
     public static class Extensions
     {
-        private static readonly StringComparison PropertyNameComparer = StringComparison.InvariantCultureIgnoreCase;
+        private const StringComparison PropertyNameComparer = StringComparison.InvariantCultureIgnoreCase;
+
+        public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true,
+        };
+
+        public static string ToJson<T>(this T item) =>
+            JsonSerializer.Serialize<T>(item, JsonOptions);
+
+        public static HttpContent ToJsonContent<T>(this T item) =>
+            new StringContent(item.ToJson(), Encoding.UTF8, "application/json");
+
+        public static T FromJson<T>(this string json) =>
+            JsonSerializer.Deserialize<T>(json, JsonOptions);
 
         internal static IGridDataColumn[] GetGridDataRequestColumns(this CandyGrid grid)
         {

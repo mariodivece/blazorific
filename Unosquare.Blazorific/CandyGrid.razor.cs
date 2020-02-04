@@ -29,6 +29,7 @@
 
         public CandyGrid()
         {
+            GridState = new StateManager(this);
             Request = new GridDataRequest(this);
             QueueProcessor = new Timer(async (s) =>
             {
@@ -92,6 +93,9 @@
 
         [Parameter]
         public RenderFragment CandyGridColumns { get; set; }
+
+        [Parameter]
+        public string LocalStorageKey { get; set; }
 
         #endregion
 
@@ -174,6 +178,8 @@
                 }
             }
         }
+
+        private StateManager GridState { get; }
 
         private GridDataRequest Request { get; }
 
@@ -304,6 +310,7 @@
                 }
 
                 var response = await DataAdapter.RetrieveDataAsync(Request);
+                await GridState.SaveState();
 
                 lock (SyncLock)
                 {
@@ -346,6 +353,7 @@
                 return;
 
             HasRendered = true;
+            await GridState.LoadState();
             QueueDataUpdate();
         }
 
@@ -379,6 +387,82 @@
 
                 IsDisposed = true;
             }
+        }
+
+        private sealed class StateManager
+        {
+            private readonly CandyGrid Grid;
+
+            public StateManager(CandyGrid grid)
+            {
+                Grid = grid;
+            }
+
+            public bool HasLoaded { get; private set; }
+
+            public async Task ClearState()
+            {
+                if (string.IsNullOrWhiteSpace(Grid.LocalStorageKey))
+                    return;
+
+                await Grid.Js.InvokeAsync<object>("localStorage.removeItem", Grid.LocalStorageKey);
+            }
+
+            public async Task LoadState()
+            {
+                if (string.IsNullOrWhiteSpace(Grid.LocalStorageKey))
+                    return;
+
+                if (HasLoaded)
+                    return;
+
+                var json = await Grid.Js.InvokeAsync<string>("localStorage.getItem", Grid.LocalStorageKey);
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    HasLoaded = true;
+                    return;
+                }
+
+                var request = json.FromJson<RequestState>();
+                request.Search.CopyFlatPropertiesTo(Grid.Request.Search);
+                Grid.Request.PageNumber = request.PageNumber;
+                Grid.Request.PageSize = request.PageSize;
+                
+                foreach (var sourceColumn in request.Columns)
+                {
+                    var targetColumn = Grid.Columns.FirstOrDefault();
+                }
+
+                HasLoaded = true;
+            }
+
+            public async Task SaveState()
+            {
+                if (string.IsNullOrWhiteSpace(Grid.LocalStorageKey))
+                    return;
+
+                var data = Grid.Request.ToJson();
+                await Grid.Js.InvokeAsync<object>("localStorage.setItem", Grid.LocalStorageKey, data);
+            }
+        }
+
+        private sealed class RequestState
+        {
+            public int Counter { get; set; }
+
+            public GridDataFilter Search { get; set; }
+
+            public int Skip { get; set; }
+
+            public int Take { get; set; }
+
+            public CandyGridColumn[] Columns { get; set; }
+
+            public int TimezoneOffset { get; set; }
+
+            public int PageSize { get; set; }
+
+            public int PageNumber { get; set; }
         }
     }
 }
