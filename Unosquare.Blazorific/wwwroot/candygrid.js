@@ -1,26 +1,29 @@
 ﻿window.CandyGrid = {
     constants: {
-        filterOpenAttribute: 'data-cg-filter-isopen',
         renderedEventName: 'candygrid.rendred',
         dataLoadedEventName: 'candygrid.data.loaded',
     },
 
     onRendered: function (rootElement, firstRender) {
-        CandyGrid.hideColumnFilterDropdowns(rootElement);
+        CandyGrid.hideDropdowns();
         var event = new CustomEvent(CandyGrid.constants.renderedEventName, { firstRender: firstRender });
         rootElement.dispatchEvent(event);
     },
 
     onDataLoaded: function (rootElement) {
-        CandyGrid.hideColumnFilterDropdowns(rootElement);
+        CandyGrid.hideDropdowns();
         var event = new Event(CandyGrid.constants.dataLoadedEventName);
         rootElement.dispatchEvent(event);
     },
 
+    hideDropdowns: function () {
+        $(window).trigger('touchstart');
+    },
+
     bindColumnFilterDropdown: function (columnFilterElement) {
-        var buttonEl = $(columnFilterElement).children("button").first();
-        var dialogEl = $(columnFilterElement).find("div.candygrid-filter-dialog").first();
-        var gridEl = $(columnFilterElement).parents(".candygrid-container").first();
+        var filterEl = $(columnFilterElement);
+        var buttonEl = filterEl.children("button").first();
+        var dialogEl = filterEl.find("div.candygrid-filter-dialog").first();
 
         buttonEl.popover({
             content: dialogEl,
@@ -39,29 +42,24 @@
         });
 
         dialogEl.find("button.candygrid-column-filter-apply").on('click', function (e) {
-            buttonEl.popover('hide');
+            // buttonEl.popover('hide');
         });
 
-        var isOpenAttr = CandyGrid.constants.filterOpenAttribute;
-        buttonEl.attr(isOpenAttr, 'false');
-
-        buttonEl.on('show.bs.popover', function () {
-            buttonEl.attr(isOpenAttr, 'true');
+        buttonEl.on('click', function (e) {
+            buttonEl.popover('toggle');
+            e.stopPropagation();
         });
 
-        buttonEl.on('hide.bs.popover', function () {
-            buttonEl.attr(isOpenAttr, 'false');
-        });
+        $(window).on("resize keydown mousedown touchstart", function (e) {
+            var isOnPopup = e && e.target && e.target.closest && e.target.closest(".popover");
+            var isEscapKey = e && e.which && e.which === 27;
+            var isWindowEvent = !e || !e.target || e.target === window;
+            var isOnButton = e && e.target && (e.target === buttonEl || $(buttonEl).has(e.target).length > 0);
 
-        buttonEl.on('click', function (event) {
-            var isOpen = buttonEl.attr(isOpenAttr) === 'true';
-            CandyGrid.hideColumnFilterDropdowns(gridEl);
-            buttonEl.popover(isOpen ? 'hide' : 'show');
+            if (!isOnButton && (!isOnPopup || isEscapKey || isWindowEvent)) {
+                buttonEl.popover('hide');
+                e.stopPropagation();
+            }
         });
     },
-
-    hideColumnFilterDropdowns: function (rootElement) {
-        $(rootElement).find("thead").first()
-            .find("[" + CandyGrid.constants.filterOpenAttribute + "]").popover('hide');
-    }
 };

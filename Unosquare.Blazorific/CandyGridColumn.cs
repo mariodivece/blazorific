@@ -246,11 +246,6 @@
                     Filter.Text = state.Filter.Text;
                     Filter.Argument = state.Filter.Argument;
                 }
-
-                if (Filter.Argument != null && Filter.Argument.Length > 0)
-                {
-                    Console.WriteLine($"Filter Arguments (COLUMN): {string.Join(", ", Filter.Argument)}");
-                }
             };
         }
     }
