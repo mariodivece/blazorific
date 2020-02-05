@@ -217,6 +217,20 @@
             if (HasInitialized)
                 return Task.CompletedTask;
 
+            try
+            {
+                OnInitialized();
+            }
+            finally
+            {
+                HasInitialized = true;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        protected virtual void OnInitialized()
+        {
             Parent.AddColumn(this);
             Parent.StateLoaded += (s, e) =>
             {
@@ -238,10 +252,6 @@
                     Console.WriteLine($"Filter Arguments (COLUMN): {string.Join(", ", Filter.Argument)}");
                 }
             };
-
-            HasInitialized = true;
-
-            return Task.CompletedTask;
         }
     }
 }
