@@ -54,7 +54,7 @@
             var isOnPopup = e && e.target && e.target.closest && e.target.closest(".popover");
             var isEscapKey = e && e.which && e.which === 27;
             var isWindowEvent = !e || !e.target || e.target === window;
-            var isOnButton = e && e.target && (e.target === buttonEl || $(buttonEl).has(e.target).length > 0);
+            var isOnButton = e && e.target && (e.target === buttonEl[0] || buttonEl.has(e.target).length > 0);
 
             if (!isOnButton && (!isOnPopup || isEscapKey || isWindowEvent)) {
                 buttonEl.popover('hide');
