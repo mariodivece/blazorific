@@ -6,3 +6,4 @@ An experimental Blazor Control Library
    - Tons of suggestions found here:
      - https://stackoverflow.com/questions/8947749/how-can-i-close-a-twitter-bootstrap-popover-with-a-click-from-anywhere-else-on
      - https://github.com/NonFactors/AspNetCore.Grid/blob/develop/src/Mvc.Grid/js/mvc-grid/mvc-grid.js
+ - [ ] candygrid.js: Single binding of window.on events to hide filter popovers
