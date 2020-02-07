@@ -79,6 +79,14 @@
                         }
                     }
                 </tbody>
+                @if (AggregateDataItem != null)
+                {
+                    <tfoot class="@TableFooterCssClass">
+                        <CascadingValue Name="DataItem" Value="AggregateDataItem">
+                            <CandyGridRow IsFooter="true" />
+                        </CascadingValue>
+                    </tfoot>
+                }
             </table>
         </div>
 

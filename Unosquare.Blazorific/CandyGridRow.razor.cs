@@ -3,7 +3,6 @@
     using Common;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
-    using System;
     using System.Collections.Generic;
 
     public sealed partial class CandyGridRow : CandyGridChildComponent, IAttachedComponent
@@ -15,6 +14,9 @@
 
         [CascadingParameter(Name = nameof(DataItem))]
         public object DataItem { get; private set; }
+
+        [Parameter]
+        public bool IsFooter { get; set; }
 
         public AttributeDictionary Attributes { get; }
 
@@ -42,12 +44,14 @@
 
         private void RaiseOnBodyRowDoubleClick(MouseEventArgs e)
         {
+            if (IsFooter) return;
             $"EVENT".Log(nameof(CandyGridCell), $"On{nameof(Parent.OnBodyRowDoubleClick)}");
             Parent.OnBodyRowDoubleClick?.Invoke(new GridRowMouseEventArgs(this, e));
         }
 
         private void RaiseOnBodyRowClick(MouseEventArgs e)
         {
+            if (IsFooter) return;
             $"EVENT".Log(nameof(CandyGridCell), $"On{nameof(Parent.OnBodyRowClick)}");
             Parent.OnBodyRowClick?.Invoke(new GridRowMouseEventArgs(this, e));
         }

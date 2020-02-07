@@ -122,6 +122,9 @@
         [Parameter]
         public string TableHeaderCssClass { get; set; } = "thead-dark";
 
+        [Parameter]
+        public string TableFooterCssClass { get; set; } = "thead-dark";
+
         #endregion
 
         #region Parameters: Templates
@@ -160,6 +163,8 @@
         public IReadOnlyList<CandyGridRow> Rows { get; } = new List<CandyGridRow>(1024);
 
         public IReadOnlyList<object> DataItems { get; protected set; }
+
+        public object AggregateDataItem { get; protected set; }
 
         public int PageNumber { get; protected set; } = 1;
 
@@ -407,6 +412,7 @@
                 lock (SyncLock)
                 {
                     DataItems = response.DataItems;
+                    AggregateDataItem = response.AggregateDataItem;
                     FilteredRecordCount = response.FilteredRecordCount;
                     TotalRecordCount = response.TotalRecordCount;
                     PageSize = Request.Take <= 0 ? response.FilteredRecordCount : Request.Take;

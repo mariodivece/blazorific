@@ -2,7 +2,6 @@
 {
     using BlazorificSample.Shared;
     using Microsoft.AspNetCore.Components.Web;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Unosquare.Blazorific;
     using Unosquare.Blazorific.Common;

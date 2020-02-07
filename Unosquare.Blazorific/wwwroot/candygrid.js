@@ -37,10 +37,11 @@
             var isWindowEvent = !e || !e.target || e.target === window;
             var stopPropagation = false;
             var i;
+            var buttonEl;
 
             // hide all popovers
             for (i = 0; i < CandyGrid.state.filterButtons.length; i++) {
-                var buttonEl = CandyGrid.state.filterButtons[i];
+                buttonEl = CandyGrid.state.filterButtons[i];
                 var isOnButton = e && e.target && (e.target === buttonEl[0] || buttonEl.has(e.target).length > 0);
 
                 if (!isOnButton && (!isOnPopup || isEscapKey || isWindowEvent)) {
@@ -51,7 +52,7 @@
 
             // remove stale popovers
             for (i = CandyGrid.state.filterButtons.length - 1; i >= 0; i--) {
-                var buttonEl = CandyGrid.state.filterButtons[i];
+                buttonEl = CandyGrid.state.filterButtons[i];
                 if (!CandyGrid.isAttachedToDocument(buttonEl[0]))
                     CandyGrid.state.filterButtons.pop();
             }

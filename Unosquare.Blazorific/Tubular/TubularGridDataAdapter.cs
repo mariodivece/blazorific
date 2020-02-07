@@ -49,11 +49,44 @@
             {
                 CurrentPage = tubularResponse.CurrentPage,
                 DataItems = ParsePayload(tubularResponse),
+                AggregateDataItem = ParseAggregateItem(tubularResponse),
                 DataItemType = DataItemType,
                 FilteredRecordCount = tubularResponse.FilteredRecordCount,
                 TotalPages = tubularResponse.TotalPages,
                 TotalRecordCount = tubularResponse.TotalRecordCount
             };
+        }
+
+        private object ParseAggregateItem(TubularGridDataResponse response)
+        {
+            var payload = response.AggregationPayload;
+
+            if (payload == null || payload.Count <= 0)
+                return null;
+
+            var result = Activator.CreateInstance(DataItemType);
+            var proxies = DataItemType.PropertyProxies();
+
+            foreach (var kvp in payload)
+            {
+                if (!(kvp.Value is JsonElement value))
+                    continue;
+
+                var property = proxies.ContainsKey(kvp.Key) ? proxies[kvp.Key] : null;
+                if (property == null)
+                    continue;
+
+                try
+                {
+                    property.SetValue(result, ParseValue(value, property.PropertyType));
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+
+            return result;
         }
 
         private IReadOnlyList<object> ParsePayload(TubularGridDataResponse response)

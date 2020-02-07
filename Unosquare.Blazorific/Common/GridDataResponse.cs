@@ -7,6 +7,8 @@
     {
         public IReadOnlyList<object> DataItems { get; set; }
 
+        public object AggregateDataItem { get; set; }
+
         public Type DataItemType { get; set; }
 
         /// <summary>

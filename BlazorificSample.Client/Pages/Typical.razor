@@ -22,18 +22,21 @@
                     @($"Field: {context.Field}")
                 </HeaderTemplate>
             </CandyGridColumn>
-            <CandyGridColumn Title="Description" Field="@nameof(Product.Description)" IsSortable="true" Width="6">
+            <CandyGridColumn Title="Description" Field="@nameof(Product.Description)" IsSortable="true" Width="6" Context="t">
                 <DataTemplate>
-                    @($"{(context as Product).Description}")
+                    @($"{t.Item<Product>().Description}")
                 </DataTemplate>
             </CandyGridColumn>
             <CandyGridColumn Title="Price" Field="@nameof(Product.Price)" FormatString="{0:c2}" Width="2" IsSortable="true" Aggregate="AggregationFunction.Average" />
             <CandyGridColumn Title="Stock" Field="@nameof(Product.StockCount)" Width="1" IsSortable="true"
                              FilterOptionsProvider="@(async () => await DataAccess.GetProductFilterOptionsAsync(nameof(Product.StockCount)))" />
 
-            <CandyGridColumn Title="Date" Context="item">
+            <CandyGridColumn Title="Date" Context="t">
                 <DataTemplate>
-                    @($"UID: {(item as Product).DateCreated.ToShortDateString()}")
+                    @if (!t.IsFooter)
+                    {
+                        @($"UID: {t.Item<Product>().DateCreated.ToShortDateString()}")
+                    }
                 </DataTemplate>
             </CandyGridColumn>
         </CandyGridColumns>

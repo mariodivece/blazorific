@@ -59,7 +59,7 @@
         public AggregationFunction Aggregate { get; set; }
 
         [Parameter]
-        public RenderFragment<object> DataTemplate { get; set; }
+        public RenderFragment<GridCellData> DataTemplate { get; set; }
 
         [Parameter]
         public RenderFragment<CandyGridColumn> HeaderTemplate { get; set; }
