@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Server" Version="3.2.0-preview1.20073.1" />
-    <PackageReference Include="Tubular.ServerSide" Version="2.1.0" />
+    <PackageReference Include="Tubular.ServerSide" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
