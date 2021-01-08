@@ -1,7 +1,9 @@
 namespace BlazorificSample.Client
 {
-    using Microsoft.AspNetCore.Blazor.Hosting;
+    using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
     using Microsoft.Extensions.DependencyInjection;
+    using System;
+    using System.Net.Http;
     using System.Threading.Tasks;
 
     public class Program
@@ -10,10 +12,15 @@ namespace BlazorificSample.Client
         {
             Extensions.SetCultureInfo("en-US");
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.RootComponents.Add<App>("#app");
+
+            builder.Services.AddScoped(sp => new HttpClient
+            {
+                BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+            });
+
             builder.Services.AddSingleton<ApplicationState>()
                 .AddDataAccessService();
-
-            builder.RootComponents.Add<App>("app");
 
             await builder.Build().RunAsync();
         }
