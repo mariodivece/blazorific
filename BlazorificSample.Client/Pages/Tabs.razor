@@ -1,0 +1,41 @@
+﻿@inherits AppComponentBase
+@page "/tabs"
+
+<div class="container mt-4">
+    <CandyTabSet @ref="TabSet">
+        <CandyTab Title="Tab 1">
+            <div class="row">
+                <div class="col-sm">
+                    This is tab 1 content <br />
+                    <button class="btn btn-danger" @onclick="() => ActivateTab(2)">Activate Tab 2</button>
+                </div>
+            </div>
+        </CandyTab>
+        <CandyTab Title="Tab 2">
+            <div class="row">
+                <div class="col-sm">
+                    This is tab 2 content <br />
+                    <button class="btn btn-danger" @onclick="() => ActivateTab(3)">Activate Tab 3</button>
+                </div>
+            </div>
+        </CandyTab>
+        <CandyTab Title="Tab 3">
+            <div class="row">
+                <div class="col-sm">
+                    This is tab 3 content <br />
+                    <button class="btn btn-danger" @onclick="() => ActivateTab(1)">Activate Tab 1</button>
+                </div>
+            </div>
+
+        </CandyTab>
+    </CandyTabSet>
+</div>
+
+@code{
+    protected CandyTabSet TabSet { get; set; }
+
+    private async Task ActivateTab(int tabNumber)
+    {
+        await TabSet.Tabs[tabNumber - 1].Show();
+    }
+}

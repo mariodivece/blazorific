@@ -2,7 +2,7 @@
 
 @if (TabSet.Mode == CandyTabMode.Normal)
 {
-    <a href="javascript:void(0)"
+    <a href="javascript:void(0)" @ref="HeaderElement"
        class="nav-item nav-link @(IsFirst ? "active" : null)"
        id="@($"{Id}-tab")"
        data-toggle="tab" data-target="@($"#{Id}")" role="tab" aria-controls="@Id" aria-selected="false">@Title</a>
@@ -11,7 +11,9 @@ else
 {
     <div class="card mb-1">
         <div class="card-header p-0" id="@($"{Id}-tab")">
-            <a href="javascript:void(0)" class="btn btn-link" data-toggle="collapse" data-target="@($"#{Id}")" aria-expanded="@(IsExpanded ? "true" : "false")" aria-controls="@Id">
+            <a href="javascript:void(0)" @ref="HeaderElement"
+               class="btn btn-link" data-toggle="collapse" data-target="@($"#{Id}")"
+               aria-expanded="@(IsExpanded ? "true" : "false")" aria-controls="@Id">
                 @Title
             </a>
         </div>

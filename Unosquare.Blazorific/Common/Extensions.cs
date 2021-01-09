@@ -81,6 +81,8 @@
             return (totalCount / pageSize) + (totalCount % pageSize > 0 ? 1 : 0);
         }
 
+        internal static string GenerateRandomHtmlId() => $"guid_{Guid.NewGuid():N}";
+
         internal static object GetColumnValue(this CandyGridColumn column, object dataItem)
         {
             if (column == null)
@@ -130,7 +132,7 @@
         internal static void RemoveAttachedComponent<T>(this IReadOnlyList<T> container, T child)
             where T : IAttachedComponent
         {
-            if (!(container is IList<T> collection))
+            if (container is not IList<T> collection)
                 return;
 
             if (collection.Count == 0 || child == null)

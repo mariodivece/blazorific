@@ -1,5 +1,6 @@
 ﻿namespace Unosquare.Blazorific
 {
+    using Common;
     using Microsoft.AspNetCore.Components;
     using System.Collections.Generic;
 
@@ -26,6 +27,14 @@
         {
             var tabs = Tabs as List<CandyTab>;
             return tabs.IndexOf(tab);
+        }
+
+        protected override void OnInitialized()
+        {
+            if (string.IsNullOrWhiteSpace(Id))
+                Id = Extensions.GenerateRandomHtmlId();
+
+            base.OnInitialized();
         }
     }
 }
