@@ -2,6 +2,7 @@
     constants: {
         renderedEventName: 'candygrid.rendred',
         dataLoadedEventName: 'candygrid.data.loaded',
+        dataLoadingEventName: 'candygrid.data.loading',
     },
 
     state: {
@@ -15,8 +16,19 @@
         rootElement.dispatchEvent(event);
     },
 
+    onDataLoading: function (rootElement) {
+        var overlay = $(rootElement).find('.candygrid-overlay').first();
+        if (overlay.css('display') === 'block')
+            return;
+
+        overlay.css('display', 'block');
+        var event = new CustomEvent(CandyGrid.constants.dataLoadingEventName);
+        rootElement.dispatchEvent(event);
+    },
+
     onDataLoaded: function (rootElement) {
         CandyGrid.hideDropdowns();
+        $(rootElement).find('.candygrid-overlay').first().css('display', 'none');
         var event = new Event(CandyGrid.constants.dataLoadedEventName);
         rootElement.dispatchEvent(event);
     },

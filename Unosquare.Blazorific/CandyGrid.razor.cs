@@ -205,7 +205,7 @@
             {
                 if (IsDisposed) return;
                 PendingAdapterUpdates++;
-                StateHasChanged();
+                _ = SignalDataLoading();
                 QueueProcessor.Change(QueueProcessorDueTimeMs, Timeout.Infinite);
             }
         }
@@ -216,7 +216,7 @@
             {
                 if (IsDisposed) return;
                 PendingRenderUpdates++;
-                StateHasChanged();
+                _ = SignalDataLoading();
                 QueueProcessor.Change(QueueProcessorDueTimeMs, Timeout.Infinite);
             }
         }
@@ -433,6 +433,12 @@
                 $"Failed to update. {ex.Message} - {ex.StackTrace}".Log(nameof(CandyGrid), nameof(UpdateDataAsync));
                 await InvokeAsync(() => OnDataLoadFailed?.Invoke(new GridExceptionEventArgs(this, ex)));
             }
+        }
+
+        private async Task SignalDataLoading()
+        {
+            // prevents re-rendering the grid just to block the UI, so we do it via Javascript interop
+            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onDataLoading", RootElement);
         }
     }
 }
