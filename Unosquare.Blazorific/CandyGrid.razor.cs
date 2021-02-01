@@ -106,6 +106,9 @@
         [Parameter]
         public string LocalStorageKey { get; set; }
 
+        [Parameter]
+        public bool DisableVirtualization { get; set; }
+
         #endregion
 
         #region Parameters: CSS Classes
@@ -162,7 +165,7 @@
 
         public IReadOnlyList<CandyGridRow> Rows { get; } = new List<CandyGridRow>(1024);
 
-        public IReadOnlyList<object> DataItems { get; protected set; }
+        public ICollection<object> DataItems { get; protected set; }
 
         public object AggregateDataItem { get; protected set; }
 

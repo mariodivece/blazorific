@@ -71,11 +71,22 @@
                     }
                     else
                     {
-                        @foreach (var item in DataItems)
+                        if (DisableVirtualization)
                         {
-                            <CascadingValue Name="DataItem" Value="item">
-                                <CandyGridRow @key="item" />
-                            </CascadingValue>
+                            @foreach (var item in DataItems)
+                            {
+                                <CascadingValue Name="DataItem" Value="item">
+                                    <CandyGridRow @key="item" />
+                                </CascadingValue>
+                            }
+                        }
+                        else
+                        {
+                            <Virtualize Items="DataItems" Context="item">
+                                <CascadingValue Name="DataItem" Value="item">
+                                    <CandyGridRow @key="item" />
+                                </CascadingValue>
+                            </Virtualize>
                         }
                     }
                 </tbody>

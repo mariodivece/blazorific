@@ -5,7 +5,7 @@
 
     public class GridDataResponse
     {
-        public IReadOnlyList<object> DataItems { get; set; }
+        public ICollection<object> DataItems { get; set; }
 
         public object AggregateDataItem { get; set; }
 

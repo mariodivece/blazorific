@@ -69,7 +69,7 @@
 
             foreach (var kvp in payload)
             {
-                if (!(kvp.Value is JsonElement value))
+                if (kvp.Value is not JsonElement value)
                     continue;
 
                 var property = proxies.ContainsKey(kvp.Key) ? proxies[kvp.Key] : null;
@@ -89,7 +89,7 @@
             return result;
         }
 
-        private IReadOnlyList<object> ParsePayload(TubularGridDataResponse response)
+        private ICollection<object> ParsePayload(TubularGridDataResponse response)
         {
             var result = new List<object>();
             var props = DataItemType.PropertyProxies().Values.Where(t => t.IsFlatType);
@@ -107,8 +107,8 @@
 
                     try
                     {
-                        if (v is JsonElement)
-                            v = ParseValue((JsonElement)v, targetProperty.PropertyType);
+                        if (v is JsonElement element)
+                            v = ParseValue(element, targetProperty.PropertyType);
                         else if (v != null && v.GetType() != (isNullable ? nullableType : targetProperty.PropertyType))
                             v = Convert.ChangeType(v?.ToString(), isNullable ? nullableType : targetProperty.PropertyType);
 
