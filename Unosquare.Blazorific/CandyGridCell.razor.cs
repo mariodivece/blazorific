@@ -69,7 +69,6 @@
             Index = Row?.AddCell(this) ?? -1;
             TextAlignCssClass = GetTextAlignCssClass();
             CheckedProperty = GetCheckedProperty();
-            base.OnInitialized();
         }
 
         private IPropertyProxy GetCheckedProperty()

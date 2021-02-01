@@ -34,8 +34,6 @@
             {
                 SearchText = e.State.SearchText;
             };
-
-            base.OnInitialized();
         }
     }
 }

@@ -33,7 +33,6 @@
         protected override void OnInitialized()
         {
             Index = Parent?.AddRow(this) ?? -1;
-            base.OnInitialized();
         }
 
         internal void NotifyStateChanged() => StateHasChanged();

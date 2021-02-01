@@ -33,8 +33,6 @@
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Extensions.GenerateRandomHtmlId();
-
-            base.OnInitialized();
         }
     }
 }

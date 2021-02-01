@@ -224,22 +224,18 @@
             }
         }
 
-        protected override void OnInitialized()
-        {
-            Grid.StateLoaded += (s, e) => CoerceFilterState();
-            base.OnInitialized();
-        }
-
         protected override async Task OnInitializedAsync()
         {
+            Grid.StateLoaded += (s, e) => CoerceFilterState();
+
             try
             {
                 if (Column?.FilterOptionsProvider != null)
                     FilterOptions = await Column.FilterOptionsProvider.Invoke();
             }
-            finally
+            catch
             {
-                await base.OnInitializedAsync();
+                // empty
             }
         }
     }
