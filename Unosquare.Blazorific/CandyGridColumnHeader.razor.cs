@@ -188,10 +188,10 @@
 
         private void CoerceFilterState()
         {
-            FilterOperator = Column?.Filter.Operator ?? CompareOperators.None;
-            FilterArg1 = Column?.Filter.Text;
-            FilterArg2 = Column?.Filter.Argument != null && Column?.Filter.Argument.Length > 0
-                ? Column?.Filter.Argument[0]
+            FilterOperator = Column?.FilterOperator ?? CompareOperators.None;
+            FilterArg1 = Column?.FilterText;
+            FilterArg2 = Column?.FilterArgument != null && Column?.FilterArgument.Length > 0
+                ? Column?.FilterArgument[0]
                 : null;
 
             CheckedFilterOptions.Clear();
@@ -199,7 +199,7 @@
             if (FilterOperator != CompareOperators.Multiple)
                 return;
 
-            var checkedOptions = Column?.Filter?.Argument ?? Array.Empty<string>();
+            var checkedOptions = Column?.FilterArgument ?? Array.Empty<string>();
             foreach (var key in checkedOptions)
             {
                 if (string.IsNullOrWhiteSpace(key))

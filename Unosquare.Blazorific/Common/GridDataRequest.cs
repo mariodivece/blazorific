@@ -7,7 +7,7 @@
     /// Represents a Data Request from a Tubular Grid.
     /// This model is how Tubular Grid sends data to any server.
     /// </summary>
-    public sealed class GridDataRequest
+    public sealed class GridDataRequest 
     {
         /// <summary>
         /// Request's counter.
@@ -15,13 +15,12 @@
         public int Counter { get; private set; } = 1;
 
         /// <summary>
-        /// The free-text search.
+        /// Gets or sets the search text.
         /// </summary>
-        public GridDataFilter Search { get; } = new GridDataFilter
-        {
-            Text = string.Empty,
-            Operator = CompareOperators.None
-        };
+        /// <value>
+        /// The search text.
+        /// </value>
+        public string SearchText { get; set; } = string.Empty;
 
         /// <summary>
         /// Set how many records skip, for pagination.
@@ -42,19 +41,19 @@
         /// Sent the minutes difference between UTC and local time.
         /// TODO: Blazor right now returns Now and UTcNow as the same date. They are both UTC.
         /// </summary>
-        public int TimezoneOffset =>
-            (int)Math.Round(DateTime.UtcNow.Subtract(DateTime.Now).TotalMinutes, 0);
+        public int TimezoneOffset { get; set; } = (int)Math.Round(DateTime.UtcNow.Subtract(DateTime.Now).TotalMinutes, 0);
 
+        /// <summary>
+        /// Updates this request object from a CandyGrid.
+        /// </summary>
+        /// <param name="grid"></param>
         internal void UpdateFrom(CandyGrid grid)
         {
             Counter += 1;
             Columns = grid.GetGridDataRequestColumns();
             Skip = grid.PageSize <= 0 ? 0 : Math.Max(0, grid.PageNumber - 1) * grid.PageSize;
             Take = grid.PageSize < 0 ? -1 : grid.PageSize;
-            Search.Text = grid.SearchText ?? string.Empty;
-            Search.Operator = string.IsNullOrWhiteSpace(Search.Text)
-                ? CompareOperators.None
-                : CompareOperators.Auto;
+            SearchText = grid.SearchText ?? string.Empty;
         }
     }
 }

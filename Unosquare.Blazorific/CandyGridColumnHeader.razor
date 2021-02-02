@@ -15,7 +15,7 @@
     @if (ShowFilter)
     {
         <div class="ml-auto" @ref="ColumnFilterElement">
-            <button class="btn candygrid-column-header-button @(Column.Filter.Operator != CompareOperators.None ? "btn-warning" : "btn-light")">
+            <button class="btn candygrid-column-header-button @(Column.FilterOperator != CompareOperators.None ? "btn-warning" : "btn-light")">
                 <i class="fas fa-filter"></i>
             </button>
             <div style="display: none">
