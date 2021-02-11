@@ -112,7 +112,20 @@
         public IPropertyProxy Property => m_Property
             ?? Parent?.DataAdapter?.DataItemType.PropertyProxy(Field ?? string.Empty);
 
-        public GridDataFilter Filter { get; } = new GridDataFilter();
+        /// <summary>
+        /// Filter search text.
+        /// </summary>
+        public string FilterText { get; set; }
+
+        /// <summary>
+        /// Filter search params.
+        /// </summary>
+        public string[] FilterArgument { get; set; }
+
+        /// <summary>
+        /// Filter operator.
+        /// </summary>
+        public CompareOperators FilterOperator { get; set; }
 
         string IGridDataColumn.Name => Field;
 
@@ -178,28 +191,28 @@
         {
             if (filterOp == CompareOperators.Auto || filterOp == CompareOperators.None || args == null || args.Length <= 0)
             {
-                Filter.Argument = null;
-                Filter.Text = null;
-                Filter.Operator = CompareOperators.None;
+                FilterArgument = null;
+                FilterText = null;
+                FilterOperator = CompareOperators.None;
                 Parent?.QueueDataUpdate();
                 return;
             }
 
-            Filter.Operator = filterOp;
+            FilterOperator = filterOp;
 
-            if (Filter.Operator == CompareOperators.Multiple)
+            if (FilterOperator == CompareOperators.Multiple)
             {
-                Filter.Text = null;
-                Filter.Argument = args;
+                FilterText = null;
+                FilterArgument = args;
             }
             else
             {
-                Filter.Text = args[0];
+                FilterText = args[0];
                 var arguments = new List<string>(args.Length - 1);
                 for (var i = 1; i < args.Length; i++)
                     arguments.Add(args[i]);
 
-                Filter.Argument = arguments.ToArray();
+                FilterArgument = arguments.ToArray();
             }
 
             Parent?.QueueDataUpdate();
@@ -239,11 +252,11 @@
 
                 SortDirection = state.SortDirection;
                 SortOrder = state.SortOrder;
-                Filter.Operator = state.Filter?.Operator ?? CompareOperators.None;
-                if (Filter.Operator != CompareOperators.None)
+                FilterOperator = state.FilterOperator;
+                if (FilterOperator != CompareOperators.None)
                 {
-                    Filter.Text = state.Filter.Text;
-                    Filter.Argument = state.Filter.Argument;
+                    FilterText = state.FilterText;
+                    FilterArgument = state.FilterArgument;
                 }
             };
         }

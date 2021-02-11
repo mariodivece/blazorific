@@ -1,5 +1,6 @@
 ﻿namespace Unosquare.Blazorific.Common
 {
+    using System;
     using System.Collections.Generic;
 
     public class GridState
@@ -46,7 +47,9 @@
                 columns.Add(new GridColumnState
                 {
                     Name = col.Field,
-                    Filter = new GridDataFilter(),
+                    FilterArgument = Array.Empty<string>(),
+                    FilterOperator = CompareOperators.None,
+                    FilterText = string.Empty
                 });
             }
 
@@ -65,8 +68,6 @@
 
         public int SortOrder { get; set; }
 
-        public GridDataFilter Filter { get; set; }
-
         public bool Sortable { get; set; }
 
         public DataType DataType { get; set; }
@@ -75,6 +76,21 @@
 
         public AggregationFunction Aggregate { get; set; }
 
+        /// <summary>
+        /// Filter search text.
+        /// </summary>
+        public string FilterText { get; set; }
+
+        /// <summary>
+        /// Filter search params.
+        /// </summary>
+        public string[] FilterArgument { get; set; }
+
+        /// <summary>
+        /// Filter operator.
+        /// </summary>
+        public CompareOperators FilterOperator { get; set; }
+
         internal static GridColumnState FromOther(IGridDataColumn other)
         {
             return new GridColumnState
@@ -82,7 +98,9 @@
                 Name = other.Name,
                 SortDirection = other.SortDirection,
                 SortOrder = other.SortOrder,
-                Filter = other.Filter,
+                FilterText = other.FilterText,
+                FilterArgument = other.FilterArgument,
+                FilterOperator = other.FilterOperator,
                 Sortable = other.Sortable,
                 DataType = other.DataType,
                 Searchable = other.Searchable,
