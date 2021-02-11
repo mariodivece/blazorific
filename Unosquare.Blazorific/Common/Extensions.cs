@@ -65,7 +65,7 @@
         internal static DataType GetDataType(this Type t)
         {
             if (t.IsBoolean()) return DataType.Boolean;
-            if (t.IsDateTime()) return DataType.DateTime;
+            if (t.IsDateTime()) return DataType.DateTimeUtc;
             if (t.IsNumeric()) return DataType.Numeric;
 
             return DataType.String;
