@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Components;
     using Microsoft.JSInterop;
     using System.Net.Http;
+    using System.Threading.Tasks;
 
     public abstract class CandyComponentBase : ComponentBase
     {

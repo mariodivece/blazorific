@@ -292,8 +292,7 @@
             LastRenderTime = DateTime.UtcNow;
             var currentRenderTime = $"{LastRenderTime.Minute:00}:{LastRenderTime.Second:00}:{LastRenderTime.Millisecond:000}";
 
-            $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago".Log(nameof(CandyGrid), nameof(OnAfterRender));
-            await base.OnAfterRenderAsync(firstRender);
+            $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago (FR: {firstRender})".Log(nameof(CandyGrid), nameof(OnAfterRender));
             await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onRendered", RootElement, firstRender);
 
             if (!firstRender)
@@ -303,9 +302,14 @@
             QueueDataUpdate();
         }
 
-        protected override async Task OnParametersSetAsync()
+        public override async Task SetParametersAsync(ParameterView parameters)
         {
-            await base.OnParametersSetAsync();
+            await base.SetParametersAsync(parameters);
+            "CALLED".Log(nameof(CandyGrid), nameof(SetParametersAsync));
+        }
+
+        protected override void OnParametersSet()
+        {
             "CALLED".Log(nameof(CandyGrid), nameof(OnParametersSet));
         }
 

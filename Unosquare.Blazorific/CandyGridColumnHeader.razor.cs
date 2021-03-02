@@ -211,17 +211,10 @@
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            try
-            {
-                if (!firstRender)
-                    return;
+            if (!firstRender)
+                return;
 
-                await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.bindColumnFilterDropdown", ColumnFilterElement);
-            }
-            finally
-            {
-                await base.OnAfterRenderAsync(firstRender);
-            }
+            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.bindColumnFilterDropdown", ColumnFilterElement);
         }
 
         protected override async Task OnInitializedAsync()

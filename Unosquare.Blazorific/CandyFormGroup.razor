@@ -1,8 +1,19 @@
 ﻿@inherits CandyComponentBase
 
-<div class="form-group">
-    <label>@Label</label>
-    <div class="input-group">
+<div class="form-group @(UseHorizontalLayout ? "row" : string.Empty)">
+    <label class="@(UseHorizontalLayout ? "col-sm-4 col-form-label text-right" : string.Empty)">
+        @if (UseHelpTooltip && !string.IsNullOrWhiteSpace(HelpText))
+        {
+            <a href="javascript: void(0)" data-toggle="tooltip" data-placement="top" title="@HelpText" @ref="TooltipElement">
+                @Label
+            </a>
+        }
+        else
+        {
+            @Label
+        }
+    </label>
+    <div class="input-group @(UseHorizontalLayout ? "col-sm-8" : string.Empty)">
         @if (!string.IsNullOrWhiteSpace(PrependIconClass))
         {
             <div class="input-group-prepend">
@@ -23,7 +34,7 @@
             </div>
         }
 
-        @if (!string.IsNullOrWhiteSpace(HelpText))
+        @if (!string.IsNullOrWhiteSpace(HelpText) && !UseHelpTooltip)
         {
             <div class="w-100">
                 <small class="form-text text-muted">
