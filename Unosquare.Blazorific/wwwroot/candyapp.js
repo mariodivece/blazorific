@@ -105,26 +105,49 @@
 
             var themeFile = null;
             for (var i = 0; i < CandyAppLoader.themeFiles.length; i++) {
-                if (CandyAppLoader.themeFiles[i].name.toLowerCase() === themeName.toLowerCase())
+                if (CandyAppLoader.themeFiles[i].name.toLowerCase() === themeName.toLowerCase()) {
+                    if (CandyAppLoader.themeFiles[i].url === '') {
+                        CandyAppLoader.themeFiles[i].url = CandyAppConstants.bootswatchBaseUrl
+                            + CandyAppLoader.themeFiles[i].name.toLowerCase()
+                            + '/bootstrap.min.css';
+                    }
+
                     themeFile = CandyAppLoader.themeFiles[i];
+                }
+                    
             }
 
             if (themeFile === null)
                 return false;
 
-            if (themeFile.url === '') {
-                themeFile.url = CandyAppConstants.bootswatchBaseUrl
-                    + themeFile.name.toLowerCase()
-                    + '/bootstrap.min.css';
-            }
-
             CandyAppLoader.themeElement.setAttribute('href', themeFile.url);
             return true;
         },
 
+        getThemeNames: function () {
+            var names = [];
+            for (var i = 0; i < CandyAppLoader.themeFiles.length; i++) {
+                names.push(CandyAppLoader.themeFiles[i].name);
+            }
+
+            return names;
+        },
+
+        getCurrentThemeName: function () {
+            var themeName = '';
+            var themeUrl = CandyAppLoader.themeElement.getAttribute('href');
+
+            for (var i = 0; i < CandyAppLoader.themeFiles.length; i++) {
+                if (CandyAppLoader.themeFiles[i].url === themeUrl)
+                    return CandyAppLoader.themeFiles[i].name;
+            }
+
+            return themeName;
+        },
+
         bindTooltip: function (targetEl) {
             $(targetEl).tooltip();
-        },        
+        },
     };
 
     CandyAppLoader.initialize();

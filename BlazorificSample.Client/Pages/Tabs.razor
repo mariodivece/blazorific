@@ -38,6 +38,25 @@
                 <div class="col-sm">
                     This is tab 2 content <br />
                     <button class="btn btn-danger" @onclick="() => ActivateTab(3)">Activate Tab 3</button>
+                    @if (ThemeNames != null)
+                    {
+                        <div class="mt-4">Theme Selector Example</div>
+                        <ul>
+                            @foreach (var themeName in ThemeNames)
+                            {
+                                <li>
+                                    @if (CurrentThemeName != themeName)
+                                    {
+                                    <a href="#" @onclick="async () => await ApplyTheme(themeName)" @onclick:preventDefault="true">@themeName</a>
+                                    }
+                                    else
+                                    {
+                                        @themeName
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
                 </div>
             </div>
         </CandyTab>
@@ -58,8 +77,29 @@
 
     protected int? Year { get; set; }
 
+    protected ICollection<string> ThemeNames { get; set; }
+
+    protected string CurrentThemeName { get; set; }
+
     private async Task ActivateTab(int tabNumber)
     {
         await TabSet.Tabs[tabNumber - 1].Show();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ThemeNames = await Js.GetThemeNames();
+            CurrentThemeName = await Js.GetCurrentThemeName();
+            StateHasChanged();
+        }
+    }
+
+    protected async Task ApplyTheme(string themeName)
+    {
+        await Js.ApplyTheme(themeName);
+        CurrentThemeName = await Js.GetCurrentThemeName();
+        await Js.StorageSetItem(ApplicationState.ThemeStorageKey, CurrentThemeName);
     }
 }
