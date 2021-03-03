@@ -17,9 +17,9 @@
         [Parameter]
         public string ThemeStorageKey { get; set; } = "Unosquare.Blazorific.Theme";
 
-        public ICollection<string> ThemeNames { get; private set; }
+        public ICollection<string> ThemeNames { get; private set; } = new string[0];
 
-        public string CurrentThemeName { get; set; }
+        public string CurrentThemeName { get; set; } = string.Empty;
 
         public async Task ApplyThemeAsync(string themeName)
         {

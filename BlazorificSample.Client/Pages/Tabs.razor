@@ -3,11 +3,36 @@
 
 <div class="container mt-4">
     <CandyTabSet @ref="TabSet">
-        <CandyTab Title="Tab 1">
+        <CandyTab Title="Theme Selector">
             <div class="row">
-                <div class="col-sm">
-                    This is tab 1 content <br />
-                    <button class="btn btn-danger" @onclick="() => ActivateTab(2)">Activate Tab 2</button>
+                <div class="col">
+                    <div>
+                        This is tab 1 content <br />
+                        <button class="btn btn-danger" @onclick="() => ActivateTab(2)">Activate Tab 2</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col"></div>
+                <div class="col">
+                    <CandyFormGroup Label="Select Theme" PrependIconClass="fas fa-layer-group"
+                                    HelpText="Sample Theme Selector." UseHorizontalLayout="true">
+                        <select class="form-control custom-select" @onchange="async (val) => await ThemeManager.ApplyThemeAsync(val.Value as string)">
+                            @foreach (var themeName in ThemeManager.ThemeNames)
+                            {
+                                <option value="@themeName" selected="@(themeName == ThemeManager.CurrentThemeName ? "selected" : null)">@themeName</option>
+                            }
+                        </select>
+                    </CandyFormGroup>
+                </div>
+                <div class="col"></div>
+            </div>
+        </CandyTab>
+        <CandyTab Title="Form Controls">
+            <div class="row">
+                <div class="col">
+                    This is tab 2 content <br />
+                    <button class="btn btn-danger" @onclick="() => ActivateTab(3)">Activate Tab 3</button>
                 </div>
             </div>
             <div class="row">
@@ -31,36 +56,15 @@
                         <input type="number" class="form-control" @bind="Year" min="2009" max="@(DateTime.Today.Year + 1)" />
                     </CandyFormGroup>
                 </div>
-            </div>
-        </CandyTab>
-        <CandyTab Title="Tab 2">
-            <div class="row">
-                <div class="col-sm">
-                    This is tab 2 content <br />
-                    <button class="btn btn-danger" @onclick="() => ActivateTab(3)">Activate Tab 3</button>
-                    @if (ThemeManager.ThemeNames != null)
-                    {
-                        <div class="mt-4">Theme Selector Example</div>
-                        <ul>
-                            @foreach (var themeName in ThemeManager.ThemeNames)
-                            {
-                                <li>
-                                    @if (ThemeManager.CurrentThemeName != themeName)
-                                    {
-                                    <a href="#" @onclick="async () => await ThemeManager.ApplyThemeAsync(themeName)" @onclick:preventDefault="true">@themeName</a>
-                                    }
-                                    else
-                                    {
-                                        @themeName
-                                    }
-                                </li>
-                            }
-                        </ul>
-                    }
+                <div class="col">
+                    <CandyFormGroup Label="Start Year" PrependIconClass="fas fa-calendar" UseHorizontalLayout="true"
+                                    HelpText="This is some sample text." UseHelpTooltip="false">
+                        <input type="number" class="form-control" @bind="Year" min="2009" max="@(DateTime.Today.Year + 1)" />
+                    </CandyFormGroup>
                 </div>
             </div>
         </CandyTab>
-        <CandyTab Title="Tab 3">
+        <CandyTab Title="Nothing Here">
             <div class="row">
                 <div class="col-sm">
                     This is tab 3 content <br />
@@ -76,7 +80,6 @@
     protected CandyTabSet TabSet { get; set; }
 
     protected int? Year { get; set; }
-
 
     private async Task ActivateTab(int tabNumber)
     {
