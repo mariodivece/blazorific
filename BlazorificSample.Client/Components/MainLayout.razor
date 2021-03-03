@@ -1,26 +1,10 @@
 ﻿@inherits LayoutComponentBase
-@inject IJSRuntime Js
 
-<div>
-    <NavMenu />
-</div>
-<main>
-    @Body
-</main>
-
-@code {
-    
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-            return;
-
-        var currentTheme = await Js.StorageGetItem(ApplicationState.ThemeStorageKey);
-        if (string.IsNullOrWhiteSpace(currentTheme))
-            currentTheme = await Js.GetCurrentThemeName();
-
-        await Js.StorageSetItem(ApplicationState.ThemeStorageKey, currentTheme);
-        await Js.ApplyTheme(currentTheme);
-    }
-}
+<CandyThemeManager>
+    <div>
+        <NavMenu />
+    </div>
+    <main>
+        @Body
+    </main>
+</CandyThemeManager>

@@ -35,7 +35,7 @@
             if (!firstRender)
                 return;
 
-            await Js.BindTooltip(TooltipElement);
+            await Js.BindTooltipAsync(TooltipElement);
         }
     }
 }

@@ -56,10 +56,22 @@
             window.addEventListener('DOMContentLoaded', CandyAppLoader.__loadResources);
         },
 
+        hideApp: function () {
+            var appElement = document.getElementById("app");
+            appElement.style.display = "none";
+        },
+
+        showApp: function () {
+            var appElement = document.getElementById("app");
+            appElement.style.display = "";
+        },
+
         __loadResources: function () {
             window.removeEventListener('DOMContentLoaded', CandyAppLoader.__loadResources);
-            CandyAppLoader.__loadScripts();
+            CandyAppLoader.hideApp();
             CandyAppLoader.__loadStyles();
+            CandyAppLoader.showApp();
+            CandyAppLoader.__loadScripts();
         },
 
         __loadScripts: function () {
@@ -103,6 +115,7 @@
             if (CandyAppLoader.themeElement === null)
                 return false;
 
+            CandyAppLoader.hideApp();
             var themeFile = null;
             for (var i = 0; i < CandyAppLoader.themeFiles.length; i++) {
                 if (CandyAppLoader.themeFiles[i].name.toLowerCase() === themeName.toLowerCase()) {
@@ -117,10 +130,13 @@
                     
             }
 
-            if (themeFile === null)
+            if (themeFile === null) {
+                CandyAppLoader.showApp();
                 return false;
+            }
 
             CandyAppLoader.themeElement.setAttribute('href', themeFile.url);
+            CandyAppLoader.showApp();
             return true;
         },
 

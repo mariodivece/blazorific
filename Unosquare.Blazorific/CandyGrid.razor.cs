@@ -260,7 +260,7 @@
 
         public async Task ResetState()
         {
-            await Js.StorageRemoveItem(LocalStorageKey);
+            await Js.StorageRemoveItemAsync(LocalStorageKey);
             var state = GridState.CreateDefault(this);
             await InvokeAsync(() => StateLoaded?.Invoke(this, new GridStateEventArgs(this, state, true)));
             QueueDataUpdate();
@@ -355,7 +355,7 @@
             if (string.IsNullOrWhiteSpace(LocalStorageKey))
                 return;
 
-            var json = await Js.StorageGetItem(LocalStorageKey);
+            var json = await Js.StorageGetItemAsync(LocalStorageKey);
             if (string.IsNullOrWhiteSpace(json))
                 return;
 
@@ -367,7 +367,7 @@
             catch (Exception ex)
             {
                 $"Unable to deserialize state. {ex.Message}".Log(nameof(CandyGrid), nameof(LoadState));
-                await Js.StorageRemoveItem(LocalStorageKey);
+                await Js.StorageRemoveItemAsync(LocalStorageKey);
             }
 
             if (state == null)
@@ -382,7 +382,7 @@
                 return;
 
             var json = GridState.FromGrid(this, Request).Serialize();
-            await Js.StorageSetItem(LocalStorageKey, json);
+            await Js.StorageSetItemAsync(LocalStorageKey, json);
         }
 
         private async Task UpdateDataAsync()

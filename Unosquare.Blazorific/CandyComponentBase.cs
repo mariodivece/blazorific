@@ -16,6 +16,9 @@
         [Inject]
         protected IJSRuntime Js { get; set; }
 
+        [CascadingParameter(Name = nameof(ThemeManager))]
+        public CandyThemeManager ThemeManager { get; private set; }
+
         public string AssetUrl(string assetFile) =>
             Navigation.ToAbsoluteUri($"/_content/{nameof(Unosquare)}.{nameof(Blazorific)}/{assetFile}").ToString();
     }
