@@ -31,7 +31,7 @@
 
         public async Task Show()
         {
-            await Js.InvokeVoidAsync($"{nameof(CandyTabSet)}.show", HeaderElement);
+            await Js.TabShow(HeaderElement);
         }
     }
 }

@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Components;
     using Microsoft.JSInterop;
     using System.Threading.Tasks;
+    using Common;
 
     public partial class CandyModal
     {
@@ -55,13 +56,13 @@
             if (!string.IsNullOrWhiteSpace(title))
                 Title = title;
 
-            await Js.InvokeVoidAsync($"{nameof(CandyModal)}.show", ModalElement);
+            await Js.ModalShow(ModalElement);
             StateHasChanged();
         }
 
         public async Task Hide()
         {
-            await Js.InvokeVoidAsync($"{nameof(CandyModal)}.hide", ModalElement);
+            await Js.ModalHide(ModalElement);
         }
     }
 }

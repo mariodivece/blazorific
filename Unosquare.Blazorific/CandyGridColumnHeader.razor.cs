@@ -214,7 +214,7 @@
             if (!firstRender)
                 return;
 
-            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.bindColumnFilterDropdown", ColumnFilterElement);
+            await Js.GridBindFilterDropdown(ColumnFilterElement);
         }
 
         protected override async Task OnInitializedAsync()

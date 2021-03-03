@@ -260,9 +260,7 @@
 
         public async Task ResetState()
         {
-            if (!string.IsNullOrWhiteSpace(LocalStorageKey))
-                await Js.InvokeVoidAsync("localStorage.removeItem", LocalStorageKey);
-
+            await Js.StorageRemoveItem(LocalStorageKey);
             var state = GridState.CreateDefault(this);
             await InvokeAsync(() => StateLoaded?.Invoke(this, new GridStateEventArgs(this, state, true)));
             QueueDataUpdate();
@@ -293,7 +291,7 @@
             var currentRenderTime = $"{LastRenderTime.Minute:00}:{LastRenderTime.Second:00}:{LastRenderTime.Millisecond:000}";
 
             $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago (FR: {firstRender})".Log(nameof(CandyGrid), nameof(OnAfterRender));
-            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onRendered", RootElement, firstRender);
+            await Js.GridFireOnRendered(RootElement, firstRender);
 
             if (!firstRender)
                 return;
@@ -357,7 +355,7 @@
             if (string.IsNullOrWhiteSpace(LocalStorageKey))
                 return;
 
-            var json = await Js.InvokeAsync<string>("localStorage.getItem", LocalStorageKey);
+            var json = await Js.StorageGetItem(LocalStorageKey);
             if (string.IsNullOrWhiteSpace(json))
                 return;
 
@@ -369,7 +367,7 @@
             catch (Exception ex)
             {
                 $"Unable to deserialize state. {ex.Message}".Log(nameof(CandyGrid), nameof(LoadState));
-                await Js.InvokeVoidAsync("localStorage.removeItem", LocalStorageKey);
+                await Js.StorageRemoveItem(LocalStorageKey);
             }
 
             if (state == null)
@@ -384,7 +382,7 @@
                 return;
 
             var json = GridState.FromGrid(this, Request).Serialize();
-            await Js.InvokeAsync<object>("localStorage.setItem", LocalStorageKey, json);
+            await Js.StorageSetItem(LocalStorageKey, json);
         }
 
         private async Task UpdateDataAsync()
@@ -433,7 +431,7 @@
 
                 await SaveState();
                 await InvokeAsync(() => OnDataLoaded?.Invoke(new GridEventArgs(this)));
-                await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onDataLoaded", RootElement);
+                await Js.GridFireOnDataLoaded(RootElement);
             }
             catch (Exception ex)
             {
@@ -445,7 +443,7 @@
         private async Task SignalDataLoading()
         {
             // prevents re-rendering the grid just to block the UI, so we do it via Javascript interop
-            await Js.InvokeVoidAsync($"{nameof(CandyGrid)}.onDataLoading", RootElement);
+            await Js.GridFireOnDataLoading(RootElement);
         }
     }
 }

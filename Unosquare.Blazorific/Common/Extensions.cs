@@ -8,7 +8,7 @@
     using System.Text;
     using System.Text.Json;
 
-    public static class Extensions
+    public static partial class Extensions
     {
         private const StringComparison PropertyNameComparer = StringComparison.InvariantCultureIgnoreCase;
 

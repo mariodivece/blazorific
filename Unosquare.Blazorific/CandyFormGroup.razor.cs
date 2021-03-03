@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Components;
     using Microsoft.JSInterop;
     using System.Threading.Tasks;
+    using Common;
 
     public partial class CandyFormGroup
     {
@@ -34,10 +35,7 @@
             if (!firstRender)
                 return;
 
-            if (string.IsNullOrWhiteSpace(TooltipElement.Id))
-                return;
-
-            await Js.InvokeVoidAsync($"CandyAssets.bindTooltip", TooltipElement);
+            await Js.BindTooltip(TooltipElement);
         }
     }
 }
