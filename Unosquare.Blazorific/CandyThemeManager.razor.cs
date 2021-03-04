@@ -17,6 +17,9 @@
         [Parameter]
         public string ThemeStorageKey { get; set; } = "Unosquare.Blazorific.Theme";
 
+        [Parameter]
+        public string DefaultThemeName { get; set; } = "Default";
+
         public ICollection<string> ThemeNames { get; private set; } = new string[0];
 
         public string CurrentThemeName { get; set; } = string.Empty;
@@ -38,7 +41,7 @@
             ThemeNames = await Js.GetThemeNamesAsync();
             CurrentThemeName = await Js.StorageGetItemAsync(ThemeStorageKey);
             if (string.IsNullOrWhiteSpace(CurrentThemeName))
-                CurrentThemeName = await Js.GetCurrentThemeNameAsync();
+                CurrentThemeName = DefaultThemeName;
             
             await Js.StorageSetItemAsync(ThemeStorageKey, CurrentThemeName);
             await Js.ApplyThemeAsync(CurrentThemeName);
