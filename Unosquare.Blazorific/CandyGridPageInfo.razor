@@ -1,5 +1,5 @@
 ﻿@inherits CandyGridChildComponent
-<span class="small">
+<span class="small pl-2">
     @if (Parent.StartRecordNumber <= 0)
     {
         @Parent.EmtyRecordsText
@@ -14,5 +14,5 @@
         <text> (Filtered from @Parent.TotalRecordCount total records)</text>
     }
 
-    &nbsp;<a style="padding: 8px;" class="badge badge-info" href="" @onclick="async () => await Grid.ResetState()" @onclick:preventDefault><i class="fas fa-undo"></i>&nbsp;Reset</a>
+    &nbsp;<a style="padding: 8px;" class="badge badge-info" href="#" @onclick="async () => await Grid.ResetState()" @onclick:preventDefault><i class="fas fa-undo"></i>&nbsp;Reset</a>
 </span>

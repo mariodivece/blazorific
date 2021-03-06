@@ -16,7 +16,7 @@
 
         private readonly object SyncLock = new object();
         private readonly Timer QueueProcessor;
-        private readonly List<CandyGridColumn> m_Columns = new List<CandyGridColumn>(32);
+        private readonly List<CandyGridColumn> m_Columns = new(32);
 
         private bool IsDisposed;
         private bool HasRendered;
@@ -85,18 +85,15 @@
             }
             set
             {
-                $"SET Called".Log(nameof(CandyGrid), nameof(DataAdapter));
                 if (value == null)
                     throw new InvalidOperationException($"The {nameof(DataAdapter)} cannot be set to null.");
 
-                if (m_DataAdapter != null && value.DataItemType != m_DataAdapter.DataItemType)
-                    throw new InvalidOperationException($"The {nameof(DataAdapter)} cannot be changed once it has been set.");
-
-                if (value == m_DataAdapter || (m_DataAdapter != null && m_DataAdapter.DataItemType == value.DataItemType))
+                if (value == m_DataAdapter)
                     return;
 
                 m_DataAdapter = value;
                 QueueDataUpdate();
+                $"SET Called".Log(nameof(CandyGrid), nameof(DataAdapter));
             }
         }
 
@@ -120,7 +117,7 @@
         public string TableContainerCssClass { get; set; } = "table-responsive";
 
         [Parameter]
-        public string TableCssClass { get; set; } = "table table-striped table-bordered table-hover table-sm";
+        public string TableCssClass { get; set; } = "table table-striped table-hover table-sm";
 
         [Parameter]
         public string TableHeaderCssClass { get; set; } = "thead-dark";
@@ -174,6 +171,8 @@
         public int PageSize { get; protected set; } = 20;
 
         public int TotalRecordCount { get; protected set; }
+
+        public int PageRecordCount { get; protected set; }
 
         public int FilteredRecordCount { get; protected set; }
 
@@ -401,6 +400,7 @@
                     PageNumber = default;
                     FilteredRecordCount = default;
                     TotalRecordCount = default;
+                    PageRecordCount = default;
                     TotalPages = default;
                     return;
                 }
@@ -420,7 +420,7 @@
                     AggregateDataItem = response.AggregateDataItem;
                     FilteredRecordCount = response.FilteredRecordCount;
                     TotalRecordCount = response.TotalRecordCount;
-                    PageSize = Request.Take <= 0 ? response.FilteredRecordCount : Request.Take;
+                    PageRecordCount = response.DataItems?.Count ?? 0;
                     TotalPages = Extensions.ComputeTotalPages(PageSize, response.FilteredRecordCount);
                     PageNumber = response.CurrentPage > TotalPages
                         ? TotalPages

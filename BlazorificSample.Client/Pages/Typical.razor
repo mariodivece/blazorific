@@ -7,7 +7,7 @@
             <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group btn-group-sm" role="group">
                     <button class="btn btn-link" type="button" @onclick="_ => context.QueueDataUpdate()"><i class="fas fa-plus"></i>&nbsp;Refresh</button>
-                    <button class="btn btn-link" type="button" @onclick="_ => CheckAll(context)"><i class="far fa-check-square"></i>&nbsp;Select All</button>
+                    <button class="btn btn-link" type="button" @onclick="_ => ToggleCheckedForAll(context)"><i class="far fa-check-square"></i>&nbsp;Toggle Checks</button>
                     <button class="btn btn-link" type="button" @onclick="OnModalButtonClick"><i class="fas fa-print"></i>&nbsp;Test Modal</button>
                 </div>
             </div>

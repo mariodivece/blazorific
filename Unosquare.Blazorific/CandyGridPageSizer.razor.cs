@@ -20,7 +20,7 @@
 
         public int PageSize
         {
-            get => Parent.PageSize == Parent.FilteredRecordCount ? -1 : Parent.PageSize;
+            get => PageSizeOptions.Keys.Contains(Parent.PageSize) ? Parent.PageSize : -1;
             set => Parent.ChangePageSize(value);
         }
     }

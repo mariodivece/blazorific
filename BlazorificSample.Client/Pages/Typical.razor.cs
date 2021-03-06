@@ -14,10 +14,17 @@
 
         private Product EditorItem { get; set; }
 
-        private void CheckAll(CandyGrid sender)
+        private void ToggleCheckedForAll(CandyGrid sender)
         {
             foreach (var row in sender.Rows)
             {
+                if (row.DataItem == null)
+                    continue;
+
+                if (row.DataItem is not Product product)
+                    return;
+
+                product.IsChecked = !product.IsChecked;
                 UpdateSelected(row);
             }
         }
@@ -63,8 +70,8 @@
 
         private void UpdateSelected(CandyGridRow row)
         {
-            var product = row.DataItem as Product;
-            if (product == null) return;
+            if (row.DataItem is not Product product)
+                return;
 
             row.Attributes.CssClass = product.IsChecked ? "table-active" : null;
             row.Cells[1].Attributes.Style = product.IsChecked ? "font-weight: bold" : "font-weight: normal";
