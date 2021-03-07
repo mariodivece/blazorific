@@ -1,8 +1,11 @@
 ﻿@import url("https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap");
 
+html, body {
+    font-family: "Google Sans", "Helvetica Neue", "Segoe UI", Arial sans-serif !important;
+}
+
 body {
     padding-top: 70px;
-    font-family: "Google Sans", "Helvetica Neue", "Segoe UI", Arial sans-serif !important;
 }
 
 button:focus {
