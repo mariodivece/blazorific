@@ -69,26 +69,26 @@
                             }
                             else if (IsBooleanInputType)
                             {
-                                <input class="form-control form-control form-control-sm mt-2" type="checkbox" @bind="BooleanFilterArg" />
+                                <input class="form-control form-control form-control-sm mt-2" type="checkbox" @bind="BooleanFilterVal" />
                             }
                             else if (IsDateInputType)
                             {
-                                <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="DateFilterArg1" />
+                                <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="DateFilterVal1" />
                             }
                             else
                             {
-                                <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterArg1" autocomplete="off" inputmode="verbatim" placeholder="value" />
+                                <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterVal1" autocomplete="off" inputmode="verbatim" placeholder="value" />
                             }
 
                             @if (FilterOperator == CompareOperators.Between)
                             {
                                 if (IsDateInputType)
                                 {
-                                    <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="DateFilterArg2" />
+                                    <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="DateFilterVal2" />
                                 }
                                 else
                                 {
-                                    <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterArg2" autocomplete="off" inputmode="verbatim" placeholder="and value">
+                                    <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterVal2" autocomplete="off" inputmode="verbatim" placeholder="and value">
                                 }
                             }
                         </div>

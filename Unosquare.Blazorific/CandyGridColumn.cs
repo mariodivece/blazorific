@@ -127,6 +127,8 @@
         /// </summary>
         public CompareOperators FilterOperator { get; set; }
 
+        internal CandyGridColumnHeader HeaderComponent { get; set; }
+
         string IGridDataColumn.Name => Field;
 
         bool IGridDataColumn.Sortable => IsSortable;
@@ -180,7 +182,7 @@
             // Reorganize sort orders for sorted columns
             var columnSortOrder = 1;
             var sortedColumns = Parent.Columns.Where(c => c.SortOrder > 0).OrderBy(c => c.SortOrder);
-            
+
             foreach (var column in sortedColumns)
                 column.SortOrder = columnSortOrder++;
 
@@ -218,6 +220,21 @@
             Parent?.QueueDataUpdate();
         }
 
+        internal void CoerceState(GridState state)
+        {
+            var colState = state.Columns.FirstOrDefault(c => c.Name == Field);
+            if (colState == null) return;
+
+            SortDirection = colState.SortDirection;
+            SortOrder = colState.SortOrder;
+            FilterOperator = colState.FilterOperator;
+            if (FilterOperator != CompareOperators.None)
+            {
+                FilterText = colState.FilterText;
+                FilterArgument = colState.FilterArgument;
+            }
+        }
+
         void IComponent.Attach(RenderHandle renderHandle)
         {
             // placeholder
@@ -245,20 +262,6 @@
         protected virtual void OnInitialized()
         {
             Parent.AddColumn(this);
-            Parent.StateLoaded += (s, e) =>
-            {
-                var state = e.State.Columns.FirstOrDefault(c => c.Name == Field);
-                if (state == null) return;
-
-                SortDirection = state.SortDirection;
-                SortOrder = state.SortOrder;
-                FilterOperator = state.FilterOperator;
-                if (FilterOperator != CompareOperators.None)
-                {
-                    FilterText = state.FilterText;
-                    FilterArgument = state.FilterArgument;
-                }
-            };
         }
     }
 }

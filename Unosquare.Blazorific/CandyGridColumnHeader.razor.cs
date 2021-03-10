@@ -47,10 +47,10 @@
             { CompareOperators.NotEquals, "Not Equals" }
         };
 
-        private readonly Dictionary<string, bool> CheckedFilterOptions = new Dictionary<string, bool>(32);
+        private readonly Dictionary<string, bool> CheckedFilterOptions = new(32);
         private CompareOperators FilterOperator;
-        private string FilterArg1;
-        private string FilterArg2;
+        private string FilterVal1;
+        private string FilterVal2;
 
         [Inject]
         private IJSRuntime Js { get; set; }
@@ -98,22 +98,22 @@
 
         private IReadOnlyDictionary<string, string> FilterOptions { get; set; } = new Dictionary<string, string>(0);
 
-        private bool BooleanFilterArg
+        private bool BooleanFilterVal
         {
-            get => (FilterArg1 ?? "false") == "true";
-            set => FilterArg1 = value ? "true" : "false";
+            get => (FilterVal1 ?? "false") == "true";
+            set => FilterVal1 = value ? "true" : "false";
         }
 
-        private string DateFilterArg1
+        private string DateFilterVal1
         {
-            get => DateTime.TryParse(FilterArg1, out var result) ? result.ToString(DateTimeFormatUI) : null;
-            set => FilterArg1 = DateTime.TryParse(value, out var result) ? result.ToString(DateTimeFormatFilter) : null;
+            get => DateTime.TryParse(FilterVal1, out var result) ? result.ToString(DateTimeFormatUI) : null;
+            set => FilterVal1 = DateTime.TryParse(value, out var result) ? result.ToString(DateTimeFormatFilter) : null;
         }
 
-        private string DateFilterArg2
+        private string DateFilterVal2
         {
-            get => DateTime.TryParse(FilterArg2, out var result) ? result.ToString(DateTimeFormatUI) : null;
-            set => FilterArg2 = DateTime.TryParse(value, out var result) ? result.ToString(DateTimeFormatFilter) : null;
+            get => DateTime.TryParse(FilterVal2, out var result) ? result.ToString(DateTimeFormatUI) : null;
+            set => FilterVal2 = DateTime.TryParse(value, out var result) ? result.ToString(DateTimeFormatFilter) : null;
         }
 
         private string FilterInputType
@@ -142,7 +142,16 @@
 
         private bool IsDateInputType => FilterInputType == "date" || FilterInputType == "datetime-local";
 
-        private bool HasFilterOptions => FilterOptions != null && FilterOptions.Count > 0;
+        private bool HasFilterOptions => Column?.FilterOptionsProvider != null && FilterOptions != null && FilterOptions.Count > 0;
+
+        internal async Task RefreshFilterState()
+        {
+            if (Column?.FilterOptionsProvider != null)
+                FilterOptions = await Column.FilterOptionsProvider.Invoke();
+
+            CoerceFilterState();
+            StateHasChanged();
+        }
 
         private void OnColumnSortClick(MouseEventArgs e)
         {
@@ -160,7 +169,7 @@
             if (FilterOperator == CompareOperators.Multiple)
                 Column?.ApplyFilter(FilterOperator, CheckedFilterOptions.Where(kvp => kvp.Value).Select(kvp => kvp.Key).ToArray());
             else
-                Column?.ApplyFilter(FilterOperator, FilterArg1, FilterArg2);
+                Column?.ApplyFilter(FilterOperator, FilterVal1, FilterVal2);
 
             CoerceFilterState();
         }
@@ -189,8 +198,8 @@
         private void CoerceFilterState()
         {
             FilterOperator = Column?.FilterOperator ?? CompareOperators.None;
-            FilterArg1 = Column?.FilterText;
-            FilterArg2 = Column?.FilterArgument != null && Column?.FilterArgument.Length > 0
+            FilterVal1 = Column?.FilterText;
+            FilterVal2 = Column?.FilterArgument != null && Column?.FilterArgument.Length > 0
                 ? Column?.FilterArgument[0]
                 : null;
 
@@ -209,27 +218,17 @@
             }
         }
 
+        protected override void OnParametersSet()
+        {
+            Column.HeaderComponent = this;
+        }
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender)
                 return;
 
             await Js.GridBindFilterDropdown(ColumnFilterElement);
-        }
-
-        protected override async Task OnInitializedAsync()
-        {
-            Grid.StateLoaded += (s, e) => CoerceFilterState();
-
-            try
-            {
-                if (Column?.FilterOptionsProvider != null)
-                    FilterOptions = await Column.FilterOptionsProvider.Invoke();
-            }
-            catch
-            {
-                // empty
-            }
         }
     }
 }

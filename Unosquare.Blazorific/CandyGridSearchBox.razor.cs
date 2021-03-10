@@ -7,7 +7,6 @@
     public partial class CandyGridSearchBox
     {
         private readonly Timer DebounceTimer;
-        private string SearchText;
 
         public CandyGridSearchBox()
         {
@@ -22,18 +21,12 @@
 
         public bool IsVisible => Parent?.Columns.Any(c => c.IsSearchable) ?? false;
 
+        public string SearchText { get; set; }
+
         private void OnSearchInput(ChangeEventArgs e)
         {
             SearchText = (e.Value as string ?? string.Empty).Trim();
             DebounceTimer.Change(250, Timeout.Infinite);
-        }
-
-        protected override void OnInitialized()
-        {
-            Grid.StateLoaded += (s, e) =>
-            {
-                SearchText = e.State.SearchText;
-            };
         }
     }
 }

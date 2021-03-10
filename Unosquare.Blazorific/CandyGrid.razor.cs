@@ -1,7 +1,6 @@
 ﻿namespace Unosquare.Blazorific
 {
     using Microsoft.AspNetCore.Components;
-    using Microsoft.JSInterop;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -14,7 +13,7 @@
     {
         private const int QueueProcessorDueTimeMs = 100;
 
-        private readonly object SyncLock = new object();
+        private readonly object SyncLock = new();
         private readonly Timer QueueProcessor;
         private readonly List<CandyGridColumn> m_Columns = new(32);
 
@@ -27,8 +26,6 @@
         private DateTime LastRenderTime;
 
         private IGridDataAdapter m_DataAdapter;
-
-        public event EventHandler<GridStateEventArgs> StateLoaded;
 
         public CandyGrid()
         {
@@ -65,13 +62,6 @@
                     }
                 }
             }, null, Timeout.Infinite, Timeout.Infinite);
-
-            StateLoaded += (s, e) =>
-            {
-                SearchText = e.State.SearchText;
-                PageNumber = e.State.PageNumber;
-                PageSize = e.State.PageSize;
-            };
         }
 
         #region Parameters: Data
@@ -157,6 +147,8 @@
         #endregion
 
         private ElementReference RootElement { get; set; }
+
+        private CandyGridSearchBox SearchBox { get; set; }
 
         public IReadOnlyList<CandyGridColumn> Columns => m_Columns;
 
@@ -261,7 +253,7 @@
         {
             await Js.StorageRemoveItemAsync(LocalStorageKey);
             var state = GridState.CreateDefault(this);
-            await InvokeAsync(() => StateLoaded?.Invoke(this, new GridStateEventArgs(this, state, true)));
+            CoerceGridState(state);
             QueueDataUpdate();
         }
 
@@ -289,6 +281,15 @@
             LastRenderTime = DateTime.UtcNow;
             var currentRenderTime = $"{LastRenderTime.Minute:00}:{LastRenderTime.Second:00}:{LastRenderTime.Millisecond:000}";
 
+            if (HasRendered)
+            {
+                foreach (var col in Columns)
+                {
+                    if (col.HeaderComponent != null)
+                        await col.HeaderComponent.RefreshFilterState();
+                }
+            }
+
             $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago (FR: {firstRender})".Log(nameof(CandyGrid), nameof(OnAfterRender));
             await Js.GridFireOnRendered(RootElement, firstRender);
 
@@ -297,17 +298,6 @@
 
             HasRendered = true;
             QueueDataUpdate();
-        }
-
-        public override async Task SetParametersAsync(ParameterView parameters)
-        {
-            await base.SetParametersAsync(parameters);
-            "CALLED".Log(nameof(CandyGrid), nameof(SetParametersAsync));
-        }
-
-        protected override void OnParametersSet()
-        {
-            "CALLED".Log(nameof(CandyGrid), nameof(OnParametersSet));
         }
 
         protected virtual void Dispose(bool alsoManaged)
@@ -372,7 +362,7 @@
             if (state == null)
                 return;
 
-            await InvokeAsync(() => StateLoaded?.Invoke(this, new GridStateEventArgs(this, state, false)));
+            CoerceGridState(state);
         }
 
         private async Task SaveState()
@@ -444,6 +434,19 @@
         {
             // prevents re-rendering the grid just to block the UI, so we do it via Javascript interop
             await Js.GridFireOnDataLoading(RootElement);
+        }
+
+        private void CoerceGridState(GridState state)
+        {
+            SearchText = state.SearchText;
+            PageNumber = state.PageNumber;
+            PageSize = state.PageSize;
+
+            if (SearchBox != null)
+                SearchBox.SearchText = SearchText;
+
+            foreach (var c in Columns)
+                c.CoerceState(state);
         }
     }
 }
