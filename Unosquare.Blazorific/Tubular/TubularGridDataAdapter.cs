@@ -11,11 +11,14 @@
 
     public class TubularGridDataAdapter : IGridDataAdapter
     {
-        public TubularGridDataAdapter(Type dataItemType, string requestUrl)
+        public TubularGridDataAdapter(Type dataItemType, string requestUrl, HttpClient client)
         {
+            Client = client;
             DataItemType = dataItemType;
             RequestUrl = requestUrl;
         }
+
+        public HttpClient Client { get; }
 
         public Type DataItemType { get; }
 
@@ -32,8 +35,7 @@
         protected virtual async Task<HttpResponseMessage> RetrieveResponseAsync(string requestUrl, GridDataRequest request)
         {
             var requestContent = SerializeRequest(request);
-            using var client = new HttpClient();
-            return await client.PostAsync(requestUrl, requestContent);
+            return await Client.PostAsync(requestUrl, requestContent);
         }
 
         protected virtual async Task<GridDataResponse> ProcessResponseAsync(HttpResponseMessage httpResponse)
@@ -193,8 +195,8 @@
 
     public class TubularGridDataAdapter<T> : TubularGridDataAdapter
     {
-        public TubularGridDataAdapter(string requestUrl)
-            : base(typeof(T), requestUrl)
+        public TubularGridDataAdapter(string requestUrl, HttpClient client)
+            : base(typeof(T), requestUrl, client)
         {
         }
     }

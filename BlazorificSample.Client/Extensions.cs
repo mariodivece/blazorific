@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.DependencyInjection;
     using System.Globalization;
+    using System.Net.Http;
 
     public static class Extensions
     {
@@ -11,7 +12,8 @@
             return services.AddScoped(typeof(DataAccessService), (serviceProvider) =>
             {
                 var navigation = serviceProvider.GetService<NavigationManager>();
-                return new DataAccessService(navigation.BaseUri);
+                var httpClient = serviceProvider.GetService<HttpClient>();
+                return new DataAccessService(navigation.BaseUri, httpClient);
             });
         }
 
