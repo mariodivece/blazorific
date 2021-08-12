@@ -127,7 +127,7 @@
 
                     themeFile = CandyAppLoader.themeFiles[i];
                 }
-                    
+
             }
 
             if (themeFile === null) {
@@ -163,6 +163,10 @@
 
         bindTooltip: function (targetEl) {
             $(targetEl).tooltip();
+        },
+
+        focusElement: function (element) {
+            $(element).focus();
         },
     };
 
