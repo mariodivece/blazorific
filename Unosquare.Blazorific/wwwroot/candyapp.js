@@ -2,6 +2,7 @@
 
     window.CandyAppConstants = {
         contentBaseUrl: '/_content/Unosquare.Blazorific/',
+        candyAppScriptsLoadedEvent: 'CandyApp.ScriptsLoaded',
     };
 
     window.CandyAppLoader = {
@@ -90,7 +91,11 @@
             if (scriptIndex + 1 < CandyAppLoader.scriptFiles.length) {
                 scriptEl.onload = function () { CandyAppLoader.__loadScriptChain(scriptIndex + 1); };
             } else {
-                scriptEl.onload = function () { CandyAppLoader.hasLoaded = true; };
+                scriptEl.onload = function () {
+                    CandyAppLoader.hasLoaded = true;
+                    const loadedEvent = new Event(CandyAppConstants.candyAppScriptsLoadedEvent);
+                    window.dispatchEvent(loadedEvent);
+                };
             }
 
             document.body.appendChild(scriptEl);
@@ -166,6 +171,15 @@
 
         focusElement: function (element) {
             $(element).focus();
+        },
+
+        copyToClipboard(text, message) {
+            navigator.clipboard.writeText(text).then(function () {
+                if (message) alert(message);
+            })
+            .catch(function (error) {
+                alert(error);
+            });
         },
     };
 

@@ -37,6 +37,9 @@
         public static async ValueTask ApplyThemeAsync(this IJSRuntime js, string themeName) =>
             await js.InvokeVoidAsync($"CandyApp.applyTheme", themeName);
 
+        public static async ValueTask CopyToClipboardAsync(this IJSRuntime js, string text, string alertMessage = default) =>
+            await js.InvokeVoidAsync($"CandyApp.copyToClipboard", text, alertMessage);
+
         public static async ValueTask FocusElementAsync(this IJSRuntime js, ElementReference element) =>
             await js.InvokeVoidAsync($"CandyApp.focusElement", element);
 
