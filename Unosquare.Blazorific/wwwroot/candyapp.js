@@ -2,16 +2,14 @@
 
     window.CandyAppConstants = {
         contentBaseUrl: '/_content/Unosquare.Blazorific/',
-        bootstrapBaseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/',
-        bootswatchBaseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/',
     };
 
     window.CandyAppLoader = {
         themeElement: null,
 
         scriptFiles: [
-            "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js",
-            CandyAppConstants.bootstrapBaseUrl + "js/bootstrap.bundle.min.js",
+            CandyAppConstants.contentBaseUrl + "jquery/jquery-3.6.0.min.js",
+            CandyAppConstants.contentBaseUrl + "bootstrap/bootstrap.bundle.min.js",
             CandyAppConstants.contentBaseUrl + "candygrid.js",
             CandyAppConstants.contentBaseUrl + "candymodal.js",
             CandyAppConstants.contentBaseUrl + "candytabset.js",
@@ -19,14 +17,14 @@
         ],
 
         styleFiles: [
-            CandyAppConstants.bootstrapBaseUrl + "css/bootstrap.min.css",
-            "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css",
+            CandyAppConstants.contentBaseUrl + "bootstrap/bootstrap.min.css",
+            CandyAppConstants.contentBaseUrl + "fontawesome/css/all.min.css",
             CandyAppConstants.contentBaseUrl + "candygrid.css",
             CandyAppConstants.contentBaseUrl + "candymodal.css",
         ],
 
         themeFiles: [
-            { name: 'Default', url: CandyAppConstants.bootstrapBaseUrl + 'css/bootstrap.min.css' },
+            { name: 'Default', url: CandyAppConstants.contentBaseUrl + 'bootstrap/bootstrap.min.css' },
             { name: 'Cerulean', url: '' },
             { name: 'Cosmo', url: '' },
             { name: 'Cyborg', url: '' },
@@ -120,7 +118,8 @@
             for (var i = 0; i < CandyAppLoader.themeFiles.length; i++) {
                 if (CandyAppLoader.themeFiles[i].name.toLowerCase() === themeName.toLowerCase()) {
                     if (CandyAppLoader.themeFiles[i].url === '') {
-                        CandyAppLoader.themeFiles[i].url = CandyAppConstants.bootswatchBaseUrl
+                        CandyAppLoader.themeFiles[i].url = CandyAppConstants.contentBaseUrl
+                            + 'bootstrap/'
                             + CandyAppLoader.themeFiles[i].name.toLowerCase()
                             + '/bootstrap.min.css';
                     }
