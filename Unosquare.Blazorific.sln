@@ -11,6 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorificSample.Client", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorificSample.Shared", "BlazorificSample.Shared\BlazorificSample.Shared.csproj", "{F41EBBD8-4BF7-4602-9793-8B2F9A6DDDBD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{6ED3AFCB-EBCB-4658-9A0D-7620BB6755A1}"
+	ProjectSection(SolutionItems) = preProject
+		blazorific.png = blazorific.png
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

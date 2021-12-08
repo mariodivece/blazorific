@@ -4,6 +4,20 @@
 		<TargetFrameworks>net6.0;net5.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Authors>mariodivece, unosquare</Authors>
+		<Company>Unosquare</Company>
+		<Version>0.9.0</Version>
+		<Product>Unosquare Blazorific UI Library</Product>
+		<Description>A handy Blazor component library for quickly prototyping and building applications.</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/mariodivece/blazorific</RepositoryUrl>
+		<Copyright>(c) 2021 Unosquare, LLC</Copyright>
+		<PackageIcon>blazorific.png</PackageIcon>
+		<PackageIconUrl />
+		<PackageTags>blazor, ui, webapp, wasm, grid, forms</PackageTags>
+		<RepositoryType>git</RepositoryType>
+		<PackageReleaseNotes>Please review the examples in the repo for usage.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
@@ -20,6 +34,13 @@
 		<Folder Include="wwwroot\bootstrap\" />
 		<Folder Include="wwwroot\jquery\" />
 		<Folder Include="wwwroot\fontawesome\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\blazorific.png">
+	    <Pack>True</Pack>
+	    <PackagePath></PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>
