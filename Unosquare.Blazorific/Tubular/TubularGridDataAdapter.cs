@@ -15,6 +15,12 @@
     /// </summary>
     public class TubularGridDataAdapter : IGridDataAdapter
     {
+        /// <summary>
+        /// Creates a new instance of the <see cref="TubularGridDataAdapter{T}"/> class.
+        /// </summary>
+        /// <param name="dataItemType">The item type.</param>
+        /// <param name="requestUrl">The request URL.</param>
+        /// <param name="client">The client.</param>
         public TubularGridDataAdapter(Type dataItemType, string requestUrl, HttpClient client)
         {
             Client = client;
