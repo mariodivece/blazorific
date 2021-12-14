@@ -33,6 +33,9 @@
         /// </summary>
         public HttpClient Client { get; }
 
+        /// <summary>
+        /// Gets the data item type.
+        /// </summary>
         public Type DataItemType { get; }
 
         public string RequestUrl { get; }
