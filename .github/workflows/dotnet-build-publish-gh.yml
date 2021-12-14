@@ -1,5 +1,10 @@
+# This GitHub Action bumps up the <Version /> tag in the csproj file depending on the commit's comment:
+#   SemVer format is: MAJOR.MINOR.PATCH-PRERELEASE
+#   If the commit's comment contains the string [MAJOR], [MINOR] or [PATCH] it bumps it accordingly.
+#   If no matching bump commment is found, the PRERELEASE component gets bumped.
+# Finally, it builds the project in .net 5 and .6, and publishes it to the local GitHub package registry.
+# by @geoperez and @mariodivece
 name: Pack and Publish
-
 on:
   push:
     branches: [ master ]
@@ -12,7 +17,7 @@ jobs:
       PROJECT_FILE_PATH: '/home/runner/work/blazorific/blazorific/Unosquare.Blazorific/Unosquare.Blazorific.csproj'
       BUILD_PATH: '/home/runner/work/blazorific/blazorific/Unosquare.Blazorific/bin/Release'
       GITHUB_TOKEN: ${{ secrets.GPR_ACCESS_TOKEN }}
-      PRE_VERSIONS_KEPT: 1
+      PRE_VERSIONS_KEPT: 10
     steps:
     - uses: actions/checkout@v2
     - name: 🥓 Setup .NET 5
