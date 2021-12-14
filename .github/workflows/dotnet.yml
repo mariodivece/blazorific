@@ -1,4 +1,4 @@
-name: .NET6 Build
+name: Pack and Publish
 
 on:
   push:
