@@ -28,6 +28,9 @@
             RequestUrl = requestUrl;
         }
 
+        /// <summary>
+        /// Gets the HTTP Client.
+        /// </summary>
         public HttpClient Client { get; }
 
         public Type DataItemType { get; }
