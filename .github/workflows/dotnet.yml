@@ -12,6 +12,7 @@ jobs:
       PROJECT_FILE_PATH: '/home/runner/work/blazorific/blazorific/Unosquare.Blazorific/Unosquare.Blazorific.csproj'
       BUILD_PATH: '/home/runner/work/blazorific/blazorific/Unosquare.Blazorific/bin/Release'
       GITHUB_TOKEN: ${{ secrets.GPR_ACCESS_TOKEN }}
+      PRE_VERSIONS_KEPT: 1
     steps:
     - uses: actions/checkout@v2
     - name: 🥓 Setup .NET 5
@@ -49,5 +50,5 @@ jobs:
       uses: actions/delete-package-versions@v2
       with: 
         package-name: ${{ env.PACKAGE_NAME }}
-        min-versions-to-keep: 10
+        min-versions-to-keep: ${{ PRE_VERSIONS_KEPT }}
         delete-only-pre-release-versions: 'true'
