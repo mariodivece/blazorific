@@ -9,6 +9,10 @@
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
 
+    /// <summary>
+    /// Provides an adapter implementation for the compact Tubular
+    /// grid data structures.
+    /// </summary>
     public class TubularGridDataAdapter : IGridDataAdapter
     {
         public TubularGridDataAdapter(Type dataItemType, string requestUrl, HttpClient client)
