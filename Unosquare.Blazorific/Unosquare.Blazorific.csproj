@@ -7,7 +7,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Authors>mariodivece, unosquare</Authors>
 		<Company>Unosquare</Company>
-		<Version>0.9.2-0</Version>
+		<Version>0.9.2</Version>
 		<Product>Unosquare Blazorific UI Library</Product>
 		<Description>A handy Blazor component library for quickly prototyping and building applications.</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
