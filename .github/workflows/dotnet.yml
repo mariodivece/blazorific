@@ -28,7 +28,7 @@ jobs:
     - name: 🐝 Bump version
       uses: unosquare/bump-nuget-version@master 
       with:
-        level: 'patch'
+        level: ${{ contains(github.event.head_commit.message, '[PATCH]') && 'patch' || 'prerelease' }}
         csproj: /home/runner/work/blazorific/blazorific/Unosquare.Blazorific/Unosquare.Blazorific.csproj
     - name: 🏗 Build and pack nuget
       run: |
