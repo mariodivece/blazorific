@@ -50,5 +50,5 @@ jobs:
       uses: actions/delete-package-versions@v2
       with: 
         package-name: ${{ env.PACKAGE_NAME }}
-        min-versions-to-keep: ${{ PRE_VERSIONS_KEPT }}
+        min-versions-to-keep: ${{ env.PRE_VERSIONS_KEPT }}
         delete-only-pre-release-versions: 'true'
