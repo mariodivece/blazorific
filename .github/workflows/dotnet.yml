@@ -20,13 +20,6 @@ jobs:
         dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-  publish:
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
-    - uses: actions/checkout@v2
     - name: ➕ Add nugets source
       uses: unosquare/add-nuget-source@master 
       with:
@@ -37,13 +30,6 @@ jobs:
       with:
         level: 'patch'
         csproj: /home/runner/work/blazorific/blazorific/Unosquare.Blazorific/Unosquare.Blazorific.csproj
-    - name: 📌 Commit
-      uses: EndBug/add-and-commit@v4
-      with:
-        author_name: '@mariodivece'
-        author_email: 'mariodivece@users.noreply.github.com'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GPR_ACCESS_TOKEN }}
     - name: 🏗 Build and pack nuget
       run: |
         dotnet build -c Release
@@ -53,3 +39,11 @@ jobs:
       with:
         access-token: ${{secrets.GPR_ACCESS_TOKEN}}
         path: /home/runner/work/blazorific/blazorific/Unosquare.Blazorific/bin/Release
+    - name: 📌 Commit
+      uses: EndBug/add-and-commit@v4
+      with:
+        author_name: '@mariodivece'
+        author_email: 'mariodivece@users.noreply.github.com'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GPR_ACCESS_TOKEN }}
+        
