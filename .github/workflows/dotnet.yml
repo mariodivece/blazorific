@@ -7,29 +7,33 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-        
+    env:
+      PACKAGE_NAME: 'Unosquare.Blazorific'
+      PROJECT_FILE_PATH: '/home/runner/work/blazorific/blazorific/Unosquare.Blazorific/Unosquare.Blazorific.csproj'
+      BUILD_PATH: '/home/runner/work/blazorific/blazorific/Unosquare.Blazorific/bin/Release'
+      GITHUB_TOKEN: ${{ secrets.GPR_ACCESS_TOKEN }}
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET 5
+    - name: 🥓 Setup .NET 5
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Setup .NET 6
+    - name: 🍟 Setup .NET 6
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
-    - name: Restore dependencies
+    - name: 🚕 Restore dependencies
       run: dotnet restore
     - name: ➕ Add nugets source
       uses: unosquare/add-nuget-source@master 
       with:
-        access-token: ${{ secrets.GPR_ACCESS_TOKEN }}
-        org: 'mariodivece'
+        access-token: ${{ env.GITHUB_TOKEN }}
+        org: ${{ github.repository_owner }} 
     - name: 🐝 Bump version
       uses: unosquare/bump-nuget-version@master 
       with:
-        level: ${{ contains(github.event.head_commit.message, '[PATCH]') && 'patch' || 'prerelease' }}
-        csproj: /home/runner/work/blazorific/blazorific/Unosquare.Blazorific/Unosquare.Blazorific.csproj
+        level: ${{ contains(github.event.head_commit.message, '[PATCH]') && 'patch' || contains(github.event.head_commit.message, '[MINOR]') && 'minor' || contains(github.event.head_commit.message, '[MAJOR]') && 'major' || 'prerelease' }}
+        csproj: ${{ env.PROJECT_FILE_PATH }}
     - name: 🏗 Build and pack nuget
       run: |
         dotnet build -c Release
@@ -37,13 +41,13 @@ jobs:
     - name: 🍱 Publish nuget
       uses: unosquare/publish-nuget-package@master 
       with:
-        access-token: ${{secrets.GPR_ACCESS_TOKEN}}
-        path: /home/runner/work/blazorific/blazorific/Unosquare.Blazorific/bin/Release
+        access-token: ${{ env.GITHUB_TOKEN }}
+        path: ${{ env.BUILD_PATH }}
     - name: 📌 Commit
-      uses: EndBug/add-and-commit@v4
-      with:
-        author_name: '@mariodivece'
-        author_email: 'mariodivece@users.noreply.github.com'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GPR_ACCESS_TOKEN }}
-        
+      uses: EndBug/add-and-commit@v7
+    - name: 🌿 Clean up stale packages
+      uses: actions/delete-package-versions@v2
+      with: 
+        package-name: ${{ env.PACKAGE_NAME }}
+        min-versions-to-keep: 10
+        delete-only-pre-release-versions: 'true'
