@@ -20,6 +20,8 @@ jobs:
       PRE_VERSIONS_KEPT: 10
     steps:
     - uses: actions/checkout@v2
+      with:
+        token: ${{ env.GITHUB_TOKEN }}
     - name: 🥓 Setup .NET 5
       uses: actions/setup-dotnet@v1
       with:
@@ -51,6 +53,8 @@ jobs:
         path: ${{ env.BUILD_PATH }}
     - name: 📌 Commit
       uses: EndBug/add-and-commit@v7
+      with:
+        message: '[skip ci]'
     - name: 🌿 Clean up stale packages
       uses: actions/delete-package-versions@v2
       with: 
