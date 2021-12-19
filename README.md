@@ -15,7 +15,7 @@ You need to check out the sample application in this repo as documentation is st
  <packageSourceCredentials>
   <mariodivece>
    <add key="Username" value="token" />
-   <add key="ClearTextPassword" value="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" />
+   <add key="ClearTextPassword" value="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" />
   </mariodivece>
  </packageSourceCredentials>
 </configuration>
