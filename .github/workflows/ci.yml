@@ -30,13 +30,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
-    - name: 🚕 Restore dependencies
-      run: dotnet restore
-    - name: ➕ Add nugets source
-      uses: unosquare/add-nuget-source@master 
-      with:
-        access-token: ${{ env.GITHUB_TOKEN }}
-        org: ${{ github.repository_owner }} 
     - name: 🐝 Bump version
       uses: unosquare/bump-nuget-version@master 
       with:
@@ -44,8 +37,7 @@ jobs:
         csproj: ${{ env.PROJECT_FILE_PATH }}
     - name: 🏗 Build and pack nuget
       run: |
-        dotnet build -c Release
-        dotnet pack --configuration Release
+        dotnet pack ${{ env.PROJECT_FILE_PATH }} --configuration Release
     - name: 🍱 Publish nuget
       uses: unosquare/publish-nuget-package@master 
       with:

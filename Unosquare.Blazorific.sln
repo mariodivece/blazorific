@@ -14,8 +14,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{6ED3AFCB-EBCB-4658-9A0D-7620BB6755A1}"
 	ProjectSection(SolutionItems) = preProject
 		blazorific.png = blazorific.png
-		.github\workflows\dotnet-build-publish-gh.yml = .github\workflows\dotnet-build-publish-gh.yml
+		.github\workflows\ci.yml = .github\workflows\ci.yml
 		LICENSE = LICENSE
+		.github\workflows\publish-nuget-org.yml = .github\workflows\publish-nuget-org.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
