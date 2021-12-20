@@ -27,6 +27,6 @@ jobs:
         dotnet-version: 6.0.x
     - name: 🏗 Build, Pack and Publich to Nuget.org
       run: |
-        dotnet pack ${{ env.PROJECT_FILE_PATH }} --configuration Release --include-symbols
-        dotnet nuget push ${{ env.BUILD_PATH }} -source https://api.nuget.org/v3/index.json --api-key ${{ env.NUGET_API_KEY }}
+        dotnet pack ${{ env.PROJECT_FILE_PATH }} --configuration Release -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
+        dotnet nuget push ${{ env.BUILD_PATH }} --source https://api.nuget.org/v3/index.json --api-key ${{ env.NUGET_API_KEY }}
         
