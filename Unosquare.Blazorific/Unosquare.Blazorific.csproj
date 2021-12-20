@@ -8,7 +8,7 @@
 
 	<PropertyGroup>
 		<PackageId>Unosquare.Blazorific</PackageId>
-		<Version>0.10.1-4</Version>
+		<Version>0.10.1-5</Version>
 		<Authors>mariodivece, unosquare</Authors>
 		<Company>Unosquare</Company>
 		<Product>Unosquare Blazorific UI Library</Product>
