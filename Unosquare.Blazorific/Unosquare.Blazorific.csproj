@@ -4,22 +4,24 @@
 		<TargetFrameworks>net6.0;net5.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Authors>mariodivece, unosquare</Authors>
-		<Company>Unosquare</Company>
-		<Version>0.10.1-2</Version>
-		<Product>Unosquare Blazorific UI Library</Product>
-		<Description>A handy Blazor component library for quickly prototyping and building applications.</Description>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<RepositoryUrl>https://github.com/mariodivece/blazorific</RepositoryUrl>
-		<Copyright>(c) 2021 Unosquare, LLC</Copyright>
-		<PackageIcon>blazorific.png</PackageIcon>
-		<PackageIconUrl />
-		<PackageTags>blazor, ui, webapp, wasm, grid, forms</PackageTags>
-		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>Please review the examples in the repo for usage.</PackageReleaseNotes>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<PackageId>Unosquare.Blazorific</PackageId>
+		<Version>0.10.1-2</Version>
+		<Authors>mariodivece, unosquare</Authors>
+		<Company>Unosquare</Company>
+		<Product>Unosquare Blazorific UI Library</Product>
+		<Description>A handy Blazor component library for quickly prototyping and building applications.</Description>
+		<Copyright>(c) 2019-2021 Unosquare, LLC</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIcon>blazorific.png</PackageIcon>
+		<PackageTags>blazor, ui, webapp, wasm, grid, forms</PackageTags>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/mariodivece/blazorific</RepositoryUrl>
+		<PackageReleaseNotes>Please review the examples in the repo for usage.</PackageReleaseNotes>
+	</PropertyGroup>
+	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.12" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.12" />
@@ -39,7 +41,7 @@
 	<ItemGroup>
 	  <None Include="..\blazorific.png">
 	    <Pack>True</Pack>
-	    <PackagePath></PackagePath>
+	    <PackagePath>\</PackagePath>
 	  </None>
 	</ItemGroup>
 

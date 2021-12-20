@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29521.150
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unosquare.Blazorific", "Unosquare.Blazorific\Unosquare.Blazorific.csproj", "{0EF320B0-3E9B-4478-9100-F717F8E251C9}"
 EndProject
@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{6ED3AFCB-EBCB-4658-9A0D-7620BB6755A1}"
 	ProjectSection(SolutionItems) = preProject
 		blazorific.png = blazorific.png
+		.github\workflows\dotnet-build-publish-gh.yml = .github\workflows\dotnet-build-publish-gh.yml
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
