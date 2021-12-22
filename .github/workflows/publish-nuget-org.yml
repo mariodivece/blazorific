@@ -1,4 +1,4 @@
-# This GitHub Action simply builds, packs and publiches the package to Nuget.org
+# This GitHub Action simply builds, packs and publishes the package to Nuget.org
 # You will need to manually trigger it.
 # by @geoperez and @mariodivece
 name: Pack and Publish to Nuget.org
@@ -17,14 +17,12 @@ jobs:
     - uses: actions/checkout@v2
       with:
         token: ${{ env.GITHUB_TOKEN }}
-    - name: 🥓 Setup .NET 5
+    - name: 🥓 Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
-    - name: 🍟 Setup .NET 6
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
+        dotnet-version: |
+            5.0.x
+            6.0.x
     - name: 🏗 Build, Pack and Publish to Nuget.org
       run: |
         dotnet pack ${{ env.PROJECT_FILE_PATH }} --configuration Release -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg

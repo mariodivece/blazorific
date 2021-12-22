@@ -22,14 +22,12 @@ jobs:
     - uses: actions/checkout@v2
       with:
         token: ${{ env.GITHUB_TOKEN }}
-    - name: 🥓 Setup .NET 5
+    - name: 🥓 Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
-    - name: 🍟 Setup .NET 6
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
+        dotnet-version: |
+            5.0.x
+            6.0.x
     - name: 🐝 Bump version
       uses: unosquare/bump-nuget-version@master 
       with:

@@ -7,11 +7,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.1" />
-    <PackageReference Include="Tubular.ServerSide" Version="4.0.0" />
+    <PackageReference Include="Tubular.ServerSide" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BlazorificSample.Client\BlazorificSample.Client.csproj" />
   </ItemGroup>
-  
+
 </Project>
