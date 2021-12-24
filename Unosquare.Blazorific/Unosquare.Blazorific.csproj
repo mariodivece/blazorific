@@ -15,6 +15,7 @@
 		<Authors>mariodivece, unosquare</Authors>
 		<Company>Unosquare</Company>
 		<Product>Unosquare Blazorific UI Library</Product>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<Description>A handy Blazor component library for quickly prototyping and building applications.</Description>
 		<Copyright>(c) 2019-2021 Unosquare, LLC</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
