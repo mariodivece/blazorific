@@ -4,10 +4,10 @@
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.JSInterop;
+    using Swan.Reflection;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using System.Threading.Tasks;
 
     public sealed partial class CandyGridColumnHeader
@@ -74,7 +74,7 @@
             }
         }
 
-        private IPropertyProxy Property => Column?.Property;
+        private IPropertyProxy? Property => Column?.Property;
 
         private IReadOnlyDictionary<CompareOperators, string> FilterOperators
         {

@@ -1,5 +1,6 @@
 ﻿namespace Unosquare.Blazorific.Common
 {
+    using Swan.Reflection;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -11,6 +12,48 @@
     public static partial class Extensions
     {
         private const StringComparison PropertyNameComparer = StringComparison.InvariantCultureIgnoreCase;
+
+        /// <summary>
+        /// Determines whether the specified type is considered flat.
+        /// Flat types are all value types and strings as they contain no structural depth.
+        /// Nullable value types are also considered flat types.
+        /// </summary>
+        /// <param name="t">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified type is considered flat; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsFlatType(this ITypeInfo t) =>
+            t.BackingType.IsValueType || t.NativeType == typeof(string);
+
+        public static bool IsFlatType(this IPropertyProxy t) =>
+            t.PropertyType.IsFlatType();
+
+        /// <summary>
+        /// Copies the flat (shallow) properties between objects of the same type.
+        /// </summary>
+        /// <typeparam name="T">The property type</typeparam>
+        /// <param name="source">The source object.</param>
+        /// <param name="target">The target object.</param>
+        public static void CopyFlatPropertiesTo<T>(this T source, T target)
+            where T : class
+        {
+            var properties = typeof(T).Properties();
+            foreach (var p in properties)
+            {
+                if (!p.IsFlatType())
+                    continue;
+
+                try
+                {
+                    if (p.TryRead(source, out var value))
+                        p.TryWrite(target, value);
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+        }
 
         public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
         {
@@ -29,13 +72,13 @@
 
         internal static IGridDataColumn[] GetGridDataRequestColumns(this CandyGrid grid)
         {
-            var properties = grid.DataAdapter.DataItemType.PropertyProxies().Values.Where(t => t.IsFlatType);
+            var properties = grid.DataAdapter.DataItemType.Properties().Where(t => t.IsFlatType());
             var result = new List<IGridDataColumn>(properties.Count());
 
             foreach (var property in properties)
             {
                 var column = grid.Columns
-                    .FirstOrDefault(c => property.Name.Equals(c.Field, PropertyNameComparer));
+                    .FirstOrDefault(c => property.PropertyName.Equals(c.Field, PropertyNameComparer));
 
                 result.Add(column as IGridDataColumn
                     ?? new CandyGridColumn(property, null));
@@ -71,8 +114,6 @@
             return DataType.String;
         }
 
-        internal static object GetDefault(this Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
-
         internal static int ComputeTotalPages(int pageSize, int totalCount)
         {
             if (totalCount <= 0) return 0;
@@ -83,13 +124,13 @@
 
         internal static string GenerateRandomHtmlId() => $"guid_{Guid.NewGuid():N}";
 
-        internal static object GetColumnValue(this CandyGridColumn column, object dataItem)
+        internal static object? GetColumnValue(this CandyGridColumn column, object dataItem)
         {
             if (column == null)
                 return null;
 
             return !string.IsNullOrWhiteSpace(column.Field)
-                ? dataItem?.PropertyProxy(column.Field)?.GetValue(dataItem)
+                ? column.Property.Read(dataItem)
                 : null;
         }
 

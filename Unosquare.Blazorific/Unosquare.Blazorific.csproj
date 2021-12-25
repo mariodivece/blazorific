@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net5.0</TargetFrameworks>
+		<TargetFramework>net6.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
@@ -25,15 +25,11 @@
 		<RepositoryUrl>https://github.com/mariodivece/blazorific</RepositoryUrl>
 		<PackageReleaseNotes>Please review the examples in the repo for usage.</PackageReleaseNotes>
 	</PropertyGroup>
-	
-	<ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-		<PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.13" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.13" />
-	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.1" />
+		<PackageReference Include="Swan.Core" Version="6.0.2-beta.25" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,10 +1,10 @@
 ﻿namespace Unosquare.Blazorific.Tubular
 {
+    using Swan.Reflection;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
-    using System.Reflection;
     using System.Text.Json;
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
@@ -82,26 +82,19 @@
             if (payload == null || payload.Count <= 0)
                 return null;
 
-            var result = Activator.CreateInstance(DataItemType);
-            var proxies = DataItemType.PropertyProxies();
+            var result = DataItemType.CreateInstance();
+            var proxies = DataItemType.Properties();
 
             foreach (var kvp in payload)
             {
                 if (kvp.Value is not JsonElement value)
                     continue;
 
-                var property = proxies.ContainsKey(kvp.Key) ? proxies[kvp.Key] : null;
+                var property = proxies.FirstOrDefault(p => p.PropertyName == kvp.Key);
                 if (property == null)
                     continue;
 
-                try
-                {
-                    property.SetValue(result, ParseValue(value, property.PropertyType));
-                }
-                catch
-                {
-                    // ignore
-                }
+                property.TryWrite(result, ParseValue(value, property.PropertyType.BackingType.NativeType));
             }
 
             return result;
@@ -110,27 +103,22 @@
         private ICollection<object> ParsePayload(TubularGridDataResponse response)
         {
             var result = new List<object>();
-            var props = DataItemType.PropertyProxies().Values.Where(t => t.IsFlatType);
+            var props = DataItemType.Properties().Where(t => t.IsFlatType());
 
             foreach (var itemData in response.Payload)
             {
                 var valueIndex = 0;
-                var targetItem = Activator.CreateInstance(DataItemType);
+                var targetItem = DataItemType.CreateInstance();
 
                 foreach (var targetProperty in props)
                 {
                     var v = itemData[valueIndex++];
-                    var nullableType = Nullable.GetUnderlyingType(targetProperty.PropertyType);
-                    var isNullable = nullableType != null;
-
                     try
                     {
                         if (v is JsonElement element)
-                            v = ParseValue(element, targetProperty.PropertyType);
-                        else if (v != null && v.GetType() != (isNullable ? nullableType : targetProperty.PropertyType))
-                            v = Convert.ChangeType(v?.ToString(), isNullable ? nullableType : targetProperty.PropertyType);
+                            v = ParseValue(element, targetProperty.PropertyType.BackingType.NativeType);
 
-                        targetProperty.SetValue(targetItem, v);
+                        targetProperty.TryWrite(targetItem, v);
                     }
                     catch
                     {
@@ -144,7 +132,7 @@
             return result;
         }
 
-        private static object ParseValue(JsonElement jsonEl, Type type)
+        private static object? ParseValue(JsonElement jsonEl, Type type)
         {
             var valueKind = jsonEl.ValueKind;
             var targetType = type;
@@ -171,15 +159,16 @@
                 case JsonValueKind.True:
                     return jsonEl.GetBoolean();
                 case JsonValueKind.String:
-                    return targetType == typeof(string)
+                    var r = targetType == typeof(string)
                         ? jsonEl.GetString()
                         : targetType == typeof(DateTime)
                         ? jsonEl.GetDateTime()
                         : targetType == typeof(Guid)
                         ? jsonEl.GetGuid()
                         : targetType.GetDefault();
+                    return r;
                 case JsonValueKind.Number:
-                    return targetType == typeof(byte)
+                    var r2 = targetType == typeof(byte)
                         ? jsonEl.GetByte()
                         : targetType == typeof(decimal)
                         ? jsonEl.GetDecimal()
@@ -202,6 +191,7 @@
                         : targetType == typeof(ulong)
                         ? jsonEl.GetUInt64()
                         : targetType.GetDefault();
+                    return r2;
                 default:
                     return targetType.GetDefault();
             }

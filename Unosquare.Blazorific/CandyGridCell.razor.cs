@@ -3,13 +3,11 @@
     using Common;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
+    using Swan.Reflection;
     using System;
-    using System.Reflection;
 
     public sealed partial class CandyGridCell : IAttachedComponent, IDisposable
     {
-        private IPropertyProxy CheckedProperty;
-
         public CandyGridCell()
         {
             Attributes = new AttributeDictionary(StateHasChanged);
@@ -38,12 +36,12 @@
         {
             get
             {
-                return (bool)(CheckedProperty?.GetValue(DataItem) ?? false);
+                return (bool)(Column.CheckedPropertyProxy?.Read(DataItem) ?? false);
             }
             set
             {
                 if (value == IsChecked) return;
-                CheckedProperty?.SetValue(DataItem, value);
+                Column.CheckedPropertyProxy?.Write(DataItem, value);
                 RaiseOnCellCheckedChanged(value);
             }
         }
@@ -57,7 +55,7 @@
             Column.OnDetailsButtonClick != null ||
             Column.OnEditButtonClick != null;
 
-        private bool HasAutomaticCheckbox => CheckedProperty != null;
+        private bool HasAutomaticCheckbox => Column.CheckedPropertyProxy != null;
 
         public void Dispose()
         {
@@ -68,22 +66,9 @@
         {
             Index = Row?.AddCell(this) ?? -1;
             TextAlignCssClass = GetTextAlignCssClass();
-            CheckedProperty = GetCheckedProperty();
         }
 
-        private IPropertyProxy GetCheckedProperty()
-        {
-            var checkedProxy = !string.IsNullOrWhiteSpace(Column.CheckedProperty)
-                ? DataItem?.PropertyProxy(Column.CheckedProperty)
-                : null;
-
-            if (checkedProxy == null || (checkedProxy.PropertyType != typeof(bool) && checkedProxy.PropertyType != typeof(bool?)))
-                return null;
-
-            return checkedProxy;
-        }
-
-        private string GetTextAlignCssClass()
+        private string? GetTextAlignCssClass()
         {
             if (Column.Alignment != TextAlignment.Auto)
             {
@@ -100,9 +85,9 @@
             if (Property == null) return null;
 
             var t = Property.PropertyType;
-            return t.IsNumeric() || t.IsDateTime()
+            return t.IsNumeric || t.BackingType.NativeType == typeof(DateTime)
                 ? "text-right"
-                : t.IsBoolean()
+                : t.BackingType.NativeType == typeof(bool)
                 ? "text-center"
                 : null;
         }

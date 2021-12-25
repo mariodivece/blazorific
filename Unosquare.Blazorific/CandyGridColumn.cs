@@ -1,10 +1,10 @@
 ﻿namespace Unosquare.Blazorific
 {
     using Microsoft.AspNetCore.Components;
+    using Swan.Reflection;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
 
@@ -26,8 +26,8 @@
             // TODO: Create automatic columns from type.
             // Make it smarter
             m_Property = property;
-            Title = property.Name;
-            Field = property.Name;
+            Title = property.PropertyName;
+            Field = property.PropertyName;
             IsSortable = true;
             IsSearchable = false; // property.PropertyType == typeof(string); // default false because it might be dbqueries.
             Parent = parent;
@@ -109,8 +109,8 @@
         [CascadingParameter(Name = nameof(Parent))]
         protected CandyGrid Parent { get; set; }
 
-        public IPropertyProxy Property => m_Property
-            ?? Parent?.DataAdapter?.DataItemType.PropertyProxy(Field ?? string.Empty);
+        public IPropertyProxy? Property => m_Property
+            ?? (string.IsNullOrWhiteSpace(Field) ? null : Parent?.DataAdapter?.DataItemType.Property(Field));
 
         /// <summary>
         /// Filter search text.
@@ -129,6 +129,8 @@
 
         internal CandyGridColumnHeader HeaderComponent { get; set; }
 
+        internal IPropertyProxy? CheckedPropertyProxy { get; private set; }
+
         string IGridDataColumn.Name => Field;
 
         bool IGridDataColumn.Sortable => IsSortable;
@@ -136,7 +138,7 @@
         bool IGridDataColumn.Searchable => IsSearchable;
 
         DataType IGridDataColumn.DataType => FilterDataType
-            ?? (Property?.PropertyType ?? typeof(string)).GetDataType();
+            ?? (Property?.PropertyType.NativeType ?? typeof(string)).GetDataType();
 
         public void ChangeSortDirection(bool multiColumnSorting)
         {
@@ -261,7 +263,20 @@
 
         protected virtual void OnInitialized()
         {
+            CheckedPropertyProxy = GetCheckedProperty();
             Parent.AddColumn(this);
+        }
+
+        private IPropertyProxy? GetCheckedProperty()
+        {
+            var checkedProxy = !string.IsNullOrWhiteSpace(CheckedProperty)
+                ? Parent?.DataAdapter?.DataItemType.Property(CheckedProperty)
+                : null;
+
+            if (checkedProxy == null || checkedProxy.PropertyType.BackingType.NativeType != typeof(bool))
+                return null;
+
+            return checkedProxy;
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿namespace Unosquare.Blazorific
 {
     using Microsoft.AspNetCore.Components;
+    using Swan.Reflection;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Unosquare.Blazorific.Common;
@@ -318,7 +318,7 @@
 
         private CandyGridColumn[] GenerateColumnsFromType(Type t)
         {
-            var proxies = t.PropertyProxies().Values.Where(t => t.IsFlatType);
+            var proxies = t.Properties().Where(t => t.IsFlatType());
             var result = new List<CandyGridColumn>(proxies.Count());
             foreach (var proxy in proxies)
                 result.Add(new CandyGridColumn(proxy, this));
