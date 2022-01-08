@@ -11,7 +11,7 @@
 
 	<PropertyGroup>
 		<PackageId>Unosquare.Blazorific</PackageId>
-		<Version>0.10.1-alpha.11</Version>
+		<Version>0.10.1-alpha.12</Version>
 		<Authors>mariodivece, unosquare</Authors>
 		<Company>Unosquare</Company>
 		<Product>Unosquare Blazorific UI Library</Product>
