@@ -19,10 +19,8 @@
 
         [HttpPost]
         [Route("grid")]
-        public GridDataResponse GetGridData(GridDataRequest request)
-        {
-            return request.CreateGridDataResponse(DummyDb.Products);
-        }
+        public GridDataResponse GetGridData(GridDataRequest request) =>
+            request.CreateGridDataResponse(DummyDb.Products);
 
         [HttpPost]
         [Route("filteroptions/{fieldName}")]
