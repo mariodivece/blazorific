@@ -1,9 +1,9 @@
 ﻿@inherits CandyGridChildComponent
 <div class="d-flex flex-nowrap">
-    <div class="candygrid-column-sortable text-nowrap">
+    <div class="candygrid-column-sortable">
         @if (Column.IsSortable)
         {
-            <a href="" @onclick:preventDefault @onclick="OnColumnSortClick" class="text-light">@(Column.Title ?? Column.Field)</a>
+            <a href="" @onclick:preventDefault @onclick="OnColumnSortClick">@(Column.Title ?? Column.Field)</a>
         }
         else
         {
@@ -14,8 +14,8 @@
 
     @if (ShowFilter)
     {
-        <div class="ml-auto" @ref="ColumnFilterElement">
-            <button class="btn candygrid-column-header-button @(Column.FilterOperator != CompareOperators.None ? "btn-warning" : "btn-light")">
+        <div class="ms-auto" @ref="ColumnFilterElement">
+            <button type="button" class="btn candygrid-column-header-button @(Column.FilterOperator != CompareOperators.None ? "btn-warning" : "btn-light")">
                 <i class="fas fa-filter"></i>
             </button>
             <div style="display: none">
@@ -28,7 +28,7 @@
                             }
                             else
                             {
-                                <select class="form-control custom-select custom-select-sm" @bind="FilterOperator">
+                                <select class="form-select form-select-sm" @bind="FilterOperator">
                                     @foreach (var kvp in FilterOperators)
                                     {
                                         <option value="@(kvp.Key)">@kvp.Value</option>
@@ -38,17 +38,17 @@
 
                             @if (HasFilterOptions)
                             {
-                                <div class="d-flex btn-group btn-group-sm">
+                                <div class="d-flex btn-group btn-group-sm mb-1">
                                     <button type="button" class="btn btn-sm btn-secondary"
-                                            @onclick="_ => OnFilterOptionCheckTool(true)"
-                                            @onclick:preventDefault="true"
-                                            @onclick:stopPropagation="true">
+                                    @onclick="_ => OnFilterOptionCheckTool(true)"
+                                    @onclick:preventDefault="true"
+                                    @onclick:stopPropagation="true">
                                         <i class="fas fa-check-double"></i>&nbsp;
                                     </button>
                                     <button type="button" class="btn btn-sm btn-secondary"
-                                            @onclick="_ => OnFilterOptionCheckTool(false)"
-                                            @onclick:preventDefault="true"
-                                            @onclick:stopPropagation="true">
+                                    @onclick="_ => OnFilterOptionCheckTool(false)"
+                                    @onclick:preventDefault="true"
+                                    @onclick:stopPropagation="true">
                                         <i class="fas fa-backspace"></i>&nbsp;
                                     </button>
                                 </div>
@@ -56,49 +56,53 @@
                                     @foreach (var kvp in FilterOptions)
                                     {
                                         var key = kvp.Key;
-                                        <label class="custom-control custom-checkbox"
-                                               @onclick:stopPropagation="true"
-                                               @ondblclick:stopPropagation="true">
-                                            <input type="checkbox" class="custom-control-input"
-                                                   @onchange="(e) => OnFilterOptionCheckedChanged(e, key)"
-                                                   checked="@(CheckedFilterOptions.ContainsKey(key) ? "checked" : null)" />
-                                            <span class="custom-control-label">@kvp.Value</span>
+                                        <label class="form-check"
+                                   @onclick:stopPropagation="true"
+                                   @ondblclick:stopPropagation="true">
+                                            <input type="checkbox" class="form-check-input"
+                                       @onchange="(e) => OnFilterOptionCheckedChanged(e, key)"
+                                       checked="@(CheckedFilterOptions.ContainsKey(key) ? "checked" : null)" />
+                                            <span class="form-check-label">@kvp.Value</span>
                                         </label>
                                     }
                                 </div>
                             }
                             else if (IsBooleanInputType)
                             {
-                                <input class="form-control form-control form-control-sm mt-2" type="checkbox" @bind="BooleanFilterVal" />
+                                <label class="form-check">
+                                    <input class="form-check-input mt-2" type="checkbox" @bind="BooleanFilterVal" />
+                                </label>
                             }
                             else if (IsDateInputType)
                             {
-                                <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="DateFilterVal1" />
+                                <input class="form-control form-control-sm mt-2" type="@FilterInputType" @bind="DateFilterVal1" />
                             }
                             else
                             {
-                                <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterVal1" autocomplete="off" inputmode="verbatim" placeholder="value" />
+                                <input class="form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterVal1" autocomplete="off" inputmode="verbatim" placeholder="value" />
                             }
 
                             @if (FilterOperator == CompareOperators.Between)
                             {
                                 if (IsDateInputType)
                                 {
-                                    <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="DateFilterVal2" />
+                                    <input class="form-control form-control-sm mt-2" type="@FilterInputType" @bind="DateFilterVal2" />
                                 }
                                 else
                                 {
-                                    <input class="form-control form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterVal2" autocomplete="off" inputmode="verbatim" placeholder="and value">
+                                    <input class="form-control form-control-sm mt-2" type="@FilterInputType" @bind="FilterVal2" autocomplete="off" inputmode="verbatim" placeholder="and value">
                                 }
                             }
                         </div>
-                        <div class="p-1 mt-2 d-flex justify-content-end">
-                            <button class="btn btn-success btn-sm mr-1 candygrid-column-filter-apply" type="submit">
-                                <i class="fas fa-check-circle"></i>
-                            </button>
-                            <button class="btn btn-danger btn-sm candygrid-column-filter-apply" type="button" @onclick="() => OnClearFilterClick()">
-                                <i class="fas fa-times-circle"></i>
-                            </button>
+                        <div class="d-flex justify-content-end">
+                            <div class="btn-group ms-auto mt-1">
+                                <button class="btn btn-success btn-sm candygrid-column-filter-apply" type="submit">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm candygrid-column-filter-apply" type="button" @onclick="() => OnClearFilterClick()">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>

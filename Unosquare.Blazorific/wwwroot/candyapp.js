@@ -9,7 +9,7 @@
         themeElement: null,
 
         scriptFiles: [
-            CandyAppConstants.contentBaseUrl + "jquery/jquery-3.6.0.min.js",
+            CandyAppConstants.contentBaseUrl + "jquery/jquery-3.6.1.min.js",
             CandyAppConstants.contentBaseUrl + "bootstrap/bootstrap.bundle.min.js",
             CandyAppConstants.contentBaseUrl + "candygrid.js",
             CandyAppConstants.contentBaseUrl + "candymodal.js",
@@ -22,6 +22,7 @@
             CandyAppConstants.contentBaseUrl + "fontawesome/css/all.min.css",
             CandyAppConstants.contentBaseUrl + "candygrid.css",
             CandyAppConstants.contentBaseUrl + "candymodal.css",
+            CandyAppConstants.contentBaseUrl + "candytabset.css",
         ],
 
         themeFiles: [
@@ -37,7 +38,9 @@
             { name: 'Lux', url: '' },
             { name: 'Materia', url: '' },
             { name: 'Minty', url: '' },
+            { name: 'Morph', url: '' },
             { name: 'Pulse', url: '' },
+            { name: 'Quartz', url: '' },
             { name: 'Sandstone', url: '' },
             { name: 'Simplex', url: '' },
             { name: 'Sketchy', url: '' },
@@ -46,7 +49,9 @@
             { name: 'Spacelab', url: '' },
             { name: 'Superhero', url: '' },
             { name: 'United', url: '' },
+            { name: 'Vapor', url: '' },
             { name: 'Yeti', url: '' },
+            { name: 'Zephyr', url: '' },
         ],
 
         hasLoaded: false,
@@ -166,11 +171,11 @@
         },
 
         bindTooltip: function (targetEl) {
-            $(targetEl).tooltip();
+            bootstrap.Tooltip.getOrCreateInstance(targetEl);
         },
 
         focusElement: function (element) {
-            $(element).focus();
+            element.focus();
         },
 
         copyToClipboard(text, message) {

@@ -1,7 +1,7 @@
 ﻿@inject NavigationManager Nav
 <div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary shadow-lg">
     <div class="container">
-        <a class="navbar-brand" href="#">Blazorific</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+        <a class="navbar-brand" href="#">Blazorific</a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse"
              id="navcol-1">
             <ul class="nav navbar-nav">
@@ -12,7 +12,7 @@
 
             @if (Nav.ToAbsoluteUri("/").Host == "localhost")
             {
-                <ul class="nav navbar-nav ml-auto">
+                <ul class="nav navbar-nav ms-auto">
                     <li class="nav-item" role="presentation"><NavLink class="nav-link" href="/notfound"><i class="fas fa-bomb"></i>&nbsp;Not Found</NavLink></li>
                 </ul>
             }

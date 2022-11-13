@@ -14,7 +14,7 @@
         @foreach (var tab in Tabs)
         {
             <div class="tab-pane fade @(IndexOf(tab) == 0 ? "show active" : null)" id="@tab.Id" role="tabpanel" aria-labelledby="@($"{tab.Id}-tab")">
-                <div class="border-left border-bottom border-right">
+                <div class="candytab-pane nav-tabs">
                     @tab.ChildContent
                 </div>
             </div>

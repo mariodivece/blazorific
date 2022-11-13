@@ -84,39 +84,41 @@
         },
 
         bindColumnFilterDropdown: function (columnFilterElement) {
-            var filterEl = $(columnFilterElement);
-            var buttonEl = filterEl.children("button").first();
-            var dialogEl = filterEl.find("div.candygrid-filter-dialog").first();
+            const filterEl = $(columnFilterElement);
+            const buttonEl = filterEl.children("button").first();
+            const dialogEl = filterEl.find("div.candygrid-filter-dialog").first();
 
             if (buttonEl.length <= 0)
                 return;
 
-            CandyGrid.state.filterButtons.push(buttonEl);
-            CandyGrid.bindWindowEvents();
-
-            buttonEl.popover({
-                content: dialogEl,
-                html: true,
-                placement: 'bottom',
-                trigger: 'manual',
+            const popover = bootstrap.Popover.getOrCreateInstance(buttonEl[0], {
+                content: dialogEl[0],
+                animation: true,
                 boundary: 'viewport',
                 container: 'body',
-                offset: 20000,
+                fallbackPlacements: ['bottom', 'left', 'top', 'right'],
+                placement: 'bottom',
+                html: true,
+                //offset: [-20000, -20000],
+                sanitize: false,
                 template:
                     '<div class="popover" role="tooltip">' +
                     '  <div class="arrow"></div>' +
                     '  <h3 class="popover-header"></h3>' +
                     '  <div class="popover-body"></div>' +
-                    '</div>'
+                    '</div>',
+                trigger: 'manual',
             });
 
+            CandyGrid.state.filterButtons.push(buttonEl);
+            CandyGrid.bindWindowEvents();
+
             dialogEl.find("button.candygrid-column-filter-apply").on('click', function (e) {
-                // buttonEl.popover('hide');
+                popover.hide();
             });
 
             buttonEl.on('click', function (e) {
-                buttonEl.popover('toggle');
-                e.stopPropagation();
+                popover.toggle();
             });
         },
     };

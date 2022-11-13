@@ -110,10 +110,13 @@
         public string TableCssClass { get; set; } = "table table-striped table-hover table-sm";
 
         [Parameter]
-        public string TableHeaderCssClass { get; set; } = "thead-dark";
+        public string TableHeaderCssClass { get; set; } = string.Empty;
 
         [Parameter]
-        public string TableFooterCssClass { get; set; } = "thead-dark";
+        public string TableBodyCssClass { get; set; } = string.Empty;
+
+        [Parameter]
+        public string TableFooterCssClass { get; set; } = string.Empty;
 
         #endregion
 

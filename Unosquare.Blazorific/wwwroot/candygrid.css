@@ -1,13 +1,3 @@
-﻿label.custom-control.custom-checkbox {
-    margin-bottom: 0;
-    cursor: pointer;
-    display: block;
-    padding-left: 1.7rem;
-}
-
-    label.custom-control.custom-checkbox span.custom-control-label {
-        padding-top: 1px;
-    }
 
 .candygrid-container {
     position: relative;
@@ -41,7 +31,11 @@
 }
 
 .candygrid-column-sortable > a {
-    margin-right: 6px;
+    margin-right: 4px;
+}
+
+.candygrid-column-sortable > i {
+    min-width: 10px;
 }
 
 .candygrid-table {
@@ -100,17 +94,21 @@
     overflow: hidden;
     max-width: 1px;
 }
-
-    .candygrid-cell .custom-control-label::before {
+    /*
+    .candygrid-cell .form-check-label::before {
         margin-top: -4px;
     }
 
-    .candygrid-cell .custom-control-label::after {
+    .candygrid-cell .form-check-label::after {
         margin-top: -4px;
     }
-
-    .candygrid-cell .custom-control-label {
-        vertical-align: top;
+    */
+    .candygrid-cell .form-check {
         cursor: pointer;
-        line-height: inherit;
+        margin-left: 6px;
     }
+
+        .candygrid-cell .form-check .form-check-input {
+            margin-top: 4px;
+            cursor: pointer;
+        }

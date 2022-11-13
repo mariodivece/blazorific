@@ -1,7 +1,7 @@
 ﻿@if (ThemeManager != null)
 {
     <form class="form-inline my-2 my-lg-0 input-group-sm" @onsubmit:preventDefault="true">
-        <select class="form-control custom-select" @onchange="async (val) => await ThemeManager.ApplyThemeAsync(val.Value as string)">
+        <select class="form-select" @onchange="async (val) => await ThemeManager.ApplyThemeAsync(val.Value as string)">
             @foreach (var themeName in ThemeManager.ThemeNames)
             {
                 <option value="@themeName" selected="@(themeName == ThemeManager.CurrentThemeName ? "selected" : null)">@themeName</option>

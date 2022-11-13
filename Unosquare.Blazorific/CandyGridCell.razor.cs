@@ -75,9 +75,9 @@
                 return Column.Alignment switch
                 {
                     TextAlignment.Center => "text-center",
-                    TextAlignment.Left => "text-left",
-                    TextAlignment.Right => "text-right",
-                    TextAlignment.Justify => "text-justify",
+                    TextAlignment.Left => "text-start",
+                    TextAlignment.Right => "text-end",
+                    TextAlignment.Justify => "text-start",
                     _ => null
                 };
             }
@@ -86,7 +86,7 @@
 
             var t = Property.PropertyType;
             return t.IsNumeric || t.BackingType.NativeType == typeof(DateTime)
-                ? "text-right"
+                ? "text-end"
                 : t.BackingType.NativeType == typeof(bool)
                 ? "text-center"
                 : null;

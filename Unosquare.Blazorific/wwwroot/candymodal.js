@@ -1,11 +1,15 @@
 ﻿if (!window.CandyModal) {
     window.CandyModal = {
         show: function (el) {
-            $(el).modal('show');
+            bootstrap.Modal.getOrCreateInstance(el).show();
         },
 
         hide: function (el) {
-            $(el).modal('hide');
-        }
+            bootstrap.Modal.getOrCreateInstance(el).hide();
+        },
+
+        toggle: function (el) {
+            bootstrap.Modal.getOrCreateInstance(el).toggle();
+        },
     };
 }

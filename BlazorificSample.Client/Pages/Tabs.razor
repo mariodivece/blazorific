@@ -17,7 +17,7 @@
                 <div class="col">
                     <CandyFormGroup Label="Select Theme" PrependIconClass="fas fa-layer-group"
                                     HelpText="Sample Theme Selector." UseHorizontalLayout="true">
-                        <select class="form-control custom-select" @onchange="async (val) => await ThemeManager.ApplyThemeAsync(val.Value as string)">
+                        <select class="form-select" @onchange="async (val) => await ThemeManager.ApplyThemeAsync(val.Value as string)">
                             @foreach (var themeName in ThemeManager.ThemeNames)
                             {
                                 <option value="@themeName" selected="@(themeName == ThemeManager.CurrentThemeName ? "selected" : null)">@themeName</option>

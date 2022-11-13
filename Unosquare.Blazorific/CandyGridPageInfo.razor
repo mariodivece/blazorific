@@ -14,5 +14,12 @@
         <text> (Filtered from @Parent.TotalRecordCount total records)</text>
     }
 
-    &nbsp;<a style="padding: 8px;" class="badge badge-info" href="#" @onclick="async () => await Grid.ResetState()" @onclick:preventDefault><i class="fas fa-undo"></i>&nbsp;Reset</a>
+    &nbsp;
+    <button 
+        type="button"
+        class="btn btn-info btn-sm"
+        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
+        @onclick="async () => await Grid.ResetState()" @onclick:preventDefault>
+        <i class="fas fa-undo"></i>&nbsp;Reset
+    </button>
 </span>
