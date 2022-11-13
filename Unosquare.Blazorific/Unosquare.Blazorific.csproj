@@ -12,7 +12,7 @@
 
 	<PropertyGroup>
 		<PackageId>Unosquare.Blazorific</PackageId>
-		<Version>7.10.1-alpha.1</Version>
+		<Version>7.10.1-alpha.2</Version>
 		<Authors>mariodivece, unosquare</Authors>
 		<Company>Unosquare</Company>
 		<Product>Unosquare Blazorific UI Library</Product>
@@ -30,7 +30,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
-		<PackageReference Include="Swan.Core" Version="6.0.2-*" />
+		<PackageReference Include="Swan.Core" Version="7.0.0-beta.2" />
 	</ItemGroup>
 
 	<ItemGroup>
