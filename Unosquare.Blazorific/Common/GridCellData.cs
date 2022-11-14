@@ -11,7 +11,7 @@ public class GridCellData
     /// <param name="row">The row.</param>
     /// <param name="column">The column.</param>
     /// <param name="dataItem">The data item.</param>
-    internal GridCellData(CandyGridRow row, CandyGridColumn column, object dataItem)
+    internal GridCellData(CandyGridRow? row, CandyGridColumn? column, object? dataItem)
     {
         Row = row;
         Column = column;
@@ -24,7 +24,7 @@ public class GridCellData
     /// <value>
     /// The row.
     /// </value>
-    public CandyGridRow Row { get; }
+    public CandyGridRow? Row { get; }
 
     /// <summary>
     /// Gets the column.
@@ -32,7 +32,7 @@ public class GridCellData
     /// <value>
     /// The column.
     /// </value>
-    public CandyGridColumn Column { get; }
+    public CandyGridColumn? Column { get; }
 
     /// <summary>
     /// Gets the data item.
@@ -40,7 +40,7 @@ public class GridCellData
     /// <value>
     /// The data item.
     /// </value>
-    public object DataItem { get; }
+    public object? DataItem { get; }
 
     /// <summary>
     /// Gets a value indicating whether this instance is footer.
