@@ -6,8 +6,6 @@
 /// <seealso cref="CandyGridChildComponent" />
 public partial class CandyGridPaginator
 {
-    private int m_ButtonCount = 5;
-
     /// <summary>
     /// Gets or sets a value indicating whether [show first button].
     /// </summary>
@@ -51,11 +49,7 @@ public partial class CandyGridPaginator
     /// The button count.
     /// </value>
     [Parameter]
-    public int ButtonCount
-    {
-        get => m_ButtonCount < 1 ? 1 : m_ButtonCount;
-        set => m_ButtonCount = value;
-    }
+    public int ButtonCount { get; set; } = 5;
 
     /// <summary>
     /// Gets or sets the page number.
@@ -67,5 +61,17 @@ public partial class CandyGridPaginator
     {
         get => Parent?.PageNumber ?? 0;
         set => Parent?.ChangePageNumber(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the control button count.
+    /// </summary>
+    /// <value>
+    /// The control button count.
+    /// </value>
+    protected int ControlButtonCount
+    {
+        get => ButtonCount < 1 ? 1 : ButtonCount;
+        set => ButtonCount = value;
     }
 }

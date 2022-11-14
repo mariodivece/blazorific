@@ -67,7 +67,7 @@
                 <div class="col">
                     <CandyFormGroup Label="Start Year" PrependIconClass="fas fa-calendar" Layout="CandyFormGroup.Layouts.Floating"
                                     HelpText="This is some sample text." UseHelpTooltip="true">
-                        <input type="number" class="form-control" @bind="Year" min="2009" max="@(DateTime.Today.Year + 1)" />
+                        <input type="number" placeholder="Year" class="form-control" @bind="Year" min="2009" max="@(DateTime.Today.Year + 1)" />
                     </CandyFormGroup>
                 </div>
                 <div class="col">

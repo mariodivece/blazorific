@@ -1,31 +1,31 @@
 ﻿@if (Row!.IsFooter)
 {
-    <th class="candygrid-cell @Column.CellCssClass" @attributes="Attributes.Dictionary">
-        @if (Column!.DataTemplate is not null)
+    <th class="candygrid-cell @Column?.CellCssClass" @attributes="Attributes.Dictionary">
+        @if (Column?.DataTemplate is not null)
         {
             @Column.DataTemplate(new GridCellData(Row, Column, DataItem))
         }
-        else if (Column.Aggregate != AggregationFunction.None)
+        else if ((Column?.Aggregate ?? AggregationFunction.None) != AggregationFunction.None)
         {
             if (!string.IsNullOrWhiteSpace(TextAlignCssClass))
             {
                 <div class="@TextAlignCssClass">
-                    @Column.GetFormattedValue(DataItem)
+                    @Column?.GetFormattedValue(DataItem)
                 </div>
             }
             else
             {
-                @Column.GetFormattedValue(DataItem)
+                @Column?.GetFormattedValue(DataItem)
             }
         }
     </th>
 }
 else
 {
-    <td class="candygrid-cell @Column.CellCssClass" @attributes="Attributes.Dictionary">
-        @if (Column!.DataTemplate is not null)
+    <td class="candygrid-cell @Column?.CellCssClass" @attributes="Attributes.Dictionary">
+        @if (Column?.DataTemplate is not null)
         {
-            @Column.DataTemplate(new GridCellData(Row, Column, DataItem))
+            @Column?.DataTemplate(new GridCellData(Row, Column, DataItem))
         }
         else if (HasAutomaticButtons || HasAutomaticCheckbox)
         {
@@ -37,7 +37,7 @@ else
                              @onclick:stopPropagation="true"
                              @ondblclick:stopPropagation="true">
 
-                            @if (Column.OnDetailsButtonClick is not null)
+                            @if (Column?.OnDetailsButtonClick is not null)
                             {
                                 <button class="btn btn-info" type="button" title="Details"
                                         @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.DetailsButtonClick)">
@@ -45,7 +45,7 @@ else
                                 </button>
                             }
 
-                            @if (Column.OnEditButtonClick is not null)
+                            @if (Column?.OnEditButtonClick is not null)
                             {
                                 <button class="btn btn-warning" type="button" title="Edit"
                                         @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.EditButtonClick)">
@@ -53,7 +53,7 @@ else
                                 </button>
                             }
 
-                            @if (Column.OnDeleteButtonClick is not null)
+                            @if (Column?.OnDeleteButtonClick is not null)
                             {
                                 <button class="btn btn-danger " type="button" title="Delete"
                                         @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.DeleteButtonClick)">
@@ -71,13 +71,13 @@ else
                                @onclick:stopPropagation="true"
                                @ondblclick:stopPropagation="true">
                             <input type="checkbox" class="form-check-input" @bind="IsChecked" />
-                            <span class="form-check-label">@Column.GetFormattedValue(DataItem)</span>
+                            <span class="form-check-label">@Column?.GetFormattedValue(DataItem)</span>
                         </label>
                     }
                     else
                     {
                         <div class="@TextAlignCssClass">
-                            @Column.GetFormattedValue(DataItem)
+                            @Column?.GetFormattedValue(DataItem)
                         </div>
                     }
                 </div>
@@ -88,12 +88,12 @@ else
             if (!string.IsNullOrWhiteSpace(TextAlignCssClass))
             {
                 <div class="@TextAlignCssClass">
-                    @Column.GetFormattedValue(DataItem)
+                    @Column?.GetFormattedValue(DataItem)
                 </div>
             }
             else
             {
-                @Column.GetFormattedValue(DataItem)
+                @Column?.GetFormattedValue(DataItem)
             }
         }
     </td>

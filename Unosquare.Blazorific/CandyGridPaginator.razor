@@ -22,14 +22,14 @@
             }
 
             @{
-                var startPage = Parent.PageNumber - (ButtonCount / 2);
+                var startPage = Parent.PageNumber - (ControlButtonCount / 2);
                 if (startPage < 1) startPage = 1;
 
-                var endPage = startPage + (ButtonCount - 1);
+                var endPage = startPage + (ControlButtonCount - 1);
                 if (endPage >= Parent.TotalPages)
                 {
                     endPage = Parent.TotalPages;
-                    startPage = endPage - (ButtonCount - 1);
+                    startPage = endPage - (ControlButtonCount - 1);
                     if (startPage <= 0) startPage = 1;
                 }
 
