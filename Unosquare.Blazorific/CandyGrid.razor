@@ -17,7 +17,7 @@
                 <CandyGridPaginator ButtonCount="5" />
             </div>
             <div class="col-lg-5 align-self-center">
-                @if (ToolbarTemplate != null)
+                @if (ToolbarTemplate is not null)
                     @ToolbarTemplate(this)
             </div>
             <div class="col-lg-3 align-self-center">
@@ -32,7 +32,7 @@
                         @foreach (var col in Columns)
                         {
                             <th width="@GetRelativeWidth(col)" class="candygrid-column-header @col.HeaderCssClass" scope="col">
-                                @if (col.HeaderTemplate == null)
+                                @if (col.HeaderTemplate is null)
                                 {
                                     <CascadingValue Value="col" Name="Column">
                                         <CandyGridColumnHeader @key="col" />
@@ -47,13 +47,13 @@
                     </tr>
                 </thead>
                 <tbody class="@TableBodyCssClass">
-                    @if (DataItems == null || DataItems.Count == 0)
+                    @if (DataItems is null || DataItems.Count == 0)
                     {
                         <tr>
                             <td colspan="@Columns.Count">
                                 @if (!IsLoading)
                                 {
-                                    if (EmptyRecordsTemplate != null)
+                                    if (EmptyRecordsTemplate is not null)
                                     {
                                         @EmptyRecordsTemplate(this)
                                     }
@@ -90,7 +90,7 @@
                         }
                     }
                 </tbody>
-                @if (AggregateDataItem != null)
+                @if (AggregateDataItem is not null)
                 {
                     <tfoot class="@TableFooterCssClass">
                         <CascadingValue Name="DataItem" Value="AggregateDataItem">

@@ -1,12 +1,25 @@
-﻿namespace Unosquare.Blazorific
+﻿namespace Unosquare.Blazorific;
+
+/// <summary>
+/// Represents a component that is contained within a <see cref="CandyGrid"/>.
+/// </summary>
+/// <seealso cref="ComponentBase" />
+public abstract class CandyGridChildComponent : ComponentBase
 {
-    using Microsoft.AspNetCore.Components;
+    /// <summary>
+    /// Gets the parent.
+    /// </summary>
+    /// <value>
+    /// The parent.
+    /// </value>
+    [CascadingParameter(Name = nameof(Parent))]
+    protected CandyGrid? Parent { get; private set; }
 
-    public abstract class CandyGridChildComponent : ComponentBase
-    {
-        [CascadingParameter(Name = nameof(Parent))]
-        protected CandyGrid Parent { get; private set; }
-
-        public CandyGrid Grid => Parent;
-    }
+    /// <summary>
+    /// Gets the grid.
+    /// </summary>
+    /// <value>
+    /// The grid.
+    /// </value>
+    public CandyGrid? Grid => Parent;
 }

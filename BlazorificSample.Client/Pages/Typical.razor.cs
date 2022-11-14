@@ -18,7 +18,7 @@
         {
             foreach (var row in sender.Rows)
             {
-                if (row.DataItem == null)
+                if (row.DataItem is null)
                     continue;
 
                 if (row.DataItem is not Product product)
@@ -32,7 +32,7 @@
         private void OnBodyRowDoubleClick(GridRowMouseEventArgs e)
         {
             var product = e.DataItem as Product;
-            if (product == null) return;
+            if (product is null) return;
 
             product.IsChecked = !product.IsChecked;
             product.Description = $"Item was {product.ProductId} double clicked!";
@@ -42,14 +42,14 @@
         private void OnDetailsButtonClick(GridRowMouseEventArgs e)
         {
             var product = e.DataItem as Product;
-            if (product == null) return;
+            if (product is null) return;
             product.Description = $"Details for item {product.ProductId} clicked. Show a modal or something!";
         }
 
         private async void OnEditButtonClick(GridRowMouseEventArgs e)
         {
             var product = e.DataItem as Product;
-            if (product == null) return;
+            if (product is null) return;
             product.Description = $"Product with ID = {product.ProductId} editing . . .";
             EditorItem = product;
             await EditDialog.Show();
@@ -63,7 +63,7 @@
         private void OnCellCheckChanged(GridCellCheckboxEventArgs e)
         {
             var product = e.DataItem as Product;
-            if (product == null) return;
+            if (product is null) return;
             product.Description = $"Product with ID = {product.ProductId}, on column {e.Column.Field} is now {(e.IsChecked ? "checked" : "unchecked")}.";
             UpdateSelected(e.Row);
         }

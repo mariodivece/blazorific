@@ -12,7 +12,7 @@
 
 	<PropertyGroup>
 		<PackageId>Unosquare.Blazorific</PackageId>
-		<Version>7.10.1-alpha.4</Version>
+		<Version>7.10.1-alpha.5</Version>
 		<Authors>mariodivece, unosquare</Authors>
 		<Company>Unosquare</Company>
 		<Product>Unosquare Blazorific UI Library</Product>
@@ -26,6 +26,10 @@
 		<RepositoryUrl>https://github.com/mariodivece/blazorific</RepositoryUrl>
 		<PackageReleaseNotes>Please review the examples in the repo for usage.</PackageReleaseNotes>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="wwwroot\candyform.css" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.0" />

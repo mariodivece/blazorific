@@ -1,38 +1,71 @@
-﻿namespace Unosquare.Blazorific
+﻿namespace Unosquare.Blazorific;
+
+/// <summary>
+/// Represents a component that contains <see cref="CandyTab"/> components.
+/// </summary>
+/// <seealso cref="Unosquare.Blazorific.CandyComponentBase" />
+public partial class CandyTabSet
 {
-    using Common;
-    using Microsoft.AspNetCore.Components;
-    using System.Collections.Generic;
+    /// <summary>
+    /// Gets or sets the identifier.
+    /// </summary>
+    /// <value>
+    /// The identifier.
+    /// </value>
+    [Parameter]
+    public string? Id { get; set; }
 
-    public partial class CandyTabSet
+    /// <summary>
+    /// Gets or sets the content of the child.
+    /// </summary>
+    /// <value>
+    /// The content of the child.
+    /// </value>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the mode.
+    /// </summary>
+    /// <value>
+    /// The mode.
+    /// </value>
+    [Parameter]
+    public CandyTabMode Mode { get; set; }
+
+    /// <summary>
+    /// Gets the tabs.
+    /// </summary>
+    /// <value>
+    /// The tabs.
+    /// </value>
+    public IReadOnlyList<CandyTab> Tabs { get; } = new List<CandyTab>();
+
+    /// <summary>
+    /// Adds the tab.
+    /// </summary>
+    /// <param name="tab">The tab.</param>
+    public void AddTab(CandyTab tab)
     {
-        [Parameter]
-        public string Id { get; set; }
+        (Tabs as List<CandyTab>)?.Add(tab);
+        StateHasChanged();
+    }
 
-        [Parameter]
-        public RenderFragment ChildContent { get; set; }
+    /// <summary>
+    /// Indexes the of.
+    /// </summary>
+    /// <param name="tab">The tab.</param>
+    /// <returns></returns>
+    public int IndexOf(CandyTab tab)
+    {
+        var tabs = Tabs as List<CandyTab>;
+        return tabs?.IndexOf(tab) ?? -1;
+    }
 
-        [Parameter]
-        public CandyTabMode Mode { get; set; }
-
-        public IReadOnlyList<CandyTab> Tabs { get; } = new List<CandyTab>();
-
-        public void AddTab(CandyTab tab)
-        {
-            (Tabs as List<CandyTab>).Add(tab);
-            StateHasChanged();
-        }
-
-        public int IndexOf(CandyTab tab)
-        {
-            var tabs = Tabs as List<CandyTab>;
-            return tabs.IndexOf(tab);
-        }
-
-        protected override void OnInitialized()
-        {
-            if (string.IsNullOrWhiteSpace(Id))
-                Id = Extensions.GenerateRandomHtmlId();
-        }
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrWhiteSpace(Id))
+            Id = Extensions.GenerateRandomHtmlId();
     }
 }

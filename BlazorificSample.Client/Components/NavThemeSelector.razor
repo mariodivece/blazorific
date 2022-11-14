@@ -1,4 +1,4 @@
-﻿@if (ThemeManager != null)
+﻿@if (ThemeManager is not null)
 {
     <form class="form-inline my-2 my-lg-0 input-group-sm" @onsubmit:preventDefault="true">
         <select class="form-select" @onchange="async (val) => await ThemeManager.ApplyThemeAsync(val.Value as string)">

@@ -20,6 +20,7 @@
         styleFiles: [
             CandyAppConstants.contentBaseUrl + "bootstrap/bootstrap.min.css",
             CandyAppConstants.contentBaseUrl + "fontawesome/css/all.min.css",
+            CandyAppConstants.contentBaseUrl + "candyform.css",
             CandyAppConstants.contentBaseUrl + "candygrid.css",
             CandyAppConstants.contentBaseUrl + "candymodal.css",
             CandyAppConstants.contentBaseUrl + "candytabset.css",

@@ -54,7 +54,7 @@
 
 <CandyModal @ref="EditDialog" Title="Editing Item" Size="CandyModal.Sizes.Default" Center="true">
     <ChildContent>
-        @if (EditorItem == null)
+        @if (EditorItem is null)
         {
             <div>No item to edit :(</div>
         }

@@ -30,7 +30,7 @@
             foreach (var item in DummyDb.Products.Select($"new ({fieldName} as Key, {fieldName} as Value)").Distinct().OrderBy("Key"))
             {
                 var kvp = item as dynamic;
-                if (kvp == null || kvp.Key == null)
+                if (kvp is null || kvp.Key is null)
                     continue;
                 
                 result[$"{kvp.Key}"] = $"{kvp.Value}";

@@ -1,7 +1,7 @@
 ﻿@if (Row.IsFooter)
 {
     <th class="candygrid-cell @Column.CellCssClass" @attributes="Attributes.Dictionary">
-        @if (Column.DataTemplate != null)
+        @if (Column.DataTemplate is not null)
         {
             @Column.DataTemplate(new GridCellData(Row, Column, DataItem))
         }
@@ -23,7 +23,7 @@
 else
 {
     <td class="candygrid-cell @Column.CellCssClass" @attributes="Attributes.Dictionary">
-        @if (Column.DataTemplate != null)
+        @if (Column.DataTemplate is not null)
         {
             @Column.DataTemplate(new GridCellData(Row, Column, DataItem))
         }
@@ -37,7 +37,7 @@ else
                              @onclick:stopPropagation="true"
                              @ondblclick:stopPropagation="true">
 
-                            @if (Column.OnDetailsButtonClick != null)
+                            @if (Column.OnDetailsButtonClick is not null)
                             {
                                 <button class="btn btn-info" type="button" title="Details"
                                         @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.DetailsButtonClick)">
@@ -45,7 +45,7 @@ else
                                 </button>
                             }
 
-                            @if (Column.OnEditButtonClick != null)
+                            @if (Column.OnEditButtonClick is not null)
                             {
                                 <button class="btn btn-warning" type="button" title="Edit"
                                         @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.EditButtonClick)">
@@ -53,7 +53,7 @@ else
                                 </button>
                             }
 
-                            @if (Column.OnDeleteButtonClick != null)
+                            @if (Column.OnDeleteButtonClick is not null)
                             {
                                 <button class="btn btn-danger " type="button" title="Delete"
                                         @onclick="e => RaiseOnRowButtonClick(e, GridButtonEventType.DeleteButtonClick)">

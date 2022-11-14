@@ -1,12 +1,22 @@
-﻿namespace Unosquare.Blazorific.Common
+﻿namespace Unosquare.Blazorific.Common;
+
+/// <summary>
+/// Defines a data adapter for a <see cref="CandyGrid"/>.
+/// </summary>
+public interface IGridDataAdapter
 {
-    using System;
-    using System.Threading.Tasks;
+    /// <summary>
+    /// Gets the type of the data item.
+    /// </summary>
+    /// <value>
+    /// The type of the data item.
+    /// </value>
+    Type DataItemType { get; }
 
-    public interface IGridDataAdapter
-    {
-        Type DataItemType { get; }
-
-        Task<GridDataResponse> RetrieveDataAsync(GridDataRequest request);
-    }
+    /// <summary>
+    /// Defines a method that is used to retrieve the data.
+    /// </summary>
+    /// <param name="request">The request.</param>
+    /// <returns></returns>
+    Task<GridDataResponse> RetrieveDataAsync(GridDataRequest request);
 }

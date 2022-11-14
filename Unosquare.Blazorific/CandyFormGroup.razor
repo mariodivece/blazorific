@@ -1,6 +1,6 @@
 ﻿@inherits CandyComponentBase
 
-<div class="@(UseHorizontalLayout ? "row" : string.Empty)">
+<div class="candyform-formgroup @(UseHorizontalLayout ? "row" : string.Empty)">
     <label class="@(UseHorizontalLayout ? "col-sm-4 col-form-label text-end" : string.Empty)">
         @if (UseHelpTooltip && !string.IsNullOrWhiteSpace(HelpText))
         {
