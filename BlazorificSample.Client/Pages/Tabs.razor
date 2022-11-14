@@ -16,7 +16,7 @@
                 <div class="col"></div>
                 <div class="col">
                     <CandyFormGroup Label="Select Theme" PrependIconClass="fas fa-layer-group"
-                                    HelpText="Sample Theme Selector." UseHorizontalLayout="true">
+                                    HelpText="Sample Theme Selector." Layout="CandyFormGroup.Layouts.Horizontal">
                         <select class="form-select" @onchange="async (val) => await ThemeManager.ApplyThemeAsync(val.Value as string)">
                             @foreach (var themeName in ThemeManager.ThemeNames)
                             {
@@ -51,13 +51,27 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <CandyFormGroup Label="Start Year" PrependIconClass="fas fa-calendar" UseHorizontalLayout="true"
+                    <CandyFormGroup Label="Start Year" PrependIconClass="fas fa-calendar" Layout="CandyFormGroup.Layouts.Horizontal"
                                     HelpText="This is some sample text." UseHelpTooltip="true">
                         <input type="number" class="form-control" @bind="Year" min="2009" max="@(DateTime.Today.Year + 1)" />
                     </CandyFormGroup>
                 </div>
                 <div class="col">
-                    <CandyFormGroup Label="Start Year" PrependIconClass="fas fa-calendar" UseHorizontalLayout="true"
+                    <CandyFormGroup Label="Start Year" PrependIconClass="fas fa-calendar" Layout="CandyFormGroup.Layouts.Horizontal"
+                                    HelpText="This is some sample text." UseHelpTooltip="false">
+                        <input type="number" class="form-control" @bind="Year" min="2009" max="@(DateTime.Today.Year + 1)" />
+                    </CandyFormGroup>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <CandyFormGroup Label="Start Year" PrependIconClass="fas fa-calendar" Layout="CandyFormGroup.Layouts.Floating"
+                                    HelpText="This is some sample text." UseHelpTooltip="true">
+                        <input type="number" class="form-control" @bind="Year" min="2009" max="@(DateTime.Today.Year + 1)" />
+                    </CandyFormGroup>
+                </div>
+                <div class="col">
+                    <CandyFormGroup Label="Start Year" PrependIconClass="fas fa-calendar" Layout="CandyFormGroup.Layouts.Floating"
                                     HelpText="This is some sample text." UseHelpTooltip="false">
                         <input type="number" class="form-control" @bind="Year" min="2009" max="@(DateTime.Today.Year + 1)" />
                     </CandyFormGroup>

@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a tabular data response.
 /// </summary>
-public class GridDataResponse
+public record GridDataResponse
 {
     /// <summary>
     /// Gets or sets the data items.
@@ -11,7 +11,7 @@ public class GridDataResponse
     /// <value>
     /// The data items.
     /// </value>
-    public ICollection<object> DataItems { get; set; }
+    public ICollection<object>? DataItems { get; set; }
 
     /// <summary>
     /// Gets or sets the aggregate data item.
@@ -19,7 +19,7 @@ public class GridDataResponse
     /// <value>
     /// The aggregate data item.
     /// </value>
-    public object AggregateDataItem { get; set; }
+    public object? AggregateDataItem { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the data item.
@@ -27,7 +27,7 @@ public class GridDataResponse
     /// <value>
     /// The type of the data item.
     /// </value>
-    public Type DataItemType { get; set; }
+    public Type? DataItemType { get; set; }
 
     /// <summary>
     /// Set how many records are in the entire set.

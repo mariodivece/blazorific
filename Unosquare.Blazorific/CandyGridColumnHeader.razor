@@ -1,13 +1,13 @@
 ﻿@inherits CandyGridChildComponent
 <div class="d-flex flex-nowrap">
     <div class="candygrid-column-sortable">
-        @if (Column.IsSortable)
+        @if (Column?.IsSortable ?? false)
         {
             <a href="" @onclick:preventDefault @onclick="OnColumnSortClick">@(Column.Title ?? Column.Field)</a>
         }
         else
         {
-            <span>@(Column.Title ?? Column.Field)</span>
+            <span>@(Column?.Title ?? Column?.Field ?? string.Empty)</span>
         }
         <i class="fas @CaretCssClass"></i>
     </div>
@@ -15,7 +15,7 @@
     @if (ShowFilter)
     {
         <div class="ms-auto" @ref="ColumnFilterElement">
-            <button type="button" class="btn candygrid-column-header-button @(Column.FilterOperator != CompareOperators.None ? "btn-warning" : "btn-light")">
+            <button type="button" class="btn candygrid-column-header-button @((Column?.FilterOperator ?? CompareOperators.None) != CompareOperators.None ? "btn-warning" : "btn-light")">
                 <i class="fas fa-filter"></i>
             </button>
             <div style="display: none">

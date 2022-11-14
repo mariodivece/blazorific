@@ -1,6 +1,6 @@
 ﻿@inherits CandyGridChildComponent
 <span class="small pl-2">
-    @if (Parent.StartRecordNumber <= 0)
+    @if (Parent!.StartRecordNumber <= 0)
     {
         @Parent.EmtyRecordsText
     }
@@ -19,7 +19,7 @@
         type="button"
         class="btn btn-info btn-sm"
         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
-        @onclick="async () => await Grid.ResetState()" @onclick:preventDefault>
+        @onclick="async () => await Grid!.ResetState()" @onclick:preventDefault>
         <i class="fas fa-undo"></i>&nbsp;Reset
     </button>
 </span>

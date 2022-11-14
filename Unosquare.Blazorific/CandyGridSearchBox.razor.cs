@@ -15,7 +15,7 @@ public partial class CandyGridSearchBox
     {
         DebounceTimer = new Timer((s) =>
         {
-            Parent.ChangeSearchText(SearchText);
+            Parent?.ChangeSearchText(SearchText);
         }, null, Timeout.Infinite, Timeout.Infinite);
     }
 

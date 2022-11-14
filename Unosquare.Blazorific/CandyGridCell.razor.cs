@@ -41,7 +41,7 @@ public sealed partial class CandyGridCell : IAttachedComponent, IDisposable
     /// The column.
     /// </value>
     [CascadingParameter(Name = nameof(Column))]
-    public CandyGridColumn Column { get; private set; }
+    public CandyGridColumn? Column { get; private set; }
 
     /// <summary>
     /// Gets the row.
@@ -50,7 +50,7 @@ public sealed partial class CandyGridCell : IAttachedComponent, IDisposable
     /// The row.
     /// </value>
     [CascadingParameter(Name = nameof(Row))]
-    public CandyGridRow Row { get; private set; }
+    public CandyGridRow? Row { get; private set; }
 
     /// <summary>
     /// Gets the property.
@@ -70,11 +70,14 @@ public sealed partial class CandyGridCell : IAttachedComponent, IDisposable
     {
         get
         {
-            return DataItem is not null && (bool)(Column.CheckedPropertyProxy?.Read(DataItem) ?? false);
+            if (Column is null) return false;
+            if (Column.CheckedPropertyProxy is null) return false;
+            if (DataItem is null) return false;
+            return Column.CheckedPropertyProxy.TryRead(DataItem, out var value) && value is bool boolValue && boolValue;
         }
         set
         {
-            if (value == IsChecked || DataItem is null) return;
+            if (value == IsChecked || DataItem is null || Column is null) return;
             Column.CheckedPropertyProxy?.Write(DataItem, value);
             RaiseOnCellCheckedChanged(value);
         }
@@ -85,11 +88,11 @@ public sealed partial class CandyGridCell : IAttachedComponent, IDisposable
     private object? DataItem => Row?.DataItem;
 
     private bool HasAutomaticButtons =>
-        Column.OnDeleteButtonClick is not null ||
-        Column.OnDetailsButtonClick is not null ||
-        Column.OnEditButtonClick is not null;
+        Column?.OnDeleteButtonClick is not null ||
+        Column?.OnDetailsButtonClick is not null ||
+        Column?.OnEditButtonClick is not null;
 
-    private bool HasAutomaticCheckbox => Column.CheckedPropertyProxy is not null;
+    private bool HasAutomaticCheckbox => Column?.CheckedPropertyProxy is not null;
 
     /// <inheridoc />
     public void Dispose()
@@ -107,6 +110,9 @@ public sealed partial class CandyGridCell : IAttachedComponent, IDisposable
     /// <inheridoc />
     private string? GetTextAlignCssClass()
     {
+        if (Column is null)
+            return null;
+
         if (Column.Alignment != TextAlignment.Auto)
         {
             return Column.Alignment switch
@@ -119,7 +125,8 @@ public sealed partial class CandyGridCell : IAttachedComponent, IDisposable
             };
         }
 
-        if (Property is null) return null;
+        if (Property is null)
+            return null;
 
         var t = Property.PropertyType;
         return t.IsNumeric || t.BackingType.NativeType == typeof(DateTime)
@@ -131,24 +138,31 @@ public sealed partial class CandyGridCell : IAttachedComponent, IDisposable
 
     private void RaiseOnRowButtonClick(MouseEventArgs e, GridButtonEventType eventType)
     {
+        if (Row is null)
+            return;
+
         var callback = eventType switch
         {
-            GridButtonEventType.EditButtonClick => Column.OnEditButtonClick,
-            GridButtonEventType.DeleteButtonClick => Column.OnDeleteButtonClick,
-            _ => Column.OnDetailsButtonClick
+            GridButtonEventType.EditButtonClick => Column?.OnEditButtonClick,
+            GridButtonEventType.DeleteButtonClick => Column?.OnDeleteButtonClick,
+            _ => Column?.OnDetailsButtonClick
         };
 
-        if (callback is null) return;
+        if (callback is null)
+            return;
 
         $"EVENT".Log(nameof(CandyGridCell), $"On{eventType}");
-        callback?.Invoke(new GridRowMouseEventArgs(Row, e));
-        Row?.NotifyStateChanged();
+        callback.Invoke(new GridRowMouseEventArgs(Row, e));
+        Row.NotifyStateChanged();
     }
 
     private void RaiseOnCellCheckedChanged(bool isChecked)
     {
+        if (Column is null || Row is null)
+            return;
+
         $"EVENT".Log(nameof(CandyGridCell), nameof(CandyGridColumn.OnCellCheckedChanged));
         Column.OnCellCheckedChanged?.Invoke(new GridCellCheckboxEventArgs(Row, Column, isChecked));
-        Row?.NotifyStateChanged();
+        Row.NotifyStateChanged();
     }
 }

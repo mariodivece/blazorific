@@ -100,7 +100,7 @@ public partial class CandyThemeManager
 
         ThemeNames = await Js.GetThemeNamesAsync();
         CurrentThemeName = IsStorageEnabled
-            ? await Js.StorageGetItemAsync(ThemeStorageKey)
+            ? await Js.StorageGetItemAsync(ThemeStorageKey) ?? string.Empty
             : string.Empty;
         
         if (string.IsNullOrWhiteSpace(CurrentThemeName))

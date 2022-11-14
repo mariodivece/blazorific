@@ -1,21 +1,25 @@
 ﻿@inherits CandyComponentBase
 
-<div class="candyform-formgroup @(UseHorizontalLayout ? "row" : string.Empty)">
-    <label class="@(UseHorizontalLayout ? "col-sm-4 col-form-label text-end" : string.Empty)">
-        @if (UseHelpTooltip && !string.IsNullOrWhiteSpace(HelpText))
-        {
-            <a href="javascript: void(0)" data-bs-toggle="tooltip" data-bs-placement="top" title="@HelpText" @ref="TooltipElement">
-                @Label
-            </a>
-        }
-        else
-        {
-            @Label
-        }
-    </label>
-    <div class="@(UseHorizontalLayout ? "col-sm-8" : string.Empty)">
+<div class="candyform-formgroup @(Layout == Layouts.Horizontal ? "row" : string.Empty)">
 
-        <div class="input-group">
+    @if (Layout is Layouts.Horizontal or Layouts.Vertical)
+    {
+        <label class="@(Layout == Layouts.Horizontal ? "col-sm-4 col-form-label text-end" : string.Empty)">
+            @if (UseHelpTooltip && !string.IsNullOrWhiteSpace(HelpText))
+            {
+                <a href="javascript: void(0)" data-bs-toggle="tooltip" data-bs-placement="top" title="@HelpText" @ref="TooltipElement">
+                    @Label
+                </a>
+            }
+            else
+            {
+                @Label
+            }
+        </label>
+    }
+    <div class="@(Layout == Layouts.Horizontal ? "col-sm-8" : string.Empty)">
+
+        <div class="input-group @SizeCssClass">
             @if (!string.IsNullOrWhiteSpace(PrependIconClass))
             {
                 <span class="input-group-text">
@@ -23,7 +27,17 @@
                 </span>
             }
 
-            @ChildContent
+            @if (Layout == Layouts.Floating)
+            {
+                <div class="form-floating">
+                    @ChildContent
+                    <label>@Label</label>
+                </div>
+            }
+            else
+            {
+                @ChildContent
+            }
 
             @if (!string.IsNullOrWhiteSpace(AppendText))
             {
@@ -33,13 +47,16 @@
             }
         </div>
 
-        @if (!string.IsNullOrWhiteSpace(HelpText) && !UseHelpTooltip)
+        @if (!string.IsNullOrWhiteSpace(HelpText))
         {
-            <div class="w-100">
-                <small class="form-text text-muted">
-                    @HelpText
-                </small>
-            </div>
+            @if (Layout is Layouts.Floating || (!UseHelpTooltip && Layout is Layouts.Horizontal or Layouts.Vertical))
+            {
+                <div class="w-100">
+                    <small class="form-text text-muted">
+                        @HelpText
+                    </small>
+                </div>
+            }
         }
     </div>
 </div>

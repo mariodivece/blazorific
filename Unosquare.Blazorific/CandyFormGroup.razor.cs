@@ -7,6 +7,48 @@
 public partial class CandyFormGroup
 {
     /// <summary>
+    /// Predefined input group sizes.
+    /// </summary>
+    public enum Sizes
+    {
+        /// <summary>
+        /// The small size.
+        /// </summary>
+        Small,
+
+        /// <summary>
+        /// The normal size.
+        /// </summary>
+        Normal,
+
+        /// <summary>
+        /// The large size.
+        /// </summary>
+        Large,
+    }
+
+    /// <summary>
+    /// The render layouts.
+    /// </summary>
+    public enum Layouts
+    {
+        /// <summary>
+        /// The vertical
+        /// </summary>
+        Vertical,
+
+        /// <summary>
+        /// The horizontal
+        /// </summary>
+        Horizontal,
+
+        /// <summary>
+        /// The floating
+        /// </summary>
+        Floating
+    }
+
+    /// <summary>
     /// The tooltip element when tooltips are enabled.
     /// </summary>
     protected ElementReference TooltipElement;
@@ -19,6 +61,15 @@ public partial class CandyFormGroup
     /// </value>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the size.
+    /// </summary>
+    /// <value>
+    /// The size.
+    /// </value>
+    [Parameter]
+    public Sizes Size { get; set; } = Sizes.Normal;
 
     /// <summary>
     /// Gets or sets the label.
@@ -63,7 +114,7 @@ public partial class CandyFormGroup
     ///   <c>true</c> if [use horizontal layout]; otherwise, <c>false</c>.
     /// </value>
     [Parameter]
-    public bool UseHorizontalLayout { get; set; }
+    public Layouts Layout { get; set; } = Layouts.Vertical;
 
     /// <summary>
     /// Gets or sets a value indicating whether [use help tooltip].
@@ -73,6 +124,16 @@ public partial class CandyFormGroup
     /// </value>
     [Parameter]
     public bool UseHelpTooltip { get; set; }
+
+    private string SizeCssClass => Layout is Layouts.Floating
+        ? string.Empty
+        : Size switch
+        {
+            Sizes.Normal => string.Empty,
+            Sizes.Small => "input-group-sm",
+            Sizes.Large => "input-group-lg",
+            _ => string.Empty
+        };
 
     /// <inheridoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)

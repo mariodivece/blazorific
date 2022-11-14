@@ -9,8 +9,6 @@ public class CandyGridColumn : IComponent, IGridDataColumn
 {
     private static readonly int MinSortDirection = Enum.GetValues(typeof(SortDirection)).Cast<int>().Min();
     private static readonly int MaxSortDirection = Enum.GetValues(typeof(SortDirection)).Cast<int>().Max();
-
-    private readonly IPropertyProxy m_Property;
     private bool HasInitialized;
 
     /// <summary>
@@ -26,11 +24,11 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     /// </summary>
     /// <param name="property">The property.</param>
     /// <param name="parent">The parent.</param>
-    internal CandyGridColumn(IPropertyProxy property, CandyGrid parent)
+    internal CandyGridColumn(IPropertyProxy property, CandyGrid? parent)
     {
         // TODO: Create automatic columns from type.
         // Make it smarter
-        m_Property = property;
+        PropertyProxy = property;
         Title = property.PropertyName;
         Field = property.PropertyName;
         IsSortable = true;
@@ -109,7 +107,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     /// The data template.
     /// </value>
     [Parameter]
-    public RenderFragment<GridCellData> DataTemplate { get; set; }
+    public RenderFragment<GridCellData>? DataTemplate { get; set; }
 
     /// <summary>
     /// Gets or sets the header template.
@@ -118,7 +116,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     /// The header template.
     /// </value>
     [Parameter]
-    public RenderFragment<CandyGridColumn> HeaderTemplate { get; set; }
+    public RenderFragment<CandyGridColumn>? HeaderTemplate { get; set; }
 
     /// <summary>
     /// Gets or sets the format string.
@@ -254,7 +252,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     /// The parent.
     /// </value>
     [CascadingParameter(Name = nameof(Parent))]
-    protected CandyGrid Parent { get; set; }
+    protected CandyGrid? Parent { get; set; }
 
     /// <summary>
     /// Gets the property.
@@ -262,7 +260,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     /// <value>
     /// The property.
     /// </value>
-    public IPropertyProxy? Property => m_Property
+    public IPropertyProxy? Property => PropertyProxy
         ?? (string.IsNullOrWhiteSpace(Field) ? null : Parent?.DataAdapter?.DataItemType.Property(Field));
 
     /// <summary>
@@ -273,7 +271,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     /// <summary>
     /// Filter search params.
     /// </summary>
-    public string[]? FilterArgument { get; set; }
+    public string?[] FilterArgument { get; set; } = Array.Empty<string?>();
 
     /// <summary>
     /// Filter operator.
@@ -286,7 +284,15 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     /// <value>
     /// The header component.
     /// </value>
-    internal CandyGridColumnHeader HeaderComponent { get; set; }
+    internal CandyGridColumnHeader? HeaderComponent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the property proxy.
+    /// </summary>
+    /// <value>
+    /// The property proxy.
+    /// </value>
+    private IPropertyProxy? PropertyProxy { get; set; }
 
     /// <summary>
     /// Gets the checked property proxy.
@@ -325,7 +331,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
             : (SortDirection)nextSortDirection;
 
         // Clear the sort order for all columns with no sort direction
-        foreach (var column in Parent.Columns)
+        foreach (var column in Parent?.Columns ?? Array.Empty<CandyGridColumn>())
         {
             column.SortOrder = column.SortDirection != SortDirection.None
                 ? column.SortOrder
@@ -334,7 +340,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
 
         if (multiColumnSorting)
         {
-            SortOrder = SortOrder <= 0
+            SortOrder = SortOrder <= 0 && Parent is not null
                 ? Parent.Columns.Max(c => c.SortOrder) + 1
                 : SortOrder;
         }
@@ -342,7 +348,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
         {
             // Reset sort order and sort direction for all columns
             // except for this one
-            foreach (var column in Parent.Columns)
+            foreach (var column in Parent?.Columns ?? Array.Empty<CandyGridColumn>())
             {
                 if (column == this)
                     continue;
@@ -356,12 +362,13 @@ public class CandyGridColumn : IComponent, IGridDataColumn
 
         // Reorganize sort orders for sorted columns
         var columnSortOrder = 1;
-        var sortedColumns = Parent.Columns.Where(c => c.SortOrder > 0).OrderBy(c => c.SortOrder);
+        var sortedColumns = Parent?.Columns.Where(c => c.SortOrder > 0).OrderBy(c => c.SortOrder).ToList()
+            ?? new List<CandyGridColumn>(new[] { this });
 
         foreach (var column in sortedColumns)
             column.SortOrder = columnSortOrder++;
 
-        Parent.QueueDataUpdate();
+        Parent?.QueueDataUpdate();
     }
 
     /// <summary>
@@ -373,7 +380,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     {
         if (filterOp == CompareOperators.Auto || filterOp == CompareOperators.None || args is null || args.Length <= 0)
         {
-            FilterArgument = null;
+            FilterArgument = Array.Empty<string>();
             FilterText = null;
             FilterOperator = CompareOperators.None;
             Parent?.QueueDataUpdate();
@@ -406,8 +413,11 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     /// <param name="state">The state.</param>
     internal void CoerceState(GridState state)
     {
-        var colState = state.Columns.FirstOrDefault(c => c.Name == Field);
-        if (colState is null) return;
+        var colState = state.Columns?
+            .FirstOrDefault(c => c.Name is not null && c.Name.Equals(Field, StringComparison.CurrentCultureIgnoreCase));
+        
+        if (colState is null)
+            return;
 
         SortDirection = colState.SortDirection;
         SortOrder = colState.SortOrder;
@@ -449,7 +459,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     protected virtual void OnInitialized()
     {
         CheckedPropertyProxy = GetCheckedProperty();
-        Parent.AddColumn(this);
+        Parent?.AddColumn(this);
     }
 
     /// <summary>

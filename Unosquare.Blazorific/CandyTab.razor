@@ -1,6 +1,6 @@
 ﻿@inherits CandyComponentBase
 
-@if (TabSet.Mode == CandyTabMode.Normal)
+@if (TabSet is not null && TabSet.Mode == CandyTabMode.Normal)
 {
     <a href="javascript:void(0)" @ref="HeaderElement"
        class="nav-item nav-link @(IsFirst ? "active" : null)"
@@ -18,7 +18,7 @@ else
             </a>
         </div>
 
-        <div id="@Id" class="collapse @(IsExpanded ? "show" : null)" aria-labelledby="@($"{Id}-tab")" data-parent="@($"#{TabSet.Id}")">
+        <div id="@Id" class="collapse @(IsExpanded ? "show" : null)" aria-labelledby="@($"{Id}-tab")" data-bs-parent="@($"#{TabSet?.Id ?? Extensions.GenerateRandomHtmlId()}")">
             <div class="card-body">
                 @ChildContent
             </div>
@@ -27,6 +27,6 @@ else
 }
 
 @code{
-    bool IsFirst => TabSet.IndexOf(this) == 0;
-    bool IsExpanded => IsFirst && TabSet.Mode != CandyTabMode.AccordionCollapsed;
+    bool IsFirst => (TabSet?.IndexOf(this) ?? 0) == 0;
+    bool IsExpanded => IsFirst && (TabSet?.Mode ?? CandyTabMode.Normal) != CandyTabMode.AccordionCollapsed;
 }

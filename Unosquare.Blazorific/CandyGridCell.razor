@@ -1,7 +1,7 @@
-﻿@if (Row.IsFooter)
+﻿@if (Row!.IsFooter)
 {
     <th class="candygrid-cell @Column.CellCssClass" @attributes="Attributes.Dictionary">
-        @if (Column.DataTemplate is not null)
+        @if (Column!.DataTemplate is not null)
         {
             @Column.DataTemplate(new GridCellData(Row, Column, DataItem))
         }
@@ -23,7 +23,7 @@
 else
 {
     <td class="candygrid-cell @Column.CellCssClass" @attributes="Attributes.Dictionary">
-        @if (Column.DataTemplate is not null)
+        @if (Column!.DataTemplate is not null)
         {
             @Column.DataTemplate(new GridCellData(Row, Column, DataItem))
         }

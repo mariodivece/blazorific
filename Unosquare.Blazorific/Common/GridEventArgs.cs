@@ -10,7 +10,7 @@ public class GridEventArgs : EventArgs
     /// Initializes a new instance of the <see cref="GridEventArgs"/> class.
     /// </summary>
     /// <param name="grid">The grid.</param>
-    public GridEventArgs(CandyGrid grid)
+    public GridEventArgs(CandyGrid? grid)
     {
         Grid = grid;
     }
@@ -21,7 +21,7 @@ public class GridEventArgs : EventArgs
     /// <value>
     /// The grid.
     /// </value>
-    public CandyGrid Grid { get; }
+    public CandyGrid? Grid { get; }
 }
 
 /// <summary>
@@ -97,7 +97,7 @@ public class GridRowMouseEventArgs : GridEventArgs
     /// </summary>
     /// <param name="row">The row.</param>
     /// <param name="mouse">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-    public GridRowMouseEventArgs(CandyGridRow row, MouseEventArgs mouse)
+    public GridRowMouseEventArgs(CandyGridRow? row, MouseEventArgs? mouse)
         : base(row?.Grid)
     {
         Row = row;
@@ -110,7 +110,7 @@ public class GridRowMouseEventArgs : GridEventArgs
     /// <value>
     /// The row.
     /// </value>
-    public CandyGridRow Row { get; }
+    public CandyGridRow? Row { get; }
 
     /// <summary>
     /// Gets the mouse.
@@ -118,7 +118,7 @@ public class GridRowMouseEventArgs : GridEventArgs
     /// <value>
     /// The mouse.
     /// </value>
-    public MouseEventArgs Mouse { get; }
+    public MouseEventArgs? Mouse { get; }
 
     /// <summary>
     /// Gets the data item.
@@ -142,7 +142,7 @@ public class GridCellCheckboxEventArgs : GridEventArgs
     /// <param name="column">The column.</param>
     /// <param name="isChecked">if set to <c>true</c> [is checked].</param>
     public GridCellCheckboxEventArgs(CandyGridRow row, CandyGridColumn column, bool isChecked)
-        : base(row?.Grid)
+        : base(row.Grid)
     {
         IsChecked = isChecked;
         Row = row;

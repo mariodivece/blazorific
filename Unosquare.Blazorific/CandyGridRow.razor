@@ -3,7 +3,7 @@
     <tr @attributes="Attributes.Dictionary"
         @ondblclick="e => RaiseOnBodyRowDoubleClick(e)"
         @onclick="e => RaiseOnBodyRowClick(e)">
-        @foreach (var col in Parent.Columns)
+        @foreach (var col in Parent!.Columns)
         {
             <CascadingValue Name="Column" Value="col">
                 <CandyGridCell />

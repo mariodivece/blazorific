@@ -3,7 +3,7 @@
 /// <summary>
 /// Defines arguments for the show event of modal dialogs.
 /// </summary>
-/// <seealso cref="System.EventArgs" />
+/// <seealso cref="EventArgs" />
 public sealed class ModalShowEventArgs : EventArgs
 {
     /// <summary>

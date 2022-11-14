@@ -11,7 +11,7 @@ public static partial class Extensions
     /// <param name="js">The js.</param>
     /// <param name="key">The key.</param>
     /// <returns></returns>
-    public static async ValueTask StorageRemoveItemAsync(this IJSRuntime js, string key)
+    public static async ValueTask StorageRemoveItemAsync(this IJSRuntime js, string? key)
     {
         if (!string.IsNullOrWhiteSpace(key))
             await js.InvokeVoidAsync("localStorage.removeItem", key);
@@ -23,8 +23,9 @@ public static partial class Extensions
     /// <param name="js">The js.</param>
     /// <param name="key">The key.</param>
     /// <returns></returns>
-    public static async ValueTask<string> StorageGetItemAsync(this IJSRuntime js, string key) =>
-        await js.InvokeAsync<string>("localStorage.getItem", key);
+    public static async ValueTask<string?> StorageGetItemAsync(this IJSRuntime js, string? key) => !string.IsNullOrWhiteSpace(key)
+        ? await js.InvokeAsync<string>("localStorage.getItem", key)
+        : default;
 
     /// <summary>
     /// Storages the set item asynchronous.
@@ -33,8 +34,11 @@ public static partial class Extensions
     /// <param name="key">The key.</param>
     /// <param name="value">The value.</param>
     /// <returns></returns>
-    public static async ValueTask StorageSetItemAsync(this IJSRuntime js, string key, string value) =>
-        await js.InvokeVoidAsync("localStorage.setItem", key, value);
+    public static async ValueTask StorageSetItemAsync(this IJSRuntime js, string? key, string value)
+    {
+        if (!string.IsNullOrWhiteSpace(key))
+            await js.InvokeVoidAsync("localStorage.setItem", key, value);
+    }
 
     /// <summary>
     /// Binds the tooltip asynchronous.

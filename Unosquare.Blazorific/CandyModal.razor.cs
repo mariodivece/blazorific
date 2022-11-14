@@ -6,6 +6,12 @@
 /// <seealso cref="Unosquare.Blazorific.CandyComponentBase" />
 public partial class CandyModal
 {
+    /// <summary>
+    /// Gets or sets the modal element.
+    /// </summary>
+    /// <value>
+    /// The modal element.
+    /// </value>
     protected ElementReference ModalElement { get; set; }
 
     /// <summary>

@@ -139,7 +139,7 @@ public class GridColumnState : IGridDataColumn
     public string? FilterText { get; set; }
 
     /// <inheritdoc />
-    public string[]? FilterArgument { get; set; }
+    public string?[] FilterArgument { get; set; }  = Array.Empty<string>();
 
     /// <inheritdoc />
     public CompareOperators FilterOperator { get; set; }

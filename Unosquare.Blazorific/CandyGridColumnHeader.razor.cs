@@ -225,6 +225,9 @@ public sealed partial class CandyGridColumnHeader
     /// <inheritdoc />
     protected override void OnParametersSet()
     {
+        if (Column is null)
+            return;
+
         Column.HeaderComponent = this;
     }
 
@@ -234,6 +237,7 @@ public sealed partial class CandyGridColumnHeader
         if (!firstRender)
             return;
 
-        await Js.GridBindFilterDropdown(ColumnFilterElement);
+        if (Js is not null)
+            await Js.GridBindFilterDropdown(ColumnFilterElement);
     }
 }

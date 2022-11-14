@@ -1,7 +1,7 @@
 ﻿namespace Unosquare.Blazorific.Common;
 
 /// <summary>
-/// Represents a set of attributes 
+/// Represents a set of HTML attributes. 
 /// </summary>
 public sealed class AttributeDictionary
 {

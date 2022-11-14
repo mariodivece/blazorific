@@ -84,17 +84,17 @@ public class TubularGridDataAdapter : IGridDataAdapter
     /// </summary>
     /// <param name="tubularResponse">The tubular response.</param>
     /// <returns></returns>
-    private GridDataResponse CreateGridDataResponse(TubularGridDataResponse tubularResponse)
+    private GridDataResponse CreateGridDataResponse(TubularGridDataResponse? tubularResponse)
     {
         return new GridDataResponse
         {
-            CurrentPage = tubularResponse.CurrentPage,
+            CurrentPage = tubularResponse?.CurrentPage ?? 0,
             DataItems = ParsePayload(tubularResponse),
             AggregateDataItem = ParseAggregateItem(tubularResponse),
             DataItemType = DataItemType,
-            FilteredRecordCount = tubularResponse.FilteredRecordCount,
-            TotalPages = tubularResponse.TotalPages,
-            TotalRecordCount = tubularResponse.TotalRecordCount
+            FilteredRecordCount = tubularResponse?.FilteredRecordCount ?? 0,
+            TotalPages = tubularResponse?.TotalPages ?? 0,
+            TotalRecordCount = tubularResponse?.TotalRecordCount ?? 0
         };
     }
 
@@ -103,13 +103,12 @@ public class TubularGridDataAdapter : IGridDataAdapter
     /// </summary>
     /// <param name="response">The response.</param>
     /// <returns></returns>
-    private object ParseAggregateItem(TubularGridDataResponse response)
+    private object? ParseAggregateItem(TubularGridDataResponse? response)
     {
-        var payload = response.AggregationPayload;
-
-        if (payload is null || payload.Count <= 0)
+        if (response is null || response.AggregationPayload is null || response.AggregationPayload.Count <= 0)
             return null;
 
+        var payload = response.AggregationPayload;
         var result = DataItemType.CreateInstance();
         var proxies = DataItemType.Properties();
 
@@ -133,13 +132,23 @@ public class TubularGridDataAdapter : IGridDataAdapter
     /// </summary>
     /// <param name="response">The response.</param>
     /// <returns></returns>
-    private ICollection<object> ParsePayload(TubularGridDataResponse response)
+    private ICollection<object> ParsePayload(TubularGridDataResponse? response)
     {
         var result = new List<object>();
-        var props = DataItemType.Properties().Where(t => t.IsFlatType());
+
+        if (response is null || response.Payload is null || DataItemType is null)
+            return result;
+
+        var props = DataItemType.Properties().Where(t => t.IsFlatType()).ToArray();
+
+        if (props.Length == 0)
+            return result;
 
         foreach (var itemData in response.Payload)
         {
+            if (itemData is null)
+                continue;
+
             var valueIndex = 0;
             var targetItem = DataItemType.CreateInstance();
 

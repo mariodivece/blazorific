@@ -100,7 +100,7 @@ public partial class CandyGrid : IDisposable
     /// The candy grid columns.
     /// </value>
     [Parameter]
-    public RenderFragment CandyGridColumns { get; set; }
+    public RenderFragment? CandyGridColumns { get; set; }
 
     /// <summary>
     /// Gets or sets the local storage key.
@@ -189,7 +189,7 @@ public partial class CandyGrid : IDisposable
     /// The empty records template.
     /// </value>
     [Parameter]
-    public RenderFragment<CandyGrid> EmptyRecordsTemplate { get; set; }
+    public RenderFragment<CandyGrid>? EmptyRecordsTemplate { get; set; }
 
     /// <summary>
     /// Gets or sets the toolbar template.
@@ -198,7 +198,7 @@ public partial class CandyGrid : IDisposable
     /// The toolbar template.
     /// </value>
     [Parameter]
-    public RenderFragment<CandyGrid> ToolbarTemplate { get; set; }
+    public RenderFragment<CandyGrid>? ToolbarTemplate { get; set; }
 
     /// <summary>
     /// Gets or sets the emty records text.
@@ -537,7 +537,9 @@ public partial class CandyGrid : IDisposable
         }
 
         $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago (FR: {firstRender})".Log(nameof(CandyGrid), nameof(OnAfterRender));
-        await Js.GridFireOnRendered(RootElement, firstRender);
+
+        if (Js is not null)
+            await Js.GridFireOnRendered(RootElement, firstRender);
 
         if (!firstRender)
             return;

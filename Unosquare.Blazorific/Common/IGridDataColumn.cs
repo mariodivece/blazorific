@@ -48,7 +48,7 @@ public interface IGridDataColumn
     /// <summary>
     /// Filter search params.
     /// </summary>
-    public string[]? FilterArgument { get; }
+    public string?[] FilterArgument { get; }
 
     /// <summary>
     /// Filter operator.
