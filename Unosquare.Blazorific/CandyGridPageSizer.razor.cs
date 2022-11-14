@@ -39,7 +39,7 @@ public partial class CandyGridPageSizer
     /// </value>
     public int PageSize
     {
-        get => PageSizeOptions.Keys.Contains(Parent.PageSize) ? Parent.PageSize : -1;
-        set => Parent.ChangePageSize(value);
+        get => PageSizeOptions.ContainsKey(Parent?.PageSize ?? -1) ? Parent?.PageSize ?? -1 : -1;
+        set => Parent?.ChangePageSize(value);
     }
 }

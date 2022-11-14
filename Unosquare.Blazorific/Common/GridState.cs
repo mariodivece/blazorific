@@ -35,7 +35,7 @@ public class GridState
     /// <value>
     /// The columns.
     /// </value>
-    public IReadOnlyCollection<GridColumnState> Columns { get; set; }
+    public IReadOnlyCollection<GridColumnState>? Columns { get; set; }
 
     /// <summary>
     /// Serializes this instance.

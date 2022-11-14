@@ -186,7 +186,7 @@ public sealed partial class CandyGridColumnHeader
 
     private void OnFilterOptionCheckedChanged(ChangeEventArgs e, string key)
     {
-        var isChecked = (bool)e.Value;
+        var isChecked = e.Value is bool value && value;
         CheckedFilterOptions[key] = isChecked;
     }
 

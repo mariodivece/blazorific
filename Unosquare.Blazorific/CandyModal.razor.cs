@@ -1,68 +1,127 @@
-﻿namespace Unosquare.Blazorific
+﻿namespace Unosquare.Blazorific;
+
+/// <summary>
+/// Represents modal dialog component.
+/// </summary>
+/// <seealso cref="Unosquare.Blazorific.CandyComponentBase" />
+public partial class CandyModal
 {
-    using Microsoft.AspNetCore.Components;
-    using Microsoft.JSInterop;
-    using System.Threading.Tasks;
-    using Common;
+    protected ElementReference ModalElement { get; set; }
 
-    public partial class CandyModal
+    /// <summary>
+    /// Modal dialog sizes.
+    /// </summary>
+    public enum Sizes
     {
-        protected ElementReference ModalElement { get; set; }
+        /// <summary>
+        /// The default
+        /// </summary>
+        Default,
 
-        public enum Sizes
+        /// <summary>
+        /// The small
+        /// </summary>
+        Small,
+
+        /// <summary>
+        /// The large
+        /// </summary>
+        Large,
+
+        /// <summary>
+        /// The extra large
+        /// </summary>
+        ExtraLarge,
+    }
+
+    /// <summary>
+    /// Gets or sets the title.
+    /// </summary>
+    /// <value>
+    /// The title.
+    /// </value>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets the content of the child.
+    /// </summary>
+    /// <value>
+    /// The content of the child.
+    /// </value>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the footer.
+    /// </summary>
+    /// <value>
+    /// The footer.
+    /// </value>
+    [Parameter]
+    public RenderFragment? Footer { get; set; }
+
+    /// <summary>
+    /// Gets or sets the size.
+    /// </summary>
+    /// <value>
+    /// The size.
+    /// </value>
+    [Parameter]
+    public Sizes Size { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this <see cref="CandyModal"/> is center.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if center; otherwise, <c>false</c>.
+    /// </value>
+    [Parameter]
+    public bool Center { get; set; }
+
+    private string OptionsClasses
+    {
+        get
         {
-            Default,
-            Small,
-            Large,
-            ExtraLarge,
-        }
-
-        [Parameter]
-        public string Title { get; set; }
-
-        [Parameter]
-        public RenderFragment ChildContent { get; set; }
-
-        [Parameter]
-        public RenderFragment Footer { get; set; }
-
-        [Parameter]
-        public Sizes Size { get; set; }
-
-        [Parameter]
-        public bool Center { get; set; }
-
-        private string OptionsClasses
-        {
-            get
+            var sizeClass = Size switch
             {
-                var sizeClass = Size switch
-                {
-                    Sizes.Default => string.Empty,
-                    Sizes.ExtraLarge => "modal-xl",
-                    Sizes.Large => "modal-lg",
-                    Sizes.Small => "modal-sam",
-                    _ => string.Empty
-                };
+                Sizes.Default => string.Empty,
+                Sizes.ExtraLarge => "modal-xl",
+                Sizes.Large => "modal-lg",
+                Sizes.Small => "modal-sam",
+                _ => string.Empty
+            };
 
-                return $"{(Center ? "modal-dialog-centered" : string.Empty)} {sizeClass}".Trim();
-            }
+            return $"{(Center ? "modal-dialog-centered" : string.Empty)} {sizeClass}".Trim();
         }
+    }
 
-        public async Task Show() => await Show(null);
+    /// <summary>
+    /// Shows this instance.
+    /// </summary>
+    public async Task Show() => await Show(null);
 
-        public async Task Show(string title)
-        {
-            if (!string.IsNullOrWhiteSpace(title))
-                Title = title;
+    /// <summary>
+    /// Shows the specified title.
+    /// </summary>
+    /// <param name="title">The title.</param>
+    public async Task Show(string? title)
+    {
+        if (!string.IsNullOrWhiteSpace(title))
+            Title = title;
 
+        if (Js is not null)
             await Js.ModalShow(ModalElement);
-            StateHasChanged();
-        }
 
-        public async Task Hide()
-        {
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Hides this instance.
+    /// </summary>
+    public async Task Hide()
+    {
+        if (Js is not null)
             await Js.ModalHide(ModalElement);
-        }
     }
 }

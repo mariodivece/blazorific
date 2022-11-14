@@ -19,6 +19,13 @@ public static partial class Extensions
     public static bool IsFlatType(this ITypeInfo t) =>
         t.BackingType.IsValueType || t.NativeType == typeof(string);
 
+    /// <summary>
+    /// Determines whether [is flat type].
+    /// </summary>
+    /// <param name="t">The t.</param>
+    /// <returns>
+    ///   <c>true</c> if [is flat type] [the specified t]; otherwise, <c>false</c>.
+    /// </returns>
     public static bool IsFlatType(this IPropertyProxy t) =>
         t.PropertyType.IsFlatType();
 
@@ -198,10 +205,10 @@ public static partial class Extensions
             return string.Empty;
 
         if (dataItem is null)
-            return column.EmptyDisplayString;
+            return column.EmptyDisplayString ?? string.Empty;
 
         var columnValue = column.GetColumnValue(dataItem);
-        if (columnValue is null) return column.EmptyDisplayString;
+        if (columnValue is null) return column.EmptyDisplayString ?? string.Empty;
 
         var stringValue = columnValue?.ToString() ?? string.Empty;
         if (!string.IsNullOrWhiteSpace(column.FormatString))

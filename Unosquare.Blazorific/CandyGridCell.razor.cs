@@ -23,6 +23,12 @@ public sealed partial class CandyGridCell : IAttachedComponent, IDisposable
         DeleteButtonClick,
     }
 
+    /// <summary>
+    /// Gets the attributes.
+    /// </summary>
+    /// <value>
+    /// The attributes.
+    /// </value>
     public AttributeDictionary Attributes { get; }
 
     /// <inheridoc />
