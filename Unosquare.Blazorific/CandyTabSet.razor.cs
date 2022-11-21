@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a component that contains <see cref="CandyTab"/> components.
 /// </summary>
-/// <seealso cref="Unosquare.Blazorific.CandyComponentBase" />
+/// <seealso cref="CandyComponentBase" />
 public partial class CandyTabSet
 {
     /// <summary>
@@ -33,6 +33,9 @@ public partial class CandyTabSet
     [Parameter]
     public CandyTabMode Mode { get; set; }
 
+    [Parameter]
+    public Action<TabSetTabEventArgs>? OnTabShown { get; set; }
+
     /// <summary>
     /// Gets the tabs.
     /// </summary>
@@ -40,6 +43,11 @@ public partial class CandyTabSet
     /// The tabs.
     /// </value>
     public IReadOnlyList<CandyTab> Tabs { get; } = new List<CandyTab>();
+
+    /// <summary>
+    /// Gets the active tab.
+    /// </summary>
+    public CandyTab? ActiveTab { get; protected set; }
 
     /// <summary>
     /// Adds the tab.
@@ -67,5 +75,11 @@ public partial class CandyTabSet
     {
         if (string.IsNullOrWhiteSpace(Id))
             Id = Extensions.GenerateRandomHtmlId();
+    }
+
+    internal void RaiseOnTabShownEvent(CandyTab? tab)
+    {
+        ActiveTab = tab;
+        OnTabShown?.Invoke(new(this, tab));
     }
 }

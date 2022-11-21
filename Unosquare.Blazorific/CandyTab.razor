@@ -6,7 +6,7 @@
         <button type="button" @ref="Element"
             class="nav-link @(IsFirst ? "active" : null)"
             id="@($"{Id}-tab")"
-            data-bs-toggle="tab" data-bs-target="@($"#{Id}")" role="tab" aria-controls="@Id" aria-selected="false">
+            data-bs-toggle="tab" data-bs-target="@($"#{Id}")" role="tab" aria-controls="@Id" aria-selected="@IsActive">
             @Title
         </button>
     </li>

@@ -4,8 +4,11 @@
 /// Defines a content tab within a <see cref="CandyTabSet"/>.
 /// </summary>
 /// <seealso cref="CandyComponentBase" />
-public partial class CandyTab
+public partial class CandyTab : IDisposable
 {
+    private DotNetObjectReference<CandyTab>? _JsCandyTab;
+    private bool isDsiposed;
+
     /// <summary>
     /// Gets or sets the tab set.
     /// </summary>
@@ -42,6 +45,19 @@ public partial class CandyTab
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>
+    /// Gets the index of the tab within the parent <see cref="TabSet"/>.
+    /// </summary>
+    public int TabIndex => TabSet?.IndexOf(this) ?? -1;
+
+    /// <summary>
+    /// Gets a value indicating whether this instance is active.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if this instance is active; otherwise, <c>false</c>.
+    /// </value>
+    public bool IsActive => TabSet?.ActiveTab == this;
+
     /// <inheritdoc />
     protected override void OnInitialized()
     {
@@ -51,6 +67,22 @@ public partial class CandyTab
         TabSet?.AddTab(this);
     }
 
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (!firstRender)
+            return;
+
+        _JsCandyTab = DotNetObjectReference.Create(this);
+
+        if (Js is not null)
+            await Js.InvokeVoidAsync($"{nameof(CandyTabSet)}.bindEvents", Element, _JsCandyTab);
+
+        if (IsExpanded)
+            JsHandleShownEvent();
+    }
+
     /// <summary>
     /// Shows this instance.
     /// </summary>
@@ -58,5 +90,34 @@ public partial class CandyTab
     {
         if (Js is not null)
             await Js.TabShow(Element);
+    }
+
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources.
+    /// </summary>
+    /// <param name="alsoManaged"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool alsoManaged)
+    {
+        if (isDsiposed)
+            return;
+
+        isDsiposed = true;
+
+        if (alsoManaged)
+            _JsCandyTab?.Dispose();
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(alsoManaged: true);
+        GC.SuppressFinalize(this);
+    }
+
+    [JSInvokable]
+    public void JsHandleShownEvent()
+    {
+        TabSet?.RaiseOnTabShownEvent(this);
     }
 }

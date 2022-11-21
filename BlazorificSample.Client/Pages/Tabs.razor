@@ -2,7 +2,7 @@
 @page "/tabs"
 
 <div class="container mt-4">
-    <CandyTabSet @ref="TabSet" Mode="CandyTabMode.Normal">
+    <CandyTabSet @ref="TabSet" Mode="CandyTabMode.Normal" OnTabShown="HandleTabShownEvent">
         <CandyTab Title="Theme Selector">
             <div class="row">
                 <div class="col">
@@ -89,7 +89,7 @@
         </CandyTab>
     </CandyTabSet>
 </div>
-
+<div>Active Tab Title: @ActiveTabTitle Tab Index: @ActiveTabIndex</div>
 @code{
     protected CandyTabSet TabSet { get; set; }
 
@@ -99,4 +99,13 @@
     {
         await TabSet.Tabs[tabNumber - 1].Show();
     }
+
+    private void HandleTabShownEvent(TabSetTabEventArgs args)
+    {
+        StateHasChanged();
+    }
+
+    private string ActiveTabTitle => TabSet?.ActiveTab?.Title;
+
+    private int? ActiveTabIndex => TabSet?.ActiveTab?.TabIndex;
 }
