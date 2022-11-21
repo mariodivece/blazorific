@@ -7,14 +7,6 @@
 public partial class CandyTab
 {
     /// <summary>
-    /// Gets or sets the header element.
-    /// </summary>
-    /// <value>
-    /// The header element.
-    /// </value>
-    protected ElementReference HeaderElement { get; set; }
-
-    /// <summary>
     /// Gets or sets the tab set.
     /// </summary>
     /// <value>
@@ -65,6 +57,6 @@ public partial class CandyTab
     public async Task Show()
     {
         if (Js is not null)
-            await Js.TabShow(HeaderElement);
+            await Js.TabShow(Element);
     }
 }

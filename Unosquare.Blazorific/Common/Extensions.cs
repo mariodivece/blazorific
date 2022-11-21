@@ -99,10 +99,10 @@ public static partial class Extensions
     /// <returns></returns>
     internal static IGridDataColumn[] GetGridDataRequestColumns(this CandyGrid grid)
     {
-        if (grid is null || grid.DataAdapter is null)
+        if (grid is null || grid.CoercedDataAdapter is null)
             return Array.Empty<IGridDataColumn>();
 
-        var properties = grid.DataAdapter.DataItemType.Properties().Where(t => t.IsFlatType());
+        var properties = grid.CoercedDataAdapter.DataItemType.Properties().Where(t => t.IsFlatType());
         var result = new List<IGridDataColumn>(properties.Count());
 
         foreach (var property in properties)

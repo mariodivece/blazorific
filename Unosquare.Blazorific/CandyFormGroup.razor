@@ -1,6 +1,6 @@
 ﻿@inherits CandyComponentBase
 
-<div class="candyform-formgroup @(Layout == Layouts.Horizontal ? "row" : string.Empty)">
+<div class="candyform-formgroup @(Layout == Layouts.Horizontal ? "row" : string.Empty)" @ref="Element">
 
     @if (Layout is Layouts.Horizontal or Layouts.Vertical)
     {

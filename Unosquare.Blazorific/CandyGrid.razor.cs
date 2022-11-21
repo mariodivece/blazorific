@@ -73,7 +73,16 @@ public partial class CandyGrid : IDisposable
     /// </value>
     /// <exception cref="System.InvalidOperationException">The {nameof(DataAdapter)} cannot be set to null.</exception>
     [Parameter]
-    public IGridDataAdapter? DataAdapter
+    public IGridDataAdapter? DataAdapter { get; set; }
+
+    /// <summary>
+    /// Gets or sets the coerced value of the <see cref="DataAdapter"/>.
+    /// </summary>
+    /// <value>
+    /// The coerced data adapter.
+    /// </value>
+    /// <exception cref="System.InvalidOperationException">The {nameof(DataAdapter)} cannot be set to null.</exception>
+    internal IGridDataAdapter? CoercedDataAdapter
     {
         get
         {
@@ -250,14 +259,6 @@ public partial class CandyGrid : IDisposable
     public Action<GridExceptionEventArgs>? OnDataLoadFailed { get; set; }
 
     #endregion
-
-    /// <summary>
-    /// Gets or sets the root element.
-    /// </summary>
-    /// <value>
-    /// The root element.
-    /// </value>
-    private ElementReference RootElement { get; set; }
 
     /// <summary>
     /// Gets or sets the search box.
@@ -519,6 +520,13 @@ public partial class CandyGrid : IDisposable
     internal void RemoveRow(CandyGridRow row) => Rows.RemoveAttachedComponent(row);
 
     /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        CoercedDataAdapter = DataAdapter;
+    }
+
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var intervalDuration = LastRenderTime == default
@@ -539,7 +547,7 @@ public partial class CandyGrid : IDisposable
         $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago (FR: {firstRender})".Log(nameof(CandyGrid), nameof(OnAfterRender));
 
         if (Js is not null)
-            await Js.GridFireOnRendered(RootElement, firstRender);
+            await Js.GridFireOnRendered(Element, firstRender);
 
         if (!firstRender)
             return;
@@ -644,15 +652,15 @@ public partial class CandyGrid : IDisposable
     /// </summary>
     private async Task UpdateDataAsync()
     {
-        if (HasRendered && Columns.Count <= 0 && m_DataAdapter is not null)
+        if (HasRendered && Columns.Count <= 0 && CoercedDataAdapter is not null)
         {
             m_Columns.AddRange(
-                GenerateColumnsFromType(m_DataAdapter.DataItemType));
+                GenerateColumnsFromType(CoercedDataAdapter.DataItemType));
         }
 
         try
         {
-            if (m_DataAdapter is null)
+            if (CoercedDataAdapter is null)
             {
                 DataItems = default;
                 PageNumber = default;
@@ -670,7 +678,7 @@ public partial class CandyGrid : IDisposable
             }
 
             Request.UpdateFrom(this);
-            var response = await m_DataAdapter.RetrieveDataAsync(Request);
+            var response = await CoercedDataAdapter.RetrieveDataAsync(Request);
 
             lock (SyncLock)
             {
@@ -691,7 +699,7 @@ public partial class CandyGrid : IDisposable
             await InvokeAsync(() => OnDataLoaded?.Invoke(new GridEventArgs(this)));
 
             if (Js is not null)
-                await Js.GridFireOnDataLoaded(RootElement);
+                await Js.GridFireOnDataLoaded(Element);
         }
         catch (Exception ex)
         {
@@ -707,7 +715,7 @@ public partial class CandyGrid : IDisposable
     private async Task SignalDataLoading()
     {
         if (Js is not null)
-            await Js.GridFireOnDataLoading(RootElement);
+            await Js.GridFireOnDataLoading(Element);
     }
 
     /// <summary>

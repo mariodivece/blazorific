@@ -1,7 +1,7 @@
 ﻿@inherits CandyComponentBase
 <CascadingValue Value="this" Name="Parent">
     @CandyGridColumns
-    <div class="candygrid-container @RootCssClass" @ref="RootElement">
+    <div class="candygrid-container @RootCssClass" @ref="Element">
         <div class="candygrid-overlay" style="display: @(IsLoading ? "block" : "none")">
             <div class="candygrid-overlay-content">
                 <div class="text-center">

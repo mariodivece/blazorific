@@ -2,31 +2,41 @@
 
 @if (TabSet is not null && TabSet.Mode == CandyTabMode.Normal)
 {
-    <a href="javascript:void(0)" @ref="HeaderElement"
-       class="nav-item nav-link @(IsFirst ? "active" : null)"
-       id="@($"{Id}-tab")"
-       data-bs-toggle="tab" data-bs-target="@($"#{Id}")" role="tab" aria-controls="@Id" aria-selected="false">@Title</a>
+    <li class="nav-item" role="presentation">
+        <button type="button" @ref="Element"
+            class="nav-link @(IsFirst ? "active" : null)"
+            id="@($"{Id}-tab")"
+            data-bs-toggle="tab" data-bs-target="@($"#{Id}")" role="tab" aria-controls="@Id" aria-selected="false">
+            @Title
+        </button>
+    </li>
 }
 else
 {
-    <div class="card mb-1">
-        <div class="card-header p-0" id="@($"{Id}-tab")">
-            <a href="javascript:void(0)" @ref="HeaderElement"
-               class="btn btn-link" data-bs-toggle="collapse" data-bs-target="@($"#{Id}")"
-               aria-expanded="@(IsExpanded ? "true" : "false")" aria-controls="@Id">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="@($"{Id}-tab")">
+            <button type="button"
+                class="accordion-button @(IsExpanded ? null : "collapsed")"
+                data-bs-toggle="collapse"
+                data-bs-target="@($"#{Id}")"
+                aria-expanded="@(IsExpanded ? "true" : "false")"
+                aria-controls="@Id">
                 @Title
-            </a>
-        </div>
+            </button>
+        </h2>
 
-        <div id="@Id" class="collapse @(IsExpanded ? "show" : null)" aria-labelledby="@($"{Id}-tab")" data-bs-parent="@($"#{TabSet?.Id ?? Extensions.GenerateRandomHtmlId()}")">
-            <div class="card-body">
+        <div id="@Id" @ref="Element"
+         class="accordion-collapse collapse @(IsExpanded ? "show" : null)"
+         aria-labelledby="@($"{Id}-tab")"
+         data-bs-parent="@($"#{TabSet?.Id ?? Extensions.GenerateRandomHtmlId()}")">
+            <div class="accordion-body">
                 @ChildContent
             </div>
         </div>
     </div>
 }
 
-@code{
+@code {
     bool IsFirst => (TabSet?.IndexOf(this) ?? 0) == 0;
     bool IsExpanded => IsFirst && (TabSet?.Mode ?? CandyTabMode.Normal) != CandyTabMode.AccordionCollapsed;
 }

@@ -7,11 +7,6 @@
 public partial class CandyModal
 {
     /// <summary>
-    /// Gets the modal element.
-    /// </summary>
-    public ElementReference Element { get; protected set; }
-
-    /// <summary>
     /// Modal dialog sizes.
     /// </summary>
     public enum Sizes

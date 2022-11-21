@@ -261,7 +261,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     /// The property.
     /// </value>
     public IPropertyProxy? Property => PropertyProxy
-        ?? (string.IsNullOrWhiteSpace(Field) ? null : Parent?.DataAdapter?.DataItemType.Property(Field));
+        ?? (string.IsNullOrWhiteSpace(Field) ? null : Parent?.CoercedDataAdapter?.DataItemType.Property(Field));
 
     /// <summary>
     /// Filter search text.
@@ -469,7 +469,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     private IPropertyProxy? GetCheckedProperty()
     {
         var checkedProxy = !string.IsNullOrWhiteSpace(CheckedProperty)
-            ? Parent?.DataAdapter?.DataItemType.Property(CheckedProperty)
+            ? Parent?.CoercedDataAdapter?.DataItemType.Property(CheckedProperty)
             : null;
 
         if (checkedProxy is null || checkedProxy.PropertyType.BackingType.NativeType != typeof(bool))

@@ -30,6 +30,11 @@ public abstract class CandyComponentBase : ComponentBase
     public CandyThemeManager? ThemeManager { get; private set; }
 
     /// <summary>
+    /// Gets or sets the root element of this component.
+    /// </summary>
+    public ElementReference Element { get; protected set; }
+
+    /// <summary>
     /// Gets the absolute URL of the given Blazorific asset file.
     /// </summary>
     /// <param name="assetFile">The asset file name.</param>
