@@ -7,12 +7,9 @@
 public partial class CandyModal
 {
     /// <summary>
-    /// Gets or sets the modal element.
+    /// Gets the modal element.
     /// </summary>
-    /// <value>
-    /// The modal element.
-    /// </value>
-    protected ElementReference ModalElement { get; set; }
+    public ElementReference Element { get; protected set; }
 
     /// <summary>
     /// Modal dialog sizes.
@@ -117,7 +114,7 @@ public partial class CandyModal
             Title = title;
 
         if (Js is not null)
-            await Js.ModalShow(ModalElement);
+            await Js.ModalShow(Element);
 
         StateHasChanged();
     }
@@ -128,6 +125,6 @@ public partial class CandyModal
     public async Task Hide()
     {
         if (Js is not null)
-            await Js.ModalHide(ModalElement);
+            await Js.ModalHide(Element);
     }
 }
