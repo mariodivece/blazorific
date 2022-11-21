@@ -247,7 +247,7 @@ public partial class CandyGrid : IDisposable
     /// The on data loaded.
     /// </value>
     [Parameter]
-    public Action<GridEventArgs>? OnDataLoaded { get; set; }
+    public Action<CandyEventArgs<CandyGrid>>? OnDataLoaded { get; set; }
 
     /// <summary>
     /// Gets or sets the on data load failed.
@@ -696,7 +696,7 @@ public partial class CandyGrid : IDisposable
             }
 
             await SaveState();
-            await InvokeAsync(() => OnDataLoaded?.Invoke(new GridEventArgs(this)));
+            await InvokeAsync(() => OnDataLoaded?.Invoke(new CandyEventArgs<CandyGrid>(this)));
 
             if (Js is not null)
                 await Js.GridFireOnDataLoaded(Element);

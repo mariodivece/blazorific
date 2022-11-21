@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents modal dialog component.
 /// </summary>
-/// <seealso cref="Unosquare.Blazorific.CandyComponentBase" />
+/// <seealso cref="CandyComponentBase" />
 public partial class CandyModal
 {
     /// <summary>
@@ -77,6 +77,30 @@ public partial class CandyModal
     [Parameter]
     public bool Center { get; set; }
 
+    /// <summary>
+    /// Gets or sets the on shown action.
+    /// </summary>
+    [Parameter]
+    public Action<CandyEventArgs<CandyModal>>? OnShown { get; set; }
+
+    /// <summary>
+    /// Gets or sets the on hidden action.
+    /// </summary>
+    [Parameter]
+    public Action<CandyEventArgs<CandyModal>>? OnHidden { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (!firstRender)
+            return;
+
+        if (Js is not null)
+            await Js.InvokeVoidAsync($"{nameof(CandyModal)}.bindEvents", Element, JsElement);
+    }
+
     private string OptionsClasses
     {
         get
@@ -121,5 +145,23 @@ public partial class CandyModal
     {
         if (Js is not null)
             await Js.ModalHide(Element);
+    }
+
+    /// <summary>
+    /// Called from Javascript when the event occurs.
+    /// </summary>
+    [JSInvokable]
+    public void JsHandleShownEvent()
+    {
+        OnShown?.Invoke(new(this));
+    }
+
+    /// <summary>
+    /// Called from Javascript when the event occurs.
+    /// </summary>
+    [JSInvokable]
+    public void JsHandleHiddenEvent()
+    {
+        OnHidden?.Invoke(new(this));
     }
 }

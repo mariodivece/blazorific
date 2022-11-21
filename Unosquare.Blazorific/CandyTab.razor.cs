@@ -4,11 +4,8 @@
 /// Defines a content tab within a <see cref="CandyTabSet"/>.
 /// </summary>
 /// <seealso cref="CandyComponentBase" />
-public partial class CandyTab : IDisposable
+public partial class CandyTab
 {
-    private DotNetObjectReference<CandyTab>? _JsCandyTab;
-    private bool isDsiposed;
-
     /// <summary>
     /// Gets or sets the tab set.
     /// </summary>
@@ -70,14 +67,12 @@ public partial class CandyTab : IDisposable
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        base.OnAfterRender(firstRender);
+        await base.OnAfterRenderAsync(firstRender);
         if (!firstRender)
             return;
 
-        _JsCandyTab = DotNetObjectReference.Create(this);
-
         if (Js is not null)
-            await Js.InvokeVoidAsync($"{nameof(CandyTabSet)}.bindEvents", Element, _JsCandyTab);
+            await Js.InvokeVoidAsync($"{nameof(CandyTabSet)}.bindEvents", Element, JsElement);
 
         if (IsExpanded)
             JsHandleShownEvent();
@@ -92,29 +87,10 @@ public partial class CandyTab : IDisposable
             await Js.TabShow(Element);
     }
 
+
     /// <summary>
-    /// Releases unmanaged and - optionally - managed resources.
+    /// Called from Javascript when the event occurs.
     /// </summary>
-    /// <param name="alsoManaged"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-    protected virtual void Dispose(bool alsoManaged)
-    {
-        if (isDsiposed)
-            return;
-
-        isDsiposed = true;
-
-        if (alsoManaged)
-            _JsCandyTab?.Dispose();
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(alsoManaged: true);
-        GC.SuppressFinalize(this);
-    }
-
     [JSInvokable]
     public void JsHandleShownEvent()
     {

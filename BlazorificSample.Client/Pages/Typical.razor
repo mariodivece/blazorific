@@ -43,7 +43,9 @@
     </CandyGrid>
 </div>
 
-<CandyModal @ref="TestDialog" Title="Hey There!" Size="CandyModal.Sizes.Large" Center="false">
+<CandyModal @ref="TestDialog" Title="Hey There!" Size="CandyModal.Sizes.Large" Center="false"
+    OnShown='(e) => Console.WriteLine("Modal was shown")'
+    OnHidden='(e) => Console.WriteLine("Modal was hidden")'>
     <ChildContent>
         <div>This is some sample content!</div>
     </ChildContent>

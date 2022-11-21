@@ -42,3 +42,57 @@ public abstract class CandyComponentBase : ComponentBase
     public string? AssetUrl(string assetFile) =>
         Navigation?.ToAbsoluteUri($"/_content/{nameof(Unosquare)}.{nameof(Blazorific)}/{assetFile}").ToString();
 }
+
+/// <summary>
+/// Base class for which Js Invokable methods can be called from javascript code.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <seealso cref="CandyComponentBase" />
+/// <seealso cref="IDisposable" />
+public abstract class JsCandyComponentBase<T> : CandyComponentBase, IDisposable
+    where T : CandyComponentBase
+{
+    private bool isDsiposed;
+
+    /// <summary>
+    /// Gets the js element that can be called from javascript code.
+    /// </summary>
+    public virtual DotNetObjectReference<JsCandyComponentBase<T>>? JsElement { get; private set; }
+
+    /// <inheritdoc />
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        if (!firstRender)
+            return;
+
+        JsElement = DotNetObjectReference.Create(this);
+    }
+
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources.
+    /// </summary>
+    /// <param name="alsoManaged"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool alsoManaged)
+    {
+        if (isDsiposed)
+            return;
+
+        isDsiposed = true;
+
+        if (alsoManaged)
+        {
+            JsElement?.Dispose();
+            JsElement = null;
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(alsoManaged: true);
+        GC.SuppressFinalize(this);
+    }
+}

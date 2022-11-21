@@ -1,34 +1,9 @@
 ﻿namespace Unosquare.Blazorific.Common;
 
 /// <summary>
-/// Defines a basic class for grid event arguments.
-/// </summary>
-/// <seealso cref="System.EventArgs" />
-public class GridEventArgs : EventArgs
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GridEventArgs"/> class.
-    /// </summary>
-    /// <param name="grid">The grid.</param>
-    public GridEventArgs(CandyGrid? grid)
-    {
-        Grid = grid;
-    }
-
-    /// <summary>
-    /// Gets the grid.
-    /// </summary>
-    /// <value>
-    /// The grid.
-    /// </value>
-    public CandyGrid? Grid { get; }
-}
-
-/// <summary>
 /// Defines the arguments for a change of state in a grid.
 /// </summary>
-/// <seealso cref="GridEventArgs" />
-public class GridStateEventArgs : GridEventArgs
+public class GridStateEventArgs : CandyEventArgs<CandyGrid>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="GridStateEventArgs"/> class.
@@ -63,8 +38,7 @@ public class GridStateEventArgs : GridEventArgs
 /// <summary>
 /// Provides a class with arguments for grid exception events.
 /// </summary>
-/// <seealso cref="GridEventArgs" />
-public class GridExceptionEventArgs : GridEventArgs
+public class GridExceptionEventArgs : CandyEventArgs<CandyGrid>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="GridExceptionEventArgs"/> class.
@@ -89,8 +63,7 @@ public class GridExceptionEventArgs : GridEventArgs
 /// <summary>
 /// Provides event arguments for mouse events on the grid.
 /// </summary>
-/// <seealso cref="GridEventArgs" />
-public class GridRowMouseEventArgs : GridEventArgs
+public class GridRowMouseEventArgs : CandyEventArgs<CandyGrid>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="GridRowMouseEventArgs"/> class.
@@ -132,8 +105,7 @@ public class GridRowMouseEventArgs : GridEventArgs
 /// <summary>
 /// Provides event arguments for checkbox events on the grid.
 /// </summary>
-/// <seealso cref="GridEventArgs" />
-public class GridCellCheckboxEventArgs : GridEventArgs
+public class GridCellCheckboxEventArgs : CandyEventArgs<CandyGrid>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="GridCellCheckboxEventArgs"/> class.

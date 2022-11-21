@@ -27,12 +27,12 @@ public partial class CandyTabSet
     /// <summary>
     /// Gets or sets the mode.
     /// </summary>
-    /// <value>
-    /// The mode.
-    /// </value>
     [Parameter]
     public CandyTabMode Mode { get; set; }
 
+    /// <summary>
+    /// Gets or sets the on tab shown action.
+    /// </summary>
     [Parameter]
     public Action<TabSetTabEventArgs>? OnTabShown { get; set; }
 
