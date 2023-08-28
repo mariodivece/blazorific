@@ -35,6 +35,11 @@ public abstract class CandyComponentBase : ComponentBase
     public ElementReference Element { get; protected set; }
 
     /// <summary>
+    /// Determines if the component is running under the WebAssembly Runtime.
+    /// </summary>
+    public bool IsWasmRuntime => Js is not null && Js is IJSInProcessRuntime;
+
+    /// <summary>
     /// Gets the absolute URL of the given Blazorific asset file.
     /// </summary>
     /// <param name="assetFile">The asset file name.</param>

@@ -6,6 +6,8 @@
 /// <seealso cref="ComponentBase" />
 public partial class CandyThemeManager
 {
+    private bool _isInitialized;
+
     /// <summary>
     /// The default theme storage key
     /// </summary>
@@ -48,6 +50,11 @@ public partial class CandyThemeManager
     public string DefaultThemeName { get; set; } = "Default";
 
     /// <summary>
+    /// Determines if the component is running under the WebAssembly Runtime.
+    /// </summary>
+    public bool IsWasmRuntime => Js is not null && Js is IJSInProcessRuntime;
+
+    /// <summary>
     /// Gets the theme names.
     /// </summary>
     /// <value>
@@ -80,11 +87,11 @@ public partial class CandyThemeManager
         if (Js is null)
             return;
 
-        await Js.ApplyThemeAsync(themeName);
-        CurrentThemeName = await Js.GetCurrentThemeNameAsync();
+        await Js.ApplyThemeAsync(themeName).ConfigureAwait(false);
+        CurrentThemeName = await Js.GetCurrentThemeNameAsync().ConfigureAwait(false);
 
         if (IsStorageEnabled)
-            await Js.StorageSetItemAsync(ThemeStorageKey!, CurrentThemeName);
+            await Js.StorageSetItemAsync(ThemeStorageKey!, CurrentThemeName).ConfigureAwait(false);
 
         $"Current theme changed to '{CurrentThemeName}'"
             .Log(nameof(CandyThemeManager), nameof(OnInitializedAsync));
@@ -93,25 +100,45 @@ public partial class CandyThemeManager
     }
 
     /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // if we are in Wasm, we don't need to call this as it is called under OnInitializedAsync
+        if (!IsWasmRuntime && firstRender)
+            await InitializeAsync().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
+        // for WASM apps this is the one that should be called
+        if (IsWasmRuntime)
+            await InitializeAsync().ConfigureAwait(false);
+    }
+
+    private async Task InitializeAsync()
+    {
+        if (_isInitialized)
+            return;
+
         if (Js is null)
             return;
 
-        ThemeNames = await Js.GetThemeNamesAsync();
+        ThemeNames = await Js.GetThemeNamesAsync().ConfigureAwait(false);
         CurrentThemeName = IsStorageEnabled
-            ? await Js.StorageGetItemAsync(ThemeStorageKey) ?? string.Empty
+            ? await Js.StorageGetItemAsync(ThemeStorageKey).ConfigureAwait(false) ?? string.Empty
             : string.Empty;
-        
+
         if (string.IsNullOrWhiteSpace(CurrentThemeName))
             CurrentThemeName = DefaultThemeName;
 
         if (IsStorageEnabled)
-            await Js.StorageSetItemAsync(ThemeStorageKey, CurrentThemeName);
-        
-        await Js.ApplyThemeAsync(CurrentThemeName);
+            await Js.StorageSetItemAsync(ThemeStorageKey, CurrentThemeName).ConfigureAwait(false);
+
+        await Js.ApplyThemeAsync(CurrentThemeName).ConfigureAwait(false);
 
         $"Loaded {ThemeNames?.Count} themes. Current Theme: {CurrentThemeName}"
             .Log(nameof(CandyThemeManager), nameof(OnInitializedAsync));
+
+        _isInitialized = true;
     }
 }

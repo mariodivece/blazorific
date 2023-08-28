@@ -9,12 +9,11 @@
         themeElement: null,
 
         scriptFiles: [
-            CandyAppConstants.contentBaseUrl + "jquery/jquery-3.6.1.min.js",
+            CandyAppConstants.contentBaseUrl + "jquery/jquery-3.7.1.min.js",
             CandyAppConstants.contentBaseUrl + "bootstrap/bootstrap.bundle.min.js",
             CandyAppConstants.contentBaseUrl + "candygrid.js",
             CandyAppConstants.contentBaseUrl + "candymodal.js",
-            CandyAppConstants.contentBaseUrl + "candytabset.js",
-            "/_framework/blazor.webassembly.js"
+            CandyAppConstants.contentBaseUrl + "candytabset.js"
         ],
 
         styleFiles: [
@@ -58,16 +57,38 @@
         hasLoaded: false,
 
         initialize: function () {
+
+            var defaultOptions = {
+                isWasm: true
+            };
+
+            if (!window.CandyAppOptions) {
+                window.CandyAppOptions = defaultOptions;
+            } else {
+                Object.assign(defaultOptions, window.CandyAppOptions);
+                window.CandyAppOptions = defaultOptions;
+            }
+
+            if (window.CandyAppOptions.isWasm === true) {
+                CandyAppLoader.scriptFiles.push("/_framework/blazor.webassembly.js");
+            }
+
             window.addEventListener('DOMContentLoaded', CandyAppLoader.__loadResources);
         },
 
         hideApp: function () {
             var appElement = document.getElementById("app");
+            if (!appElement)
+                return;
+
             appElement.style.display = "none";
         },
 
         showApp: function () {
             var appElement = document.getElementById("app");
+            if (!appElement)
+                return;
+
             appElement.style.display = "";
         },
 
@@ -93,8 +114,9 @@
             var scriptEl = document.createElement('script');
             scriptEl.setAttribute('src', CandyAppLoader.scriptFiles[scriptIndex]);
             scriptEl.setAttribute('type', 'text/javascript');
+            var continueLoading = scriptIndex + 1 < CandyAppLoader.scriptFiles.length;
 
-            if (scriptIndex + 1 < CandyAppLoader.scriptFiles.length) {
+            if (continueLoading) {
                 scriptEl.onload = function () { CandyAppLoader.__loadScriptChain(scriptIndex + 1); };
             } else {
                 scriptEl.onload = function () {
@@ -183,9 +205,9 @@
             navigator.clipboard.writeText(text).then(function () {
                 if (message) alert(message);
             })
-            .catch(function (error) {
-                alert(error);
-            });
+                .catch(function (error) {
+                    alert(error);
+                });
         },
     };
 
