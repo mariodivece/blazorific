@@ -51,7 +51,7 @@ public partial class CandyFormGroup
     /// <summary>
     /// The tooltip element when tooltips are enabled.
     /// </summary>
-    protected ElementReference TooltipElement;
+    protected ElementReference TooltipElement { get; set; }
 
     /// <summary>
     /// Gets or sets the content of the child.
@@ -144,6 +144,6 @@ public partial class CandyFormGroup
         if (Js is null)
             return;
 
-        await Js.BindTooltipAsync(TooltipElement!);
+        await Js.BindTooltipAsync(TooltipElement!).ConfigureAwait(false);
     }
 }

@@ -46,7 +46,7 @@ public partial class CandyGrid : IDisposable
             try
             {
                 if (pendingDataUpdates > 0 && !IsDisposed)
-                    await UpdateDataAsync();
+                    await UpdateDataAsync().ConfigureAwait(false);
             }
             finally
             {
@@ -482,7 +482,7 @@ public partial class CandyGrid : IDisposable
     public async Task ResetState()
     {
         if (Js is not null && !string.IsNullOrWhiteSpace(LocalStorageKey))
-            await Js.StorageRemoveItemAsync(LocalStorageKey);
+            await Js.StorageRemoveItemAsync(LocalStorageKey).ConfigureAwait(false);
 
         var state = GridState.CreateDefault(this);
         CoerceGridState(state);
@@ -540,14 +540,14 @@ public partial class CandyGrid : IDisposable
             foreach (var col in Columns)
             {
                 if (col.HeaderComponent is not null)
-                    await col.HeaderComponent.RefreshFilterState();
+                    await col.HeaderComponent.RefreshFilterState().ConfigureAwait(false);
             }
         }
 
         $"Current: {currentRenderTime} Previous: {intervalDuration} ms. ago (FR: {firstRender})".Log(nameof(CandyGrid), nameof(OnAfterRender));
 
         if (Js is not null)
-            await Js.GridFireOnRendered(Element, firstRender);
+            await Js.GridFireOnRendered(Element, firstRender).ConfigureAwait(false);
 
         if (!firstRender)
             return;
@@ -580,12 +580,14 @@ public partial class CandyGrid : IDisposable
     /// <returns></returns>
     private CandyGridColumn[] GenerateColumnsFromType(Type t)
     {
-        var proxies = t.Properties().Where(t => t.IsFlatType());
-        var result = new List<CandyGridColumn>(proxies.Count());
+        var proxies = t.Properties().Where(t => t.IsFlatType()).ToArray();
+        if (proxies is null || proxies.Length == 0) return [];
+
+        var result = new List<CandyGridColumn>(proxies.Length);
         foreach (var proxy in proxies)
             result.Add(new CandyGridColumn(proxy, this));
 
-        return result.ToArray();
+        return [.. result];
     }
 
     /// <summary>
@@ -614,7 +616,7 @@ public partial class CandyGrid : IDisposable
         if (string.IsNullOrWhiteSpace(LocalStorageKey) || Js is null)
             return;
 
-        var json = await Js.StorageGetItemAsync(LocalStorageKey);
+        var json = await Js.StorageGetItemAsync(LocalStorageKey).ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(json))
             return;
 
@@ -626,7 +628,7 @@ public partial class CandyGrid : IDisposable
         catch (Exception ex)
         {
             $"Unable to deserialize state. {ex.Message}".Log(nameof(CandyGrid), nameof(LoadState));
-            await Js.StorageRemoveItemAsync(LocalStorageKey);
+            await Js.StorageRemoveItemAsync(LocalStorageKey).ConfigureAwait(false);
         }
 
         if (state is null)
@@ -644,7 +646,7 @@ public partial class CandyGrid : IDisposable
             return;
 
         var json = GridState.FromGrid(this, Request).Serialize();
-        await Js.StorageSetItemAsync(LocalStorageKey, json);
+        await Js.StorageSetItemAsync(LocalStorageKey, json).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -673,12 +675,12 @@ public partial class CandyGrid : IDisposable
 
             if (!HasLoadedState)
             {
-                await LoadState();
+                await LoadState().ConfigureAwait(false);
                 HasLoadedState = true;
             }
 
             Request.UpdateFrom(this);
-            var response = await CoercedDataAdapter.RetrieveDataAsync(Request);
+            var response = await CoercedDataAdapter.RetrieveDataAsync(Request).ConfigureAwait(false);
 
             lock (SyncLock)
             {
@@ -695,16 +697,16 @@ public partial class CandyGrid : IDisposable
                     : response.CurrentPage;
             }
 
-            await SaveState();
-            await InvokeAsync(() => OnDataLoaded?.Invoke(new CandyEventArgs<CandyGrid>(this)));
+            await SaveState().ConfigureAwait(false);
+            await InvokeAsync(() => OnDataLoaded?.Invoke(new CandyEventArgs<CandyGrid>(this))).ConfigureAwait(false);
 
             if (Js is not null)
-                await Js.GridFireOnDataLoaded(Element);
+                await Js.GridFireOnDataLoaded(Element).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             $"Failed to update. {ex.Message} - {ex.StackTrace}".Log(nameof(CandyGrid), nameof(UpdateDataAsync));
-            await InvokeAsync(() => OnDataLoadFailed?.Invoke(new GridExceptionEventArgs(this, ex)));
+            await InvokeAsync(() => OnDataLoadFailed?.Invoke(new GridExceptionEventArgs(this, ex))).ConfigureAwait(false);
         }
     }
 
@@ -715,7 +717,7 @@ public partial class CandyGrid : IDisposable
     private async Task SignalDataLoading()
     {
         if (Js is not null)
-            await Js.GridFireOnDataLoading(Element);
+            await Js.GridFireOnDataLoading(Element).ConfigureAwait(false);
     }
 
     /// <summary>

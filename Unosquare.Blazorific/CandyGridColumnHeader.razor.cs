@@ -151,7 +151,7 @@ public sealed partial class CandyGridColumnHeader
     internal async Task RefreshFilterState()
     {
         if (Column?.FilterOptionsProvider is not null)
-            FilterOptions = await Column.FilterOptionsProvider.Invoke();
+            FilterOptions = await Column.FilterOptionsProvider.Invoke().ConfigureAwait(false);
 
         CoerceFilterState();
         StateHasChanged();
@@ -212,7 +212,7 @@ public sealed partial class CandyGridColumnHeader
         if (FilterOperator != CompareOperators.Multiple)
             return;
 
-        var checkedOptions = Column?.FilterArgument ?? Array.Empty<string>();
+        var checkedOptions = Column?.FilterArgument ?? [];
         foreach (var key in checkedOptions)
         {
             if (string.IsNullOrWhiteSpace(key))
@@ -238,6 +238,6 @@ public sealed partial class CandyGridColumnHeader
             return;
 
         if (Js is not null)
-            await Js.GridBindFilterDropdown(ColumnFilterElement);
+            await Js.GridBindFilterDropdown(ColumnFilterElement).ConfigureAwait(false);
     }
 }

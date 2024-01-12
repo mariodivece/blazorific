@@ -44,8 +44,8 @@ public class TubularGridDataAdapter : IGridDataAdapter
     /// <returns></returns>
     public async Task<GridDataResponse> RetrieveDataAsync(GridDataRequest request)
     {
-        using var httpResponse = await RetrieveResponseAsync(RequestUrl, request);
-        return await ProcessResponseAsync(httpResponse);
+        using var httpResponse = await RetrieveResponseAsync(RequestUrl, request).ConfigureAwait(false);
+        return await ProcessResponseAsync(httpResponse).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public class TubularGridDataAdapter : IGridDataAdapter
     protected virtual async Task<HttpResponseMessage> RetrieveResponseAsync(string requestUrl, GridDataRequest request)
     {
         var requestContent = SerializeRequest(request);
-        return await Client.PostAsync(requestUrl, requestContent);
+        return await Client.PostAsync(requestUrl, requestContent).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public class TubularGridDataAdapter : IGridDataAdapter
     /// <returns></returns>
     protected virtual async Task<GridDataResponse> ProcessResponseAsync(HttpResponseMessage httpResponse)
     {
-        var responseJson = await httpResponse.Content.ReadAsStringAsync();
+        var responseJson = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
         var response = responseJson.DeserializeJson<TubularGridDataResponse>();
         return CreateGridDataResponse(response);
     }

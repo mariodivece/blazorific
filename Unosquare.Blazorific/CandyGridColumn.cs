@@ -271,7 +271,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     /// <summary>
     /// Filter search params.
     /// </summary>
-    public string?[] FilterArgument { get; set; } = Array.Empty<string?>();
+    public string?[] FilterArgument { get; set; } = [];
 
     /// <summary>
     /// Filter operator.
@@ -380,7 +380,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
     {
         if (filterOp == CompareOperators.Auto || filterOp == CompareOperators.None || args is null || args.Length <= 0)
         {
-            FilterArgument = Array.Empty<string>();
+            FilterArgument = [];
             FilterText = null;
             FilterOperator = CompareOperators.None;
             Parent?.QueueDataUpdate();
@@ -401,7 +401,7 @@ public class CandyGridColumn : IComponent, IGridDataColumn
             for (var i = 1; i < args.Length; i++)
                 arguments.Add(args[i]!);
 
-            FilterArgument = arguments.ToArray();
+            FilterArgument = [.. arguments];
         }
 
         Parent?.QueueDataUpdate();

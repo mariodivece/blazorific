@@ -14,7 +14,7 @@ public static partial class Extensions
     public static async ValueTask StorageRemoveItemAsync(this IJSRuntime js, string? key)
     {
         if (!string.IsNullOrWhiteSpace(key))
-            await js.InvokeVoidAsync("localStorage.removeItem", key);
+            await js.InvokeVoidAsync("localStorage.removeItem", key).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -24,7 +24,7 @@ public static partial class Extensions
     /// <param name="key">The key.</param>
     /// <returns></returns>
     public static async ValueTask<string?> StorageGetItemAsync(this IJSRuntime js, string? key) => !string.IsNullOrWhiteSpace(key)
-        ? await js.InvokeAsync<string>("localStorage.getItem", key)
+        ? await js.InvokeAsync<string>("localStorage.getItem", key).ConfigureAwait(false)
         : default;
 
     /// <summary>
@@ -37,7 +37,7 @@ public static partial class Extensions
     public static async ValueTask StorageSetItemAsync(this IJSRuntime js, string? key, string value)
     {
         if (!string.IsNullOrWhiteSpace(key))
-            await js.InvokeVoidAsync("localStorage.setItem", key, value);
+            await js.InvokeVoidAsync("localStorage.setItem", key, value).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ public static partial class Extensions
         if (string.IsNullOrWhiteSpace(element.Id))
             return;
 
-        await js.InvokeVoidAsync($"CandyApp.bindTooltip", element);
+        await js.InvokeVoidAsync($"CandyApp.bindTooltip", element).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -61,7 +61,7 @@ public static partial class Extensions
     /// <returns></returns>
     public static async ValueTask<ICollection<string>> GetThemeNamesAsync(this IJSRuntime js)
     {
-        var result = await js.InvokeAsync<string[]>($"CandyApp.getThemeNames");
+        var result = await js.InvokeAsync<string[]>($"CandyApp.getThemeNames").ConfigureAwait(false);
         return result;
     }
 
@@ -72,7 +72,7 @@ public static partial class Extensions
     /// <param name="themeName">Name of the theme.</param>
     /// <returns></returns>
     public static async ValueTask ApplyThemeAsync(this IJSRuntime js, string themeName) =>
-        await js.InvokeVoidAsync($"CandyApp.applyTheme", themeName);
+        await js.InvokeVoidAsync($"CandyApp.applyTheme", themeName).ConfigureAwait(false);
 
     /// <summary>
     /// Copies to clipboard asynchronous.
@@ -82,7 +82,7 @@ public static partial class Extensions
     /// <param name="alertMessage">The alert message.</param>
     /// <returns></returns>
     public static async ValueTask CopyToClipboardAsync(this IJSRuntime js, string text, string? alertMessage = default) =>
-        await js.InvokeVoidAsync($"CandyApp.copyToClipboard", text, alertMessage!);
+        await js.InvokeVoidAsync($"CandyApp.copyToClipboard", text, alertMessage!).ConfigureAwait(false);
 
     /// <summary>
     /// Focuses the element asynchronous.
@@ -91,7 +91,7 @@ public static partial class Extensions
     /// <param name="element">The element.</param>
     /// <returns></returns>
     public static async ValueTask FocusElementAsync(this IJSRuntime js, ElementReference element) =>
-        await js.InvokeVoidAsync($"CandyApp.focusElement", element);
+        await js.InvokeVoidAsync($"CandyApp.focusElement", element).ConfigureAwait(false);
 
     /// <summary>
     /// Gets the current theme name asynchronous.
@@ -99,7 +99,7 @@ public static partial class Extensions
     /// <param name="js">The js.</param>
     /// <returns></returns>
     public static async ValueTask<string> GetCurrentThemeNameAsync(this IJSRuntime js) =>
-        await js.InvokeAsync<string>($"CandyApp.getCurrentThemeName");
+        await js.InvokeAsync<string>($"CandyApp.getCurrentThemeName").ConfigureAwait(false);
 
     /// <summary>
     /// Grids the fire on rendered.
@@ -109,7 +109,7 @@ public static partial class Extensions
     /// <param name="firstRender">if set to <c>true</c> [first render].</param>
     /// <returns></returns>
     internal static async ValueTask GridFireOnRendered(this IJSRuntime js, ElementReference rootElement, bool firstRender) =>
-        await js.InvokeVoidAsync($"{nameof(CandyGrid)}.onRendered", rootElement, firstRender);
+        await js.InvokeVoidAsync($"{nameof(CandyGrid)}.onRendered", rootElement, firstRender).ConfigureAwait(false);
 
     /// <summary>
     /// Grids the fire on data loading.
@@ -118,7 +118,7 @@ public static partial class Extensions
     /// <param name="rootElement">The root element.</param>
     /// <returns></returns>
     internal static async ValueTask GridFireOnDataLoading(this IJSRuntime js, ElementReference rootElement) =>
-        await js.InvokeVoidAsync($"{nameof(CandyGrid)}.onDataLoading", rootElement);
+        await js.InvokeVoidAsync($"{nameof(CandyGrid)}.onDataLoading", rootElement).ConfigureAwait(false);
 
     /// <summary>
     /// Grids the fire on data loaded.
@@ -127,7 +127,7 @@ public static partial class Extensions
     /// <param name="rootElement">The root element.</param>
     /// <returns></returns>
     internal static async ValueTask GridFireOnDataLoaded(this IJSRuntime js, ElementReference rootElement) =>
-        await js.InvokeVoidAsync($"{nameof(CandyGrid)}.onDataLoaded", rootElement);
+        await js.InvokeVoidAsync($"{nameof(CandyGrid)}.onDataLoaded", rootElement).ConfigureAwait(false);
 
     /// <summary>
     /// Grids the bind filter dropdown.
@@ -136,7 +136,7 @@ public static partial class Extensions
     /// <param name="filterElement">The filter element.</param>
     /// <returns></returns>
     internal static async ValueTask GridBindFilterDropdown(this IJSRuntime js, ElementReference filterElement) =>
-        await js.InvokeVoidAsync($"{nameof(CandyGrid)}.bindColumnFilterDropdown", filterElement);
+        await js.InvokeVoidAsync($"{nameof(CandyGrid)}.bindColumnFilterDropdown", filterElement).ConfigureAwait(false);
 
     /// <summary>
     /// Modals the show.
@@ -145,7 +145,7 @@ public static partial class Extensions
     /// <param name="element">The element.</param>
     /// <returns></returns>
     internal static async ValueTask ModalShow(this IJSRuntime js, ElementReference element) =>
-        await js.InvokeVoidAsync($"{nameof(CandyModal)}.show", element);
+        await js.InvokeVoidAsync($"{nameof(CandyModal)}.show", element).ConfigureAwait(false);
 
     /// <summary>
     /// Modals the hide.
@@ -154,7 +154,7 @@ public static partial class Extensions
     /// <param name="element">The element.</param>
     /// <returns></returns>
     internal static async ValueTask ModalHide(this IJSRuntime js, ElementReference element) =>
-        await js.InvokeVoidAsync($"{nameof(CandyModal)}.hide", element);
+        await js.InvokeVoidAsync($"{nameof(CandyModal)}.hide", element).ConfigureAwait(false);
 
     /// <summary>
     /// Tabs the show.
@@ -163,5 +163,5 @@ public static partial class Extensions
     /// <param name="element">The element.</param>
     /// <returns></returns>
     internal static async ValueTask TabShow(this IJSRuntime js, ElementReference element) =>
-        await js.InvokeVoidAsync($"{nameof(CandyTabSet)}.show", element);
+        await js.InvokeVoidAsync($"{nameof(CandyTabSet)}.show", element).ConfigureAwait(false);
 }

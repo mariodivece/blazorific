@@ -92,13 +92,13 @@ public partial class CandyModal
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
+        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
 
         if (!firstRender)
             return;
 
         if (Js is not null)
-            await Js.InvokeVoidAsync($"{nameof(CandyModal)}.bindEvents", Element, JsElement);
+            await Js.InvokeVoidAsync($"{nameof(CandyModal)}.bindEvents", Element, JsElement).ConfigureAwait(false);
     }
 
     private string OptionsClasses
@@ -121,7 +121,7 @@ public partial class CandyModal
     /// <summary>
     /// Shows this instance.
     /// </summary>
-    public async Task Show() => await Show(null);
+    public async Task Show() => await Show(null).ConfigureAwait(false);
 
     /// <summary>
     /// Shows the specified title.
@@ -133,7 +133,7 @@ public partial class CandyModal
             Title = title;
 
         if (Js is not null)
-            await Js.ModalShow(Element);
+            await Js.ModalShow(Element).ConfigureAwait(false);
 
         StateHasChanged();
     }
@@ -144,7 +144,7 @@ public partial class CandyModal
     public async Task Hide()
     {
         if (Js is not null)
-            await Js.ModalHide(Element);
+            await Js.ModalHide(Element).ConfigureAwait(false);
     }
 
     /// <summary>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
@@ -12,13 +12,13 @@
 
 	<PropertyGroup>
 		<PackageId>Unosquare.Blazorific</PackageId>
-		<Version>7.10.1-alpha.15</Version>
+		<Version>8.10.1-alpha.16</Version>
 		<Authors>mariodivece, unosquare</Authors>
 		<Company>Unosquare</Company>
 		<Product>Unosquare Blazorific UI Library</Product>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<Description>A handy Blazor component library for quickly prototyping and building applications.</Description>
-		<Copyright>(c) 2019-2021 Unosquare, LLC</Copyright>
+		<Copyright>(c) 2019-2024 Unosquare, LLC</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>blazorific.png</PackageIcon>
 		<PackageTags>blazor, ui, webapp, wasm, grid, forms</PackageTags>
@@ -32,8 +32,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.1" />
 		<PackageReference Include="Swan.Core" Version="7.0.0-*" />
 	</ItemGroup>
 

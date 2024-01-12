@@ -4,9 +4,10 @@
 /// Defines a search box for the <see cref="CandyGrid"/>.
 /// </summary>
 /// <seealso cref="CandyGridChildComponent" />
-public partial class CandyGridSearchBox
+public partial class CandyGridSearchBox : IDisposable
 {
     private readonly Timer DebounceTimer;
+    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CandyGridSearchBox"/> class.
@@ -52,5 +53,29 @@ public partial class CandyGridSearchBox
     {
         SearchText = (e.Value as string ?? string.Empty).Trim();
         DebounceTimer.Change(250, Timeout.Infinite);
+    }
+
+    /// <summary>
+    /// Disposes unmanaged and optionally managed resources.
+    /// </summary>
+    /// <param name="alsoManaged">Dispose managed resources.</param>
+    protected virtual void Dispose(bool alsoManaged)
+    {
+        if (isDisposed)
+            return;
+
+        isDisposed = true;
+
+        if (alsoManaged)
+        {
+            DebounceTimer.Dispose();
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(alsoManaged: true);
+        GC.SuppressFinalize(this);
     }
 }

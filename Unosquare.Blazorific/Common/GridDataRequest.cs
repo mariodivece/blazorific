@@ -38,7 +38,7 @@ public sealed class GridDataRequest
     /// Sent the minutes difference between UTC and local time.
     /// In Blazor we never shift the datetime offset because we want the original datetime datum coming from the server.
     /// </summary>
-    public int TimezoneOffset { get; set; } = 0; // (int)Math.Round(DateTime.UtcNow.Subtract(DateTime.Now).TotalMinutes, 0);
+    public int TimezoneOffset { get; set; }  // (int)Math.Round(DateTime.UtcNow.Subtract(DateTime.Now).TotalMinutes, 0);
 
     /// <summary>
     /// Updates this request object from a CandyGrid.

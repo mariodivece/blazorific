@@ -67,12 +67,12 @@ public partial class CandyTab
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
+        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
         if (!firstRender)
             return;
 
         if (Js is not null)
-            await Js.InvokeVoidAsync($"{nameof(CandyTabSet)}.bindEvents", Element, JsElement);
+            await Js.InvokeVoidAsync($"{nameof(CandyTabSet)}.bindEvents", Element, JsElement).ConfigureAwait(false);
 
         if (IsExpanded)
             JsHandleShownEvent();
@@ -84,7 +84,7 @@ public partial class CandyTab
     public async Task Show()
     {
         if (Js is not null)
-            await Js.TabShow(Element);
+            await Js.TabShow(Element).ConfigureAwait(false);
     }
 
 

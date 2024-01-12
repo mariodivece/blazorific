@@ -90,7 +90,7 @@ public class GridState
             columns.Add(new GridColumnState
             {
                 Name = col.Field,
-                FilterArgument = Array.Empty<string>(),
+                FilterArgument = [],
                 FilterOperator = CompareOperators.None,
                 FilterText = string.Empty
             });
@@ -139,7 +139,7 @@ public class GridColumnState : IGridDataColumn
     public string? FilterText { get; set; }
 
     /// <inheritdoc />
-    public string?[] FilterArgument { get; set; }  = Array.Empty<string>();
+    public string?[] FilterArgument { get; set; }  = [];
 
     /// <inheritdoc />
     public CompareOperators FilterOperator { get; set; }
